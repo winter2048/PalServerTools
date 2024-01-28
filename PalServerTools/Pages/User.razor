@@ -1,0 +1,89 @@
+﻿@page "/user"
+
+<PageTitle>玩家</PageTitle>
+
+@using PalServerTools.Data
+@using PalServerTools.Models
+@inject PalRconService palRconService
+
+<h1>玩家(@(players == null ? 0 : players.Count))</h1>
+
+<div class="bd-example">
+    <div class="row row-cols-lg-auto g-3 align-items-center">
+        <div class="col-12">
+            <label class="visually-hidden">服务器名称</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control form-control-sm" id="inputPassword" placeholder="搜索" @bind="keywords">
+            </div>
+        </div>
+
+        <div class="col-12">
+            <button class="btn btn-primary btn-sm" @onclick="Refresh">刷新</button>
+        </div>
+    </div>
+</div>
+
+@if (players == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>名称</th>
+                <th>SteamId</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var player in players.Where(p => p.Name.Contains(keywords) || p.PlayerUid.Contains(keywords) || p.SteamId.Contains(keywords)))
+            {
+                <tr>
+                    <td>@player.PlayerUid</td>
+                    <td>@player.Name</td>
+                    <td>@player.SteamId</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" @onclick=" ()=>{ palRconService.TeleportToPlayer(player.SteamId);}">传送到玩家位置</button>
+                        <button type="button" class="btn btn-primary btn-sm" @onclick=" ()=>{ palRconService.TeleportToMe(player.SteamId);}">传送玩家到自己位置</button>
+                        <button type="button" class="btn btn-danger btn-sm" @onclick=" ()=>{ palRconService.KickPlayer(player.SteamId);}">踢出</button>
+                        <button type="button" class="btn btn-danger btn-sm" @onclick=" ()=>{ palRconService.BanPlayer(player.SteamId);}">封禁</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<PlayerModel> players;
+    private string keywords = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+       await this.Refresh();
+    }
+
+    public async Task Refresh()
+    {
+        players = null;
+        var playersRes = await palRconService.ShowPlayers();
+        players = new List<PlayerModel>();
+        foreach (var player in playersRes.Split("\n").Skip(1))
+        {
+            if (!string.IsNullOrWhiteSpace(player))
+            {
+                var value = player.Split(",");
+                players.Add(new PlayerModel()
+                    {
+                        Name = value.Length >= 1 ? value[0] : "",
+                        PlayerUid = value.Length >= 2 ? value[1] : "",
+                        SteamId = value.Length >= 3 ? value[2] : ""
+                    });
+            }
+        }
+        this.StateHasChanged();
+    }
+}

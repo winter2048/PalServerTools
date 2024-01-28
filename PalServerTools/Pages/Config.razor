@@ -1,0 +1,296 @@
+﻿@page "/config"
+
+@using PalServerTools.Data
+@inject ConfigService configService;
+
+<PageTitle>配置</PageTitle>
+
+<h1>配置</h1>
+
+<div class="accordion" id="accordionPanelsStayOpenExample">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                基础配置
+            </button>
+        </h2>
+        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+            <div class="accordion-body">
+                <div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">服务器名称</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputPassword" @bind="configService.PalConfig.ServerName">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">公共IP地址</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputPassword" @bind="configService.PalConfig.PublicIP">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">公共端口号</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.PublicPort">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">服务器密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="inputPassword" @bind="configService.PalConfig.ServerPassword">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">管理员密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="inputPassword" @bind="configService.PalConfig.AdminPassword">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">难度</label>
+                        <div class="col-sm-10">
+                            <select class="form-select" aria-label="Default select example" @bind="configService.PalConfig.Difficulty">
+                                <option value="Difficulty" selected>困难</option>
+                                <option value="None">简单</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">最大玩家数</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.ServerPlayerMaxNum">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">是否启用RCON</label>
+                        <div class="col-sm-10">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.PalConfig.RCONEnabled">
+                        </div>
+                    </div>
+                    @if (configService.PalConfig.RCONEnabled)
+                    {
+                        <div class="mb-3 row">
+                            <label for="difficulty" class="col-sm-2 col-form-label">RCON端口号</label>
+                            <div class="col-sm-10">
+                                <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.RCONPort">
+                            </div>
+                        </div>
+                    }
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">服务器描述</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" aria-label="With textarea" @bind="configService.PalConfig.ServerDescription"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                游戏体验调整
+            </button>
+        </h2>
+        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+            <div class="accordion-body">
+                <div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">白天流逝速度(@configService.PalConfig.DayTimeSpeedRate)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="5" step="0.0001" @bind="configService.PalConfig.DayTimeSpeedRate">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">夜晚流逝速度(@configService.PalConfig.NightTimeSpeedRate)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="5" step="0.0001" @bind="configService.PalConfig.NightTimeSpeedRate">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">经验倍率(@configService.PalConfig.ExpRate)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.ExpRate">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">帕鲁捕获概率倍率(@configService.PalConfig.PalCaptureRate)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PalCaptureRate">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">帕鲁出现概率倍率(@configService.PalConfig.PalSpawnNumRate)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PalSpawnNumRate">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                战斗与生存
+            </button>
+        </h2>
+        <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+            <div class="accordion-body">
+                <div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">帕鲁攻击伤害倍率(@configService.PalConfig.PalDamageRateAttack)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PalDamageRateAttack">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">玩家攻击伤害倍率(@configService.PalConfig.PlayerDamageRateAttack)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PlayerDamageRateAttack">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">玩家饥饿下降率(@configService.PalConfig.PlayerStomachDecreaseRate)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PlayerStomachDecreaseRate">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">玩家耐力下降率(@configService.PalConfig.PlayerStaminaDecreaseRate)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PlayerStaminaDecreaseRate">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">帕鲁自动恢复生命值率(@configService.PalConfig.PalAutoHPRegeneRate)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PalAutoHPRegeneRate">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">玩家自动恢复生命值率(@configService.PalConfig.PlayerAutoHPRegeneRate)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PlayerAutoHPRegeneRate">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingThree2">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree2" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                其他配置
+            </button>
+        </h2>
+        <div id="panelsStayOpen-collapseThree2" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree2">
+            <div class="accordion-body">
+                <div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">建筑物受损伤害倍率(@configService.PalConfig.BuildObjectDamageRate)</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.BuildObjectDamageRate">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">采集物品倍率(@configService.PalConfig.CollectionDropRate</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.CollectionDropRate">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">敌人掉落物品倍率(@configService.PalConfig.EnemyDropItemRate</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.EnemyDropItemRate">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">死亡惩罚</label>
+                        <div class="col-sm-10">
+                            <select class="form-select" aria-label="Default select example" @bind="configService.PalConfig.DeathPenalty">
+                                <option value="None" selected>无惩罚</option>
+                                <option value="Item">丢失物品但不丢失装备</option>
+                                <option value="ItemAndEquipment">丢失物品和装备</option>
+                                <option value="All">丢失所以物品、装备、伙伴</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">启用玩家对玩家的伤害</label>
+                        <div class="col-sm-10">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.PalConfig.bEnablePlayerToPlayerDamage">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">火焰伤害</label>
+                        <div class="col-sm-10">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.PalConfig.bEnableFriendlyFire">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">是否发生袭击事件</label>
+                        <div class="col-sm-10">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.PalConfig.bEnableInvaderEnemy">
+                        </div>
+                    </div>
+                        <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">掉落物品存在最大时长</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.DropItemAliveMaxHours">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">自动重置没有在线玩家的公会</label>
+                        <div class="col-sm-10">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.PalConfig.bAutoResetGuildNoOnlinePlayers">
+                        </div>
+                    </div>         
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">无在线玩家时自动重置生成时间</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.AutoResetGuildTimeNoOnlinePlayers">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">公会玩家最大数量</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.GuildPlayerMaxNum">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">帕鲁蛋孵化时间</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.PalEggDefaultHatchingTime">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">工作速度倍率</label>
+                        <div class="col-sm-10">
+                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.WorkSpeedRate">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top:20px">
+    <button class="btn btn-primary" @onclick="IncrementCount">
+        保存
+    </button>
+    <button class="btn btn-primary" @onclick="IncrementCount">
+        保存并重启
+    </button>
+</div>
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

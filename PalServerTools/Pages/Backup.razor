@@ -1,0 +1,78 @@
+﻿@page "/backup"
+
+<PageTitle>备份</PageTitle>
+
+@using PalServerTools.Data
+@inject WeatherForecastService ForecastService
+
+<h1>存档</h1>
+
+<div class="bd-example">
+    <div class="row row-cols-lg-auto g-3 align-items-center">
+        <div class="col-12">
+            <label class="visually-hidden" for="inlineFormInputGroupUsername">Username</label>
+            <div class="input-group input-group-sm">
+                <div class="input-group-text">日期</div>
+                <input type="datetime-local" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+                <span class="input-group-text">-</span>
+                <input type="datetime-local" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label class="visually-hidden" for="inlineFormSelectPref">Preference</label>
+            <select class="form-select form-select-sm" id="inlineFormSelectPref">
+                <option selected>全部</option>
+                <option value="1">自动</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <button class="btn btn-primary btn-sm">查询</button>
+            <button class="btn btn-primary btn-sm">备份</button>
+        </div>
+    </div>
+</div>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>名称</th>
+                <th>大小</th>
+                <th>时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm">下载</button>
+                        <button type="button" class="btn btn-danger btn-sm">删除</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+    }
+}
