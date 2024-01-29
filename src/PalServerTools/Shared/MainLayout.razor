@@ -1,4 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using PalServerTools.Pages
+@using PalServerTools.Auth;
+@inherits LayoutComponentBase
+
+@inject NavigationManager nvm
+@inject ImitateAuthStateProvider AuthStateProvider;
 
 <PageTitle>PalServerTools</PageTitle>
 
@@ -8,12 +13,30 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+        <AuthorizeView>
+            <Authorized>
+                <div class="top-row px-4">
+                    <a href="#" @onclick="SignOut">退出</a>
+                </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
+                <article class="content px-4">
+                    @Body
+                </article>
+            </Authorized>
+            <NotAuthorized>
+                <div style="margin:120px 0;width:100%;text-align:center;color:red;">
+                    <span style="font-size:20px">检测到登录超时，请重新<a href="/Login" style="text-decoration:underline">登录</a>!</span>
+                </div>
+                <RedirectToLogin></RedirectToLogin>   <!--加载组件，未登录时强制跳转-->
+            </NotAuthorized>
+        </AuthorizeView>
     </main>
 </div>
+
+@code {
+    private async Task SignOut()
+    {
+        await AuthStateProvider.SignOut();
+        nvm.NavigateTo("/Login");
+    }
+}

@@ -6,20 +6,19 @@ namespace PalServerTools.Job
     public class BackupJob : IJob
     {
         private readonly PalProcessService _palProcessService;
-        private readonly ConfigService _configService;
+        private readonly BackupService _backupService;
 
-        public BackupJob(PalProcessService palProcessService, ConfigService configService)
+        public BackupJob(PalProcessService palProcessService, BackupService backupService)
         {
             _palProcessService = palProcessService;
-            _configService = configService;
+            _backupService = backupService;
         }
         public async Task RunAsync()
         {
             if (_palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
             {
-               // _configService.ToolsConfig.BackupPath
+                _backupService.Backup();
             }
-            Console.WriteLine("11111");
         }
     }
 }

@@ -46,8 +46,8 @@ else
                     <td>@player.Name</td>
                     <td>@player.SteamId</td>
                     <td>
-                        <button type="button" class="btn btn-primary btn-sm" @onclick=" ()=>{ palRconService.TeleportToPlayer(player.SteamId);}">传送到玩家位置</button>
-                        <button type="button" class="btn btn-primary btn-sm" @onclick=" ()=>{ palRconService.TeleportToMe(player.SteamId);}">传送玩家到自己位置</button>
+                       @* <button type="button" class="btn btn-primary btn-sm" @onclick=" ()=>{ palRconService.TeleportToPlayer(player.SteamId);}">传送到玩家位置</button>
+                        <button type="button" class="btn btn-primary btn-sm" @onclick=" ()=>{ palRconService.TeleportToMe(player.SteamId);}">传送玩家到自己位置</button>*@
                         <button type="button" class="btn btn-danger btn-sm" @onclick=" ()=>{ palRconService.KickPlayer(player.SteamId);}">踢出</button>
                         <button type="button" class="btn btn-danger btn-sm" @onclick=" ()=>{ palRconService.BanPlayer(player.SteamId);}">封禁</button>
                     </td>
@@ -63,7 +63,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-       await this.Refresh();
+        await this.Refresh();
     }
 
     public async Task Refresh()

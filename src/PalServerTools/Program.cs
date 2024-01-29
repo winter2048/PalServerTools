@@ -1,9 +1,12 @@
 
 using CronQuery.Mvc.Jobs;
 using CronQuery.Mvc.Options;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
+using PalServerTools.Auth;
 using PalServerTools.Data;
 using PalServerTools.Job;
+using PalServerTools.Utils;
 
 namespace PalServerTools
 {
@@ -16,11 +19,17 @@ namespace PalServerTools
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
-            builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddSingleton<ConsoleService>();
             builder.Services.AddSingleton<PalProcessService>();
             builder.Services.AddTransient<ConfigService>();
             builder.Services.AddTransient<PalRconService>();
+            builder.Services.AddTransient<BackupService>();
+
+            // ×¢ÈëImitateAuthStateProvider
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<ICookieUtil, CookieUtil>();
+            builder.Services.AddScoped<ImitateAuthStateProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider>(implementationFactory => implementationFactory.GetRequiredService<ImitateAuthStateProvider>());
 
             builder.Services.AddTransient<BackupJob>();
             builder.Services.AddTransient<PalProcessJob>();

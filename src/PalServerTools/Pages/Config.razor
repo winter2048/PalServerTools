@@ -2,6 +2,7 @@
 
 @using PalServerTools.Data
 @inject ConfigService configService;
+@inject PalProcessService palProcessService
 
 <PageTitle>配置</PageTitle>
 
@@ -17,6 +18,18 @@
         <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
             <div class="accordion-body">
                 <div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">PalServer根目录</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputPassword" @bind="configService.ToolsConfig.PalServerPath">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">PalServer启动参数</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputPassword" @bind="configService.ToolsConfig.RunArguments">
+                        </div>
+                    </div>
                     <div class="mb-3 row">
                         <label for="difficulty" class="col-sm-2 col-form-label">服务器名称</label>
                         <div class="col-sm-10">
@@ -45,6 +58,12 @@
                         <label for="difficulty" class="col-sm-2 col-form-label">管理员密码</label>
                         <div class="col-sm-10">
                             <input type="password" class="form-control" id="inputPassword" @bind="configService.PalConfig.AdminPassword">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">工具密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="inputPassword" @bind="configService.ToolsConfig.ToolsPassword">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -133,7 +152,7 @@
     <div class="accordion-item">
         <h2 class="accordion-header" id="panelsStayOpen-headingThree">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                战斗与生存
+                游戏战斗与生存
             </button>
         </h2>
         <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
@@ -182,7 +201,7 @@
     <div class="accordion-item">
         <h2 class="accordion-header" id="panelsStayOpen-headingThree2">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree2" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                其他配置
+                游戏其他配置
             </button>
         </h2>
         <div id="panelsStayOpen-collapseThree2" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree2">
@@ -275,22 +294,67 @@
             </div>
         </div>
     </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingThree3">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree3" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                存档配置
+            </button>
+        </h2>
+        <div id="panelsStayOpen-collapseThree3" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree3">
+            <div class="accordion-body">
+                <div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">存档备份位置</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputPassword" @bind="configService.ToolsConfig.BackupPath">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="difficulty" class="col-sm-2 col-form-label">存档自动备份</label>
+                        <div class="col-sm-10">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.ToolsConfig.AutoBackup">
+                        </div>
+                    </div>
+                    @if (configService.ToolsConfig.AutoBackup)
+                    {
+                        <div class="mb-3 row">
+                            <label for="difficulty" class="col-sm-2 col-form-label">存档备份频率Cron</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="inputPassword" @bind="configService.ToolsConfig.BackupCron">
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div style="margin-top:20px">
-    <button class="btn btn-primary" @onclick="IncrementCount">
+    <button class="btn btn-primary" @onclick="Save">
         保存
     </button>
-    <button class="btn btn-primary" @onclick="IncrementCount">
+    <button class="btn btn-primary" @onclick="SaveAndRestart">
         保存并重启
     </button>
 </div>
 
 @code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
+    private void Save()
     {
-        currentCount++;
+        configService.Save();
+    }
+
+    private void SaveAndRestart()
+    {
+        configService.Save();
+        if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
+        {
+            palProcessService.CloseProcess();
+        }
+        if (!configService.ToolsConfig.AutoRestart)
+        {
+            palProcessService.StartProcess();
+        }
     }
 }

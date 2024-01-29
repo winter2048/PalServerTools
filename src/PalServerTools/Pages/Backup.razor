@@ -3,7 +3,9 @@
 <PageTitle>备份</PageTitle>
 
 @using PalServerTools.Data
-@inject WeatherForecastService ForecastService
+@using PalServerTools.Models;
+
+@inject BackupService backupService
 
 <h1>存档</h1>
 
@@ -13,66 +15,85 @@
             <label class="visually-hidden" for="inlineFormInputGroupUsername">Username</label>
             <div class="input-group input-group-sm">
                 <div class="input-group-text">日期</div>
-                <input type="datetime-local" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+                <input type="datetime-local" class="form-control" id="inlineFormInputGroupUsername" @bind="StartTime">
                 <span class="input-group-text">-</span>
-                <input type="datetime-local" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+                <input type="datetime-local" class="form-control" id="inlineFormInputGroupUsername" @bind="EndTime">
             </div>
         </div>
 
         <div class="col-12">
-            <label class="visually-hidden" for="inlineFormSelectPref">Preference</label>
-            <select class="form-select form-select-sm" id="inlineFormSelectPref">
-                <option selected>全部</option>
-                <option value="1">自动</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-            </select>
-        </div>
-
-        <div class="col-12">
-            <button class="btn btn-primary btn-sm">查询</button>
-            <button class="btn btn-primary btn-sm">备份</button>
+            <button class="btn btn-primary btn-sm" @onclick="Search">查询</button>
+            <button class="btn btn-primary btn-sm" @onclick="Refresh">刷新</button>
+            <button class="btn btn-primary btn-sm" @onclick="CurrentBackup">备份</button>
         </div>
     </div>
 </div>
-
-@if (forecasts == null)
+@if (backupList == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
+  <table class="table">
         <thead>
-            <tr>
+        <tr>
                 <th>名称</th>
                 <th>大小</th>
                 <th>时间</th>
-                <th>操作</th>
+              <th>操作</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>
-                        <button type="button" class="btn btn-primary btn-sm">下载</button>
-                        <button type="button" class="btn btn-danger btn-sm">删除</button>
-                    </td>
-                </tr>
-            }
+            @foreach (var file in backupList)
+        {
+            <tr>
+                <td>@file.Name</td>
+                <td>@file.Size</td>
+                <td>@file.CreateTime.ToShortDateString()</td>
+                <td>
+                    <button type="button" class="btn btn-primary btn-sm">下载</button>
+                    <button type="button" class="btn btn-danger btn-sm">删除</button>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private List<BackupModel> backupList = null;
+    private DateTime? StartTime = null;
+    private DateTime? EndTime = null;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        backupList = backupService.GetBackupList();
+    }
+
+    private void CurrentBackup()
+    {
+        backupService.Backup();
+        Refresh();
+    }
+
+    private void Refresh()
+    {
+        StartTime = null;
+        EndTime = null;
+        Search();
+    }
+
+    private void Search()
+    {
+        backupList = null;
+        backupList = backupService.GetBackupList();
+        if (StartTime != null)
+        {
+            backupList = backupList.Where(p => p.CreateTime >= StartTime).ToList();
+        }
+        if (EndTime != null)
+        {
+            backupList = backupList.Where(p => p.CreateTime <= EndTime).ToList();
+        }
     }
 }

@@ -1,0 +1,9 @@
+﻿@inject NavigationManager nvm
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        nvm.NavigateTo("/Login", true);
+    }
+}

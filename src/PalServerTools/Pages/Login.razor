@@ -1,0 +1,55 @@
+﻿@page "/Login"
+@using PalServerTools.Models;
+@using PalServerTools.Utils;
+@using PalServerTools.Auth;
+
+@layout LoginLayout
+@inject NavigationManager nvm
+@inject ImitateAuthStateProvider AuthStateProvider;
+
+<div class="card align-items-center">
+    <div class="card-body my-2">
+        <h3>登录</h3>
+        <EditForm Model="loginModel" OnValidSubmit="SubmitHandler" OnInvalidSubmit="InvalidHandler">
+            <div class="form-gourp">
+                <input type="password" class="form-control" id="inputPassword" @bind="loginModel.Password">
+            </div>
+            <span class="form-control-plaintext"></span>
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <button class="btn btn-primary">登录</button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private UserInfo loginModel = new UserInfo();
+    bool isAuthLoading = false;
+
+    private async Task SubmitHandler()
+    {
+        isAuthLoading = true;
+        try
+        {
+            if (await AuthStateProvider.Login(new UserInfo() { Password = loginModel.Password }))
+            {
+                nvm.NavigateTo("/");
+            }
+        }
+        catch(Exception ex)
+        {
+            System.Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isAuthLoading = false;
+        }
+    }
+   
+    private void InvalidHandler()
+    {
+        nvm.NavigateTo("/Login");
+    }
+}
