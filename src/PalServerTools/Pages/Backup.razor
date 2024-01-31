@@ -52,7 +52,7 @@ else
                 <td>@file.CreateTime.ToShortDateString()</td>
                 <td>
                     <button type="button" class="btn btn-primary btn-sm">下载</button>
-                    <button type="button" class="btn btn-danger btn-sm">删除</button>
+                        <button type="button" class="btn btn-danger btn-sm" @onclick="()=>DelBackup(file.Name)">删除</button>
                 </td>
             </tr>
         }
@@ -73,6 +73,12 @@ else
     private void CurrentBackup()
     {
         backupService.Backup();
+        Refresh();
+    }
+
+    private void DelBackup(string name)
+    {
+        backupService.DelBackup(name);
         Refresh();
     }
 

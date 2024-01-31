@@ -37,18 +37,26 @@ namespace PalServerTools
             builder.Services.Configure<JobRunnerOptions>((option) =>
             {
                 option.Running = true;
-                option.Jobs.Add(new JobOptions()
+                var backupJob = option.Jobs.FirstOrDefault(p => p.Name == "BackupJob");
+                if (backupJob == null)
                 {
-                    Cron = builder.Configuration.GetValue<string>("ToolsConfig:BackupCron", "0/5 * * * * *"),
-                    Name = "BackupJob",
-                    Running = builder.Configuration.GetValue<bool>("ToolsConfig:AutoBackup", true)
-                });
-                option.Jobs.Add(new JobOptions()
+                    backupJob = new JobOptions();
+                    option.Jobs.Add(backupJob);
+                }
+                backupJob.Cron = builder.Configuration.GetValue<string>("ToolsConfig:BackupCron", "0/5 * * * * *");
+                backupJob.Running = builder.Configuration.GetValue<bool>("ToolsConfig:AutoBackup", true);
+
+                var palProcessJob = option.Jobs.FirstOrDefault(p => p.Name == "PalProcessJob");
+                if (palProcessJob == null)
                 {
-                    Cron = "0/5 * * * * *",
-                    Name = "PalProcessJob",
-                    Running = true
-                });
+                    palProcessJob = new JobOptions()
+                    {
+                        Cron = "0/5 * * * * *",
+                        Name = "PalProcessJob",
+                        Running = true
+                    };
+                    option.Jobs.Add(palProcessJob);
+                }
             });
             builder.Services.AddSingleton<JobRunner>();
             builder.Services.AddSingleton((IServiceProvider serviceProvider) => new JobCollection(builder.Services));

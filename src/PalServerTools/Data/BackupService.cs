@@ -15,7 +15,7 @@ namespace PalServerTools.Data
         public List<BackupModel> GetBackupList()
         {
             List<BackupModel> backupList = new List<BackupModel>();
-            foreach (var file in Directory.GetFiles(_configService.ToolsConfig.BackupPath, "backup*.zip", SearchOption.AllDirectories))
+            foreach (var file in Directory.GetFiles(_configService.ToolsConfig.BackupPath, "backup*.zip"))
             {
                 var fileInfo = new FileInfo(file);
                 backupList.Add(new BackupModel()
@@ -66,6 +66,16 @@ namespace PalServerTools.Data
             catch (Exception ex)
             {
                 Console.WriteLine("错误：" + ex.Message);
+            }
+        }
+
+
+        public void DelBackup(string name)
+        {
+            var filePath = Path.Combine(_configService.ToolsConfig.BackupPath, $"{name}.zip");
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
             }
         }
 
