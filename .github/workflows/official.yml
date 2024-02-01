@@ -1,0 +1,66 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Official
+
+# run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
+
+on: 
+  push:
+    branches: [ "master", "dev" ]
+
+env:
+  GB_NUGET_TOKEN: ${{secrets.GB_NUGET_TOKEN}}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup BuildNumber
+        id: setup_buildnumber
+        run: .\.github\workflows\script\set-buildnumber.ps1 -refName ${{ github.ref_name }}
+        shell: powershell
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ./src/PalServerTools.sln
+
+      - name: Publish Service
+        run: dotnet publish --configuration Release ./src/PalServerTools.sln --no-restore
+
+      - name: Copy Artifact
+        run: |
+          Compress-Archive -Path "./src/PalServerTools/bin/Release/net6.0/publish/*" -DestinationPath "./PalServerTools.zip" -Force
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: |
+            ./src/PalServerTools/bin/Release/net6.0/publish/*
+
+      - name: Get Release Note
+        id: get_releasenote
+        run: .\.github\workflows\script\get-releasenote.ps1 -version ${{ env.BUILD_BUILDNUMBER }}
+        shell: powershell
+
+      - name: Tag commit
+        uses: tvdias/github-tagger@v0.0.1
+        with:
+          repo-token: ${{ env.GB_NUGET_TOKEN }}
+          tag: v${{ env.BUILD_BUILDNUMBER }}
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          bodyFile: 'ReleaseNote.md'
+          token: ${{ env.GB_NUGET_TOKEN }}
+          prerelease: ${{ github.ref_name != 'master' }}
+          tag: v${{ env.BUILD_BUILDNUMBER }}
+          artifacts: "./PalServerTools.zip"
