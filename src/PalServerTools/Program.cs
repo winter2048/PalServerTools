@@ -25,7 +25,7 @@ namespace PalServerTools
             builder.Services.AddTransient<PalRconService>();
             builder.Services.AddTransient<BackupService>();
 
-            // ×¢ÈëImitateAuthStateProvider
+            // ×¢ï¿½ï¿½ImitateAuthStateProvider
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ICookieUtil, CookieUtil>();
             builder.Services.AddScoped<ImitateAuthStateProvider>();
@@ -43,7 +43,7 @@ namespace PalServerTools
                     };
                     option.Jobs.Add(backupJob);
                 }
-                backupJob.Cron = builder.Configuration.GetValue<string>("ToolsConfig:BackupCron", "0/5 * * * * *");
+                backupJob.Cron = builder.Configuration.GetValue<string>("ToolsConfig:BackupCron", "0 0/30 * * * *");
                 backupJob.Running = builder.Configuration.GetValue<bool>("ToolsConfig:AutoBackup", true);
 
                 var palProcessJob = option.Jobs.FirstOrDefault(p => p.Name == "PalProcessJob");
