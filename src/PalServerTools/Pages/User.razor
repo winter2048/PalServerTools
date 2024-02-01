@@ -18,6 +18,7 @@
         </div>
 
         <div class="col-12">
+            <button class="btn btn-primary btn-sm" @onclick="Search">查询</button>
             <button class="btn btn-primary btn-sm" @onclick="Refresh">刷新</button>
         </div>
     </div>
@@ -39,7 +40,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var player in players.Where(p => p.Name.Contains(keywords) || p.PlayerUid.Contains(keywords) || p.SteamId.Contains(keywords)))
+            @foreach (var player in players)
             {
                 <tr>
                     <td>@player.PlayerUid</td>
@@ -66,7 +67,7 @@ else
         await this.Refresh();
     }
 
-    public async Task Refresh()
+    private async Task Search()
     {
         players = null;
         var playersRes = await palRconService.ShowPlayers();
@@ -84,6 +85,15 @@ else
                     });
             }
         }
-        this.StateHasChanged();
+        if (!string.IsNullOrWhiteSpace(keywords))
+        {
+            players = players.Where(p => p.Name.Contains(keywords) || p.PlayerUid.Contains(keywords) || p.SteamId.Contains(keywords)).ToList();
+        }
+    }
+
+    public async Task Refresh()
+    {
+        keywords = "";
+        await Search();
     }
 }

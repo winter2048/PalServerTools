@@ -72,11 +72,21 @@ namespace PalServerTools.Data
 
         public void DelBackup(string name)
         {
-            var filePath = Path.Combine(_configService.ToolsConfig.BackupPath, $"{name}.zip");
+            var filePath = Path.Combine(_configService.ToolsConfig.BackupPath, name);
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
             }
+        }
+
+        public Stream GetBackupStream(string name)
+        {
+            var filePath = Path.Combine(_configService.ToolsConfig.BackupPath, name);
+            if (File.Exists(filePath))
+            {
+               return  File.OpenRead(filePath);
+            }
+            return null;
         }
 
         private void CopyDirectory(string sourceDir, string targetDir)

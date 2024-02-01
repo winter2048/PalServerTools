@@ -40,7 +40,9 @@ namespace PalServerTools
                 var backupJob = option.Jobs.FirstOrDefault(p => p.Name == "BackupJob");
                 if (backupJob == null)
                 {
-                    backupJob = new JobOptions();
+                    backupJob = new JobOptions() {
+                        Name = "BackupJob"
+                    };
                     option.Jobs.Add(backupJob);
                 }
                 backupJob.Cron = builder.Configuration.GetValue<string>("ToolsConfig:BackupCron", "0/5 * * * * *");
