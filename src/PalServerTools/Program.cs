@@ -31,8 +31,6 @@ namespace PalServerTools
             builder.Services.AddScoped<ImitateAuthStateProvider>();
             builder.Services.AddScoped<AuthenticationStateProvider>(implementationFactory => implementationFactory.GetRequiredService<ImitateAuthStateProvider>());
 
-            builder.Services.AddTransient<BackupJob>();
-            builder.Services.AddTransient<PalProcessJob>();
             builder.Services.Configure<JobRunnerOptions>(builder.Configuration.GetSection("ToolsConfig"));
             builder.Services.Configure<JobRunnerOptions>((option) =>
             {
@@ -63,6 +61,9 @@ namespace PalServerTools
             builder.Services.AddSingleton<JobRunner>();
             builder.Services.AddSingleton((IServiceProvider serviceProvider) => new JobCollection(builder.Services));
             builder.Services.AddHostedService<JobRunner>();
+
+            builder.Services.AddTransient<BackupJob>();
+            builder.Services.AddTransient<PalProcessJob>();
 
             var app = builder.Build();
 
