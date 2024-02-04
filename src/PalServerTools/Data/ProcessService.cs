@@ -6,12 +6,12 @@ namespace PalServerTools.Data
 {
     public class PalProcessService
     {
-        private readonly ConfigService _configService;
+        private readonly PalConfigService _configService;
         private string processName = "PalServer";
 
         public PalServerState palServerState;
 
-        public PalProcessService(ConfigService configService) {
+        public PalProcessService(PalConfigService configService) {
             _configService = configService;
         }
 

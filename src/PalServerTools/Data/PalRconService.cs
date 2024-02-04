@@ -4,11 +4,11 @@ namespace PalServerTools.Data
 {
     public class PalRconService
     {
-        private readonly ConfigService _configService;
+        private readonly PalConfigService _configService;
 
         public RconClient client;
     
-        public PalRconService(ConfigService configService)
+        public PalRconService(PalConfigService configService)
         {
             this._configService = configService;
             this.client = new RconClient();

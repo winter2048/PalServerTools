@@ -6,42 +6,32 @@
 @inject ConsoleService consoleService
 @inject PalRconService palRconService
 @inject PalProcessService palProcessService
-@inject ConfigService configService
+@inject PalConfigService configService
 
 <h1>监控</h1>
 
 <div class="alert alert-secondary mt-4">
-    <span class="oi oi-pencil me-2" aria-hidden="true"></span>
-    <strong>服务器信息： </strong>
-
-    <span class="text-nowrap">
-        @serverInfo
-    </span>
+    <Card Title="基本信息" Style="width:100%;">
+        <Body>
+            <p>服务器版本： @serverInfo</p>
+            <p>服务器状态： @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
+                <Button Type="@ButtonType.Primary" Size="small" Icon="reload" OnClick="OnClickReload">重启</Button>
+                @if (palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped)
+                {
+                    <Button Type="@ButtonType.Primary" Size="small" Icon="poweroff" OnClick="OnClickStart">开机</Button>
+                }
+                else
+                {
+                    <Button Type="@ButtonType.Primary" Danger Icon="poweroff" Size="small" OnClick="OnClickClose">关机</Button>
+                }
+            </p>
+            <p>
+                自动重启：<Switch Size="small" @bind-Checked="configService.ToolsConfig.AutoRestart" OnChange="OnChangeAutomaticRestart" />
+            </p>
+        </Body>
+    </Card>
 </div>
 
-<div class="alert alert-secondary mt-4">
-    <span class="oi oi-pencil me-2" aria-hidden="true"></span>
-    <strong>服务器状态： </strong>
-
-    <span class="text-nowrap">
-        @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
-    </span>
-
-    <button type="button" class="btn btn-warning btn-sm" @onclick="()=>{palProcessService.CloseProcess();this.StateHasChanged();palProcessService.StartProcess();this.StateHasChanged();}">重启</button>
-    @if (palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped)
-    {
-        <button type="button" class="btn btn-primary btn-sm" @onclick="()=>{palProcessService.StartProcess();this.StateHasChanged();}">开机</button>
-    }
-    else
-    {
-        <button type="button" class="btn btn-danger btn-sm" @onclick="()=>{palProcessService.CloseProcess();this.StateHasChanged();}">关机</button>
-    }
-
-    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @onchange="OnChangeAutomaticRestart" checked="@configService.ToolsConfig.AutoRestart">
-    <label class="form-check-label" for="flexCheckDefault" >
-        自动重启
-    </label>
-</div>
 
 @code {
     private string serverInfo = "";
@@ -54,9 +44,29 @@
         }
     }
 
-    public async void OnChangeAutomaticRestart(ChangeEventArgs e)
+    async Task OnClickStart()
     {
-        configService.ToolsConfig.AutoRestart = Convert.ToBoolean(e.Value);
+        palProcessService.StartProcess(); 
+        this.StateHasChanged();
+    }
+
+    async Task OnClickClose()
+    {
+        palProcessService.CloseProcess(); 
+        this.StateHasChanged();
+    }
+
+    async Task OnClickReload()
+    {
+        palProcessService.CloseProcess(); 
+        this.StateHasChanged(); 
+        palProcessService.StartProcess(); 
+        this.StateHasChanged();
+    }
+
+    async Task OnChangeAutomaticRestart(bool value)
+    {
+        configService.ToolsConfig.AutoRestart = Convert.ToBoolean(value);
         configService.ToolsConfigSave();
     }
 }

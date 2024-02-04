@@ -1,0 +1,16 @@
+﻿@namespace PalServerTools.Components
+@inherits AntDomComponentBase
+@inject NavigationManager nvm
+
+<Button Icon="@this.Icon"
+        Class="@("sy-layout-menu-btn" + ((this.Active) ? " sy-layout-menu-btn-active ": " ") + this.Class)"
+        OnClick="@(async (e) => {
+          await this.HandleOnClick(e);
+          if (!string.IsNullOrWhiteSpace(this.Path))
+            {
+                nvm.NavigateTo(this.Path);
+                this.StateHasChanged();
+            }
+        })">
+    @this.Title
+</Button>

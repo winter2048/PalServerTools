@@ -5,9 +5,9 @@ namespace PalServerTools.Data
 {
     public class BackupService
     {
-        private readonly ConfigService _configService;
+        private readonly PalConfigService _configService;
 
-        public BackupService(ConfigService configService)
+        public BackupService(PalConfigService configService)
         {
             _configService = configService;
         }

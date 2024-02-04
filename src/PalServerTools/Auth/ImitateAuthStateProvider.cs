@@ -10,9 +10,9 @@ namespace PalServerTools.Auth
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICookieUtil _cookieUtil;
-        private readonly ConfigService _configService;
+        private readonly PalConfigService _configService;
 
-        public ImitateAuthStateProvider(IHttpContextAccessor httpContextAccessor, ICookieUtil cookieUtil, ConfigService configService)
+        public ImitateAuthStateProvider(IHttpContextAccessor httpContextAccessor, ICookieUtil cookieUtil, PalConfigService configService)
         {
             _httpContextAccessor = httpContextAccessor;
             _cookieUtil = cookieUtil;

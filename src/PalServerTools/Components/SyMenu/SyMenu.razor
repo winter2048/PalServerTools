@@ -1,0 +1,34 @@
+﻿@namespace PalServerTools.Components
+@inherits AntDomComponentBase
+@inject NavigationManager nvm
+
+@using PalServerTools.Utils;
+
+<Flex Vertical="@true" Align="center" Style="height: 100%;" Justify="space-between">
+    <Flex Vertical="@true" Align="center">
+        <div class="sy-layout-menu-avatar">
+            <Avatar Size="32">XXXX</Avatar>
+        </div>
+        @foreach (var menu in SyValue.menuItems)
+        {
+            <SyMenuItem Path="@menu.Path" Title="@menu.Title" Icon="@menu.Icon" Active="@(this.CurrentPath == menu.Path)" OnClick="()=>{ this.CurrentPath = menu.Path; this.StateHasChanged();}"></SyMenuItem>
+        }
+    </Flex>
+
+    <Flex Vertical="@true" Align="center">
+        <Tooltip Placement="@Placement.Right" Title="退出登录">
+            <Button Class="sy-layout-menu-btn"
+                    Icon="logout"
+                    OnClick="async () => {await this.SignOut();}"></Button>
+        </Tooltip>
+        <Tooltip Placement="@Placement.Right" Title="@(this.THEME == "dark" ? "亮色模式" : "暗色模式")">
+            <Button Class="sy-layout-menu-btn"
+                    Icon="alert"
+                    OnClick="@(async () => {await this.ConfigProvider.ChangeGlobalTheme((this.THEME == "dark" ? GlobalTheme.Dark: GlobalTheme.Light)); this.THEME = (this.THEME =="dark" ?"light":"dark"); this.StateHasChanged(); })"></Button>
+        </Tooltip>
+        <Tooltip Placement="@Placement.Right" Title="GitHub">
+            <Button Class="sy-layout-menu-btn"
+                    Icon="github"></Button>
+        </Tooltip>
+    </Flex>
+</Flex>

@@ -1,5 +1,6 @@
 ﻿@using PalServerTools.Pages
 @using PalServerTools.Auth;
+@using PalServerTools.Components;
 @inherits LayoutComponentBase
 
 @inject NavigationManager nvm
@@ -7,7 +8,36 @@
 
 <PageTitle>PalServerTools</PageTitle>
 
-<div class="page">
+    <div class="App">
+      <Space Direction="@DirectionVHType.Vertical" Style="width: 100%">
+        <Layout>
+          <Sider Width="60" Class="sy-layout-menu">
+            <SyMenu/>
+          </Sider>
+            <Layout Style="background-color: #f5f5f5">
+                <Content Class="sy-layout-content">
+                    <main>
+                        <AuthorizeView>
+                            <Authorized>
+                                <article class="content px-4">
+                                    @Body
+                                </article>
+                            </Authorized>
+                            <NotAuthorized>
+                                <div style="margin:120px 0;width:100%;text-align:center;color:red;">
+                                    <span style="font-size:20px">检测到登录超时，请重新<a href="/Login" style="text-decoration:underline">登录</a>!</span>
+                                </div>
+                                <RedirectToLogin></RedirectToLogin>   <!--加载组件，未登录时强制跳转-->
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </main>
+            </Content>
+          </Layout>
+        </Layout>
+      </Space>
+    </div>
+
+@*<div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
@@ -32,7 +62,7 @@
         </AuthorizeView>
     </main>
 </div>
-
+*@
 @code {
     private async Task SignOut()
     {

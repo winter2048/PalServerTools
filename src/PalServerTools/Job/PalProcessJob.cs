@@ -8,10 +8,10 @@ namespace PalServerTools.Job
     public class PalProcessJob : IJob
     {
         private readonly PalProcessService _palProcessService;
-        private readonly ConfigService _configService;
+        private readonly PalConfigService _configService;
         private string processName = "PalServer";
 
-        public PalProcessJob(PalProcessService palProcessService, ConfigService configService)
+        public PalProcessJob(PalProcessService palProcessService, PalConfigService configService)
         {
             _palProcessService = palProcessService;
             _configService = configService;

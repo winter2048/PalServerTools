@@ -9,14 +9,14 @@ using System.Text.RegularExpressions;
 
 namespace PalServerTools.Data
 {
-    public class ConfigService
+    public class PalConfigService
     {
         private readonly IConfiguration _configuration;
 
         public PalConfigModel PalConfig;
         public ToolsConfigModel ToolsConfig;
 
-        public ConfigService(IConfiguration configuration) {
+        public PalConfigService(IConfiguration configuration) {
             _configuration = configuration;
             ToolsConfig = GetToolsConfig();
             PalConfig = GetPalConfig();
