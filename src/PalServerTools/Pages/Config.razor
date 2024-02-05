@@ -6,6 +6,52 @@
 
 <PageTitle>配置</PageTitle>
 
+<Flex Vertical="true" Class="sy-content">
+    @*<PageHeader Class="sy-content-title" Title="备份" />*@
+    <Tabs Class="sy-content-tabs" DefaultActiveKey="1" TabPosition="TabPosition.Left" TabBarExtraContentLeft="leftExtra">
+        <TabPane Key="基础配置" Tab="基础配置">
+            <Flex Vertical="true" Class="sy-content">
+                <PageHeader Class="sy-content-title-2" Title="基础配置" />
+
+                 Content of tab Pane 基础配置
+            </Flex>
+        </TabPane>
+        <TabPane Key="游戏体验调整" Tab="游戏体验调整">
+            <Flex Vertical="true" Class="sy-content">
+                <PageHeader Class="sy-content-title-2" Title="游戏体验调整" />
+
+                Content of tab Pane 游戏体验调整
+            </Flex>
+        </TabPane>
+        <TabPane Key="游戏战斗与生存" Tab="游戏战斗与生存">
+            <Flex Vertical="true" Class="sy-content">
+                <PageHeader Class="sy-content-title-2" Title="游戏战斗与生存" />
+
+                Content of tab Pane 游戏战斗与生存
+            </Flex>
+        </TabPane>
+        <TabPane Key="游戏其他配置" Tab="游戏其他配置" >
+            <Flex Vertical="true" Class="sy-content">
+                <PageHeader Class="sy-content-title-2" Title="游戏其他配置" />
+
+                Content of tab Pane 游戏其他配置
+            </Flex>
+        </TabPane>
+        <TabPane Key="存档配置" Tab="存档配置" >
+            <Flex Vertical="true" Class="sy-content">
+                <PageHeader Class="sy-content-title-2" Title="存档配置" />
+
+                Content of tab Pane 存档配置
+            </Flex>
+        </TabPane>
+    </Tabs>
+</Flex>
+
+@code {
+    RenderFragment leftExtra => @<PageHeader Class="sy-content-title" Title="设置" />;
+
+}
+@*
 <h1>配置</h1>
 
 <div class="accordion" id="accordionPanelsStayOpenExample">
@@ -358,3 +404,4 @@
         }
     }
 }
+*@

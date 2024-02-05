@@ -21,11 +21,12 @@ namespace PalServerTools
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
             builder.Services.AddAntDesign();
-            builder.Services.AddSingleton<ConsoleService>();
+            builder.Services.AddScoped<ConsoleService>();
             builder.Services.AddSingleton<PalProcessService>();
             builder.Services.AddTransient<PalConfigService>();
             builder.Services.AddTransient<PalRconService>();
             builder.Services.AddTransient<BackupService>();
+            builder.Services.AddScoped<ClientConfigService>();
 
             // ע��ImitateAuthStateProvider
             builder.Services.AddHttpContextAccessor();

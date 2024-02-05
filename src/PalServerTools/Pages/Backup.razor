@@ -9,54 +9,58 @@
 @using AntDesign.TableModels
 
 @inject IJSRuntime JS
+@inject IMessageService message
 @inject BackupService backupService
 
-<h1>存档</h1>
-
-<div class="bd-example">
-    <div class="row row-cols-lg-auto g-3 align-items-center">
-        <div class="col-12">
+<Flex Vertical="true" Class="sy-content">
+    <PageHeader Class="sy-content-title" Title="备份" />
+    <div class="sy-content-body">
+        <div class="sy-content-body-search">
             <RangePicker TValue="DateTime?[]" ShowTime='@("HH:mm")' OnChange="OnRangeChange" Value="dateTimes" />
 
-            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" OnClick="Search">查询</Button>
-            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" OnClick="Refresh">刷新</Button>
-            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" OnClick="CurrentBackup">备份</Button>
+            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="search" OnClick="Search">查询</Button>
+            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="reload" OnClick="Refresh" Loading="withRefreshLoading">刷新</Button>
+            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="snippets" OnClick="CurrentBackup" Loading="withBackupLoading">备份</Button>
         </div>
+        <br />
+        @if (backupList == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <Table @ref="table"
+               TItem="BackupModel"
+               DataSource="@backupList"
+               Total="_total"
+               @bind-PageIndex="_pageIndex"
+               @bind-PageSize="_pageSize"
+               @bind-SelectedRows="selectedRows"
+               OnChange="OnChange"
+               Size="TableSize.Default"
+               RowKey="x=>x.Name">
+                <Selection Key="@(context.Name)" />
+                <PropertyColumn Property="c=>c.Name" Sortable Title="名称" />
+                <PropertyColumn Property="c=>c.Size" Sortable Title="大小(k)" />
+                <PropertyColumn Property='c=>c.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")' Sortable Title="时间" />
+                <ActionColumn Title="操作">
+                    <Space>
+                        <SpaceItem><Button Icon="download" Type="@ButtonType.Primary" Shape="@ButtonShape.Round" OnClick="()=>DownloadBackup(context.Name)">下载</Button></SpaceItem>
+                        <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>DelBackup(context.Name)">删除</Button></SpaceItem>
+                    </Space>
+                </ActionColumn>
+            </Table>
+        }
     </div>
-</div>
-<br />
-@if (backupList == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <Table @ref="table"
-       TItem="BackupModel"
-       DataSource="@backupList"
-       Total="_total"
-       @bind-PageIndex="_pageIndex"
-       @bind-PageSize="_pageSize"
-       @bind-SelectedRows="selectedRows"
-       OnChange="OnChange"
-       Size="TableSize.Default"
-       RowKey="x=>x.Name">
-        <Selection Key="@(context.Name)" />
-        <PropertyColumn Property="c=>c.Name" Sortable Title="名称" />
-        <PropertyColumn Property="c=>c.Size" Sortable Title="大小(k)" />
-        <PropertyColumn Property='c=>c.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")' Sortable Title="时间" />
-        <ActionColumn Title="操作">
-            <Space>
-                <SpaceItem><Button OnClick="()=>DownloadBackup(context.Name)">下载</Button></SpaceItem>
-                <SpaceItem><Button Danger OnClick="()=>DelBackup(context.Name)">删除</Button></SpaceItem>
-            </Space>
-        </ActionColumn>
-    </Table>
-}
+</Flex>
+
+
 
 @code {
     private List<BackupModel> backupList = null;
     private DateTime?[] dateTimes;
+    private bool withBackupLoading = false;
+    private bool withRefreshLoading = false;
 
     IEnumerable<BackupModel> selectedRows;
     ITable table;
@@ -89,22 +93,45 @@ else
         await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
     }
 
-    private void CurrentBackup()
+    private async Task CurrentBackup()
     {
-        backupService.Backup();
-        Refresh();
+        try
+        {
+            withBackupLoading = true;
+            backupService.Backup();
+            _ = message.Success("备份成功！");
+            Refresh();
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
+        }
+        finally
+        {
+            withBackupLoading = false;
+        }
     }
 
     private void DelBackup(string name)
     {
-        backupService.DelBackup(name);
-        Refresh();
+        try
+        {
+            backupService.DelBackup(name);
+            _ = message.Success("删除成功！");
+            Refresh();
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
+        }
     }
 
     private void Refresh()
     {
+        withRefreshLoading = true;
         dateTimes = null;
         Search();
+        withRefreshLoading = false;
     }
 
     private void Search()

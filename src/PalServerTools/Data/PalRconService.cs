@@ -22,9 +22,9 @@ namespace PalServerTools.Data
         public async Task<string> ExecuteCommand(string command)
         {
             string res = "";
-            await this.Connect();
             try
             {
+                await this.Connect();
                 res = await client.SendCommandAsync(command);
             }
             catch (Exception ex)

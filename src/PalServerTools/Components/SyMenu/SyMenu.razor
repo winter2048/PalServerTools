@@ -4,6 +4,7 @@
 
 @using PalServerTools.Utils;
 
+@*<div style="display:none" tomato-theme="@_clientConfigService?.ClientConfig?.Theme"></div>*@
 <Flex Vertical="@true" Align="center" Style="height: 100%;" Justify="space-between">
     <Flex Vertical="@true" Align="center">
         <div class="sy-layout-menu-avatar">
@@ -21,10 +22,10 @@
                     Icon="logout"
                     OnClick="async () => {await this.SignOut();}"></Button>
         </Tooltip>
-        <Tooltip Placement="@Placement.Right" Title="@(this.THEME == "dark" ? "亮色模式" : "暗色模式")">
+        <Tooltip Placement="@Placement.Right" Title="@(_clientConfigService?.ClientConfig?.Theme == "dark" ? "亮色模式" : "暗色模式")">
             <Button Class="sy-layout-menu-btn"
                     Icon="alert"
-                    OnClick="@(async () => {await this.ConfigProvider.ChangeGlobalTheme((this.THEME == "dark" ? GlobalTheme.Dark: GlobalTheme.Light)); this.THEME = (this.THEME =="dark" ?"light":"dark"); this.StateHasChanged(); })"></Button>
+                    OnClick="ChangeGlobalTheme"></Button>
         </Tooltip>
         <Tooltip Placement="@Placement.Right" Title="GitHub">
             <Button Class="sy-layout-menu-btn"

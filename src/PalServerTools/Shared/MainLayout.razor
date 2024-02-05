@@ -1,72 +1,53 @@
 ﻿@using PalServerTools.Pages
 @using PalServerTools.Auth;
 @using PalServerTools.Components;
+@using PalServerTools.Data;
 @inherits LayoutComponentBase
 
 @inject NavigationManager nvm
-@inject ImitateAuthStateProvider AuthStateProvider;
+@inject ImitateAuthStateProvider AuthStateProvider
+@inject ClientConfigService ClientConfigService
 
 <PageTitle>PalServerTools</PageTitle>
 
-    <div class="App">
-      <Space Direction="@DirectionVHType.Vertical" Style="width: 100%">
+<div class="App" tomato-theme="@ClientConfigService?.ClientConfig?.Theme">
+    <Space Direction="@DirectionVHType.Vertical" Style="width: 100%">
         <Layout>
-          <Sider Width="60" Class="sy-layout-menu">
-            <SyMenu/>
-          </Sider>
-            <Layout Style="background-color: #f5f5f5">
+            <Sider Width="60" Class="sy-layout-menu">
+                <SyMenu />
+            </Sider>
+            <Layout Style="background-color:var(--ant-layout-body-bg);">
                 <Content Class="sy-layout-content">
-                    <main>
-                        <AuthorizeView>
-                            <Authorized>
-                                <article class="content px-4">
-                                    @Body
-                                </article>
-                            </Authorized>
-                            <NotAuthorized>
-                                <div style="margin:120px 0;width:100%;text-align:center;color:red;">
-                                    <span style="font-size:20px">检测到登录超时，请重新<a href="/Login" style="text-decoration:underline">登录</a>!</span>
-                                </div>
-                                <RedirectToLogin></RedirectToLogin>   <!--加载组件，未登录时强制跳转-->
-                            </NotAuthorized>
-                        </AuthorizeView>
-                    </main>
-            </Content>
-          </Layout>
+                    <AuthorizeView>
+                        <Authorized>
+                            @Body
+                        </Authorized>
+                        <NotAuthorized>
+                            <div style="margin:120px 0;width:100%;text-align:center;color:red;">
+                                <span style="font-size:20px">检测到登录超时，请重新<a href="/Login" style="text-decoration:underline">登录</a>!</span>
+                            </div>
+                            <RedirectToLogin></RedirectToLogin>   <!--加载组件，未登录时强制跳转-->
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </Content>
+            </Layout>
         </Layout>
-      </Space>
-    </div>
-
-@*<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <AuthorizeView>
-            <Authorized>
-                <div class="top-row px-4">
-                    <a href="#" @onclick="SignOut">退出</a>
-                </div>
-
-                <article class="content px-4">
-                    @Body
-                </article>
-            </Authorized>
-            <NotAuthorized>
-                <div style="margin:120px 0;width:100%;text-align:center;color:red;">
-                    <span style="font-size:20px">检测到登录超时，请重新<a href="/Login" style="text-decoration:underline">登录</a>!</span>
-                </div>
-                <RedirectToLogin></RedirectToLogin>   <!--加载组件，未登录时强制跳转-->
-            </NotAuthorized>
-        </AuthorizeView>
-    </main>
+    </Space>
 </div>
-*@
+
 @code {
     private async Task SignOut()
     {
         await AuthStateProvider.SignOut();
         nvm.NavigateTo("/Login");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        ClientConfigService.OnSave += () =>
+        {
+            this.StateHasChanged();
+        };
     }
 }

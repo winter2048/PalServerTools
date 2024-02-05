@@ -8,30 +8,31 @@
 @inject PalProcessService palProcessService
 @inject PalConfigService configService
 
-<h1>监控</h1>
-
-<div class="alert alert-secondary mt-4">
-    <Card Title="基本信息" Style="width:100%;">
-        <Body>
-            <p>服务器版本： @serverInfo</p>
-            <p>服务器状态： @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
-                <Button Type="@ButtonType.Primary" Size="small" Icon="reload" OnClick="OnClickReload">重启</Button>
-                @if (palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped)
-                {
-                    <Button Type="@ButtonType.Primary" Size="small" Icon="poweroff" OnClick="OnClickStart">开机</Button>
-                }
-                else
-                {
-                    <Button Type="@ButtonType.Primary" Danger Icon="poweroff" Size="small" OnClick="OnClickClose">关机</Button>
-                }
-            </p>
-            <p>
-                自动重启：<Switch Size="small" @bind-Checked="configService.ToolsConfig.AutoRestart" OnChange="OnChangeAutomaticRestart" />
-            </p>
-        </Body>
-    </Card>
-</div>
-
+<Flex Vertical="true" Class="sy-content">
+    <PageHeader Class="sy-content-title" Title="监控" Subtitle="This is a subtitle" />
+    <div class="sy-content-body">
+        <Card Title="基本信息" Style="width:100%;">
+            <Body>
+                <p>服务器版本： @serverInfo</p>
+                <p>
+                    服务器状态： @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
+                    <Button Type="@ButtonType.Primary" Size="small" Icon="reload" OnClick="OnClickReload">重启</Button>
+                    @if (palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped)
+                    {
+                        <Button Type="@ButtonType.Primary" Size="small" Icon="poweroff" OnClick="OnClickStart">开机</Button>
+                    }
+                    else
+                    {
+                        <Button Type="@ButtonType.Primary" Danger Icon="poweroff" Size="small" OnClick="OnClickClose">关机</Button>
+                    }
+                </p>
+                <p>
+                    自动重启：<Switch Size="small" @bind-Checked="configService.ToolsConfig.AutoRestart" OnChange="OnChangeAutomaticRestart" />
+                </p>
+            </Body>
+        </Card>
+    </div>
+</Flex>
 
 @code {
     private string serverInfo = "";
@@ -46,21 +47,21 @@
 
     async Task OnClickStart()
     {
-        palProcessService.StartProcess(); 
+        palProcessService.StartProcess();
         this.StateHasChanged();
     }
 
     async Task OnClickClose()
     {
-        palProcessService.CloseProcess(); 
+        palProcessService.CloseProcess();
         this.StateHasChanged();
     }
 
     async Task OnClickReload()
     {
-        palProcessService.CloseProcess(); 
-        this.StateHasChanged(); 
-        palProcessService.StartProcess(); 
+        palProcessService.CloseProcess();
+        this.StateHasChanged();
+        palProcessService.StartProcess();
         this.StateHasChanged();
     }
 
