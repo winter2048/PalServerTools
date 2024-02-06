@@ -3,60 +3,84 @@
 <PageTitle>监控</PageTitle>
 
 @using PalServerTools.Data
+@using PalServerTools.Utils;
 @inject ConsoleService consoleService
 @inject PalRconService palRconService
 @inject PalProcessService palProcessService
-@inject ConfigService configService
+@inject PalConfigService configService
 
-<h1>监控</h1>
-
-<div class="alert alert-secondary mt-4">
-    <span class="oi oi-pencil me-2" aria-hidden="true"></span>
-    <strong>服务器信息： </strong>
-
-    <span class="text-nowrap">
-        @serverInfo
-    </span>
-</div>
-
-<div class="alert alert-secondary mt-4">
-    <span class="oi oi-pencil me-2" aria-hidden="true"></span>
-    <strong>服务器状态： </strong>
-
-    <span class="text-nowrap">
-        @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
-    </span>
-
-    <button type="button" class="btn btn-warning btn-sm" @onclick="()=>{palProcessService.CloseProcess();this.StateHasChanged();palProcessService.StartProcess();this.StateHasChanged();}">重启</button>
-    @if (palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped)
-    {
-        <button type="button" class="btn btn-primary btn-sm" @onclick="()=>{palProcessService.StartProcess();this.StateHasChanged();}">开机</button>
-    }
-    else
-    {
-        <button type="button" class="btn btn-danger btn-sm" @onclick="()=>{palProcessService.CloseProcess();this.StateHasChanged();}">关机</button>
-    }
-
-    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @onchange="OnChangeAutomaticRestart" checked="@configService.ToolsConfig.AutoRestart">
-    <label class="form-check-label" for="flexCheckDefault" >
-        自动重启
-    </label>
-</div>
+<Flex Vertical="true" Class="sy-content">
+    <PageHeader Class="sy-content-title" Title="监控" Subtitle="Pal Server Tools" />
+    <div class="sy-content-body">
+        <Card Title="基本信息" Style="width:100%;">
+            <Body>
+                <p>服务器版本： @serverInfo</p>
+                <p>
+                    服务器状态： @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
+                    <Button Type="@ButtonType.Primary" Size="small" Icon="reload" OnClick="OnClickReload">重启</Button>
+                    @if (palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped)
+                    {
+                        <Button Type="@ButtonType.Primary" Size="small" Icon="poweroff" OnClick="OnClickStart">开机</Button>
+                    }
+                    else
+                    {
+                        <Button Type="@ButtonType.Primary" Danger Icon="poweroff" Size="small" OnClick="OnClickClose">关机</Button>
+                    }
+                </p>
+                <p>
+                    自动重启：<Switch Size="small" @bind-Checked="configService.ToolsConfig.AutoRestart" OnChange="OnChangeAutomaticRestart" />
+                </p>
+            </Body>
+        </Card>
+        <br />
+        <SystemMonitor></SystemMonitor>
+    </div>
+</Flex>
 
 @code {
+    Timer timer;
     private string serverInfo = "";
 
     protected override async Task OnInitializedAsync()
     {
+        timer = new Timer(UpdateStateInfo, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
         if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
         {
             serverInfo = await palRconService.Info();
         }
     }
 
-    public async void OnChangeAutomaticRestart(ChangeEventArgs e)
+    private void UpdateStateInfo(object state)
     {
-        configService.ToolsConfig.AutoRestart = Convert.ToBoolean(e.Value);
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+    async Task OnClickStart()
+    {
+        palProcessService.StartProcess();
+        this.StateHasChanged();
+    }
+
+    async Task OnClickClose()
+    {
+        palProcessService.CloseProcess();
+        this.StateHasChanged();
+    }
+
+    async Task OnClickReload()
+    {
+        palProcessService.CloseProcess();
+        this.StateHasChanged();
+        palProcessService.StartProcess();
+        this.StateHasChanged();
+    }
+
+    async Task OnChangeAutomaticRestart(bool value)
+    {
+        configService.ToolsConfig.AutoRestart = Convert.ToBoolean(value);
         configService.ToolsConfigSave();
     }
 }

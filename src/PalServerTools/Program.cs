@@ -4,6 +4,7 @@ using CronQuery.Mvc.Options;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
 using PalServerTools.Auth;
+using PalServerTools.Components;
 using PalServerTools.Data;
 using PalServerTools.Job;
 using PalServerTools.Utils;
@@ -19,11 +20,14 @@ namespace PalServerTools
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
-            builder.Services.AddSingleton<ConsoleService>();
+            builder.Services.AddAntDesign();
+            builder.Services.AddScoped<ConsoleService>();
             builder.Services.AddSingleton<PalProcessService>();
-            builder.Services.AddTransient<ConfigService>();
+            builder.Services.AddSingleton<ServerInfo>();
+            builder.Services.AddTransient<PalConfigService>();
             builder.Services.AddTransient<PalRconService>();
             builder.Services.AddTransient<BackupService>();
+            builder.Services.AddScoped<ClientConfigService>();
 
             // ע��ImitateAuthStateProvider
             builder.Services.AddHttpContextAccessor();

@@ -2,69 +2,76 @@
 
 <PageTitle>玩家</PageTitle>
 
+@using AntDesign.TableModels;
 @using PalServerTools.Data
 @using PalServerTools.Models
 @inject PalRconService palRconService
 
-<h1>玩家(@(players == null ? 0 : players.Count))</h1>
+<Flex Vertical="true" Class="sy-content">
+    <PageHeader Class="sy-content-title" Title="玩家" Subtitle="@("当前在线人数(" + (players == null ? 0 : players.Count) + ")")" />
+    <div class="sy-content-body">
+        <div class="sy-content-body-search">
+            <Search Placeholder="输入名称" WrapperStyle="width: 200px;" ClassicSearchIcon Value="@keywords" />
 
-<div class="bd-example">
-    <div class="row row-cols-lg-auto g-3 align-items-center">
-        <div class="col-12">
-            <label class="visually-hidden">服务器名称</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control form-control-sm" id="inputPassword" placeholder="搜索" @bind="keywords">
-            </div>
+            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="search" OnClick="Search">查询</Button>
+            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="reload" OnClick="Refresh" Loading="withRefreshLoading">刷新</Button>
+         
         </div>
-
-        <div class="col-12">
-            <button class="btn btn-primary btn-sm" @onclick="Search">查询</button>
-            <button class="btn btn-primary btn-sm" @onclick="Refresh">刷新</button>
-        </div>
+        <br />
+        @if (players == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <Table @ref="table"
+               TItem="PlayerModel"
+               DataSource="@players"
+               Total="_total"
+               @bind-PageIndex="_pageIndex"
+               @bind-PageSize="_pageSize"
+               @bind-SelectedRows="selectedRows"
+               OnChange="OnChange"
+               Size="TableSize.Default"
+               RowKey="x=>x.Name">
+                <Selection Key="@(context.PlayerUid)" />
+                <PropertyColumn Property="c=>c.PlayerUid" Sortable Title="Id" />
+                <PropertyColumn Property="c=>c.Name" Sortable Title="名称" />
+                <PropertyColumn Property='c=>c.SteamId' Sortable Title="SteamId" />
+                <ActionColumn Title="操作">
+                    <Space>
+                        <SpaceItem><Button Icon="download" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>palRconService.KickPlayer(context.SteamId)">踢出</Button></SpaceItem>
+                        <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>palRconService.BanPlayer(context.SteamId)">封禁</Button></SpaceItem>
+                    </Space>
+                </ActionColumn>
+            </Table>
+        }
     </div>
-</div>
+</Flex>
 
-@if (players == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>名称</th>
-                <th>SteamId</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var player in players)
-            {
-                <tr>
-                    <td>@player.PlayerUid</td>
-                    <td>@player.Name</td>
-                    <td>@player.SteamId</td>
-                    <td>
-                       @* <button type="button" class="btn btn-primary btn-sm" @onclick=" ()=>{ palRconService.TeleportToPlayer(player.SteamId);}">传送到玩家位置</button>
-                        <button type="button" class="btn btn-primary btn-sm" @onclick=" ()=>{ palRconService.TeleportToMe(player.SteamId);}">传送玩家到自己位置</button>*@
-                        <button type="button" class="btn btn-danger btn-sm" @onclick=" ()=>{ palRconService.KickPlayer(player.SteamId);}">踢出</button>
-                        <button type="button" class="btn btn-danger btn-sm" @onclick=" ()=>{ palRconService.BanPlayer(player.SteamId);}">封禁</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+
+
 
 @code {
     private List<PlayerModel> players;
     private string keywords = "";
+    private bool withRefreshLoading = false;
+
+    IEnumerable<PlayerModel> selectedRows;
+    ITable table;
+
+    int _pageIndex = 1;
+    int _pageSize = 10;
+    int _total = 0;
 
     protected override async Task OnInitializedAsync()
     {
         await this.Refresh();
+    }
+
+    public async Task OnChange(QueryModel<PlayerModel> queryModel)
+    {
+        //Console.WriteLine(JsonSerializer.Serialize(queryModel));
     }
 
     private async Task Search()
@@ -93,7 +100,9 @@ else
 
     public async Task Refresh()
     {
+        withRefreshLoading = true;
         keywords = "";
         await Search();
+        withRefreshLoading = false;
     }
 }

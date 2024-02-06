@@ -1,4 +1,4 @@
-# PalServerTools
+# PalServerTools 2.0
 幻兽帕鲁服务器工具 (开发中，暂时只支持Windows)
 
 # 功能
@@ -8,6 +8,7 @@
 - [x] 游戏配置参数修改
 - [x] 游戏控制台
 - [x] 世界喊话
+- [x] UI暗色模式
 - [ ] 自动更新游戏版本
 - [ ] 代理配置(frpc)
 - [ ] 服务器崩溃时提醒在线玩家即将重启
@@ -23,13 +24,10 @@
 - 使用`appsettings.json`文件中配置的密码`ToolsPassword`登录PalServerTools，默认密码`123456`
 
 # 预览
-![image](https://github.com/winter2048/PalServerTools/assets/31879147/e2c80aeb-fe5b-4937-be0e-e60f2578f718)
+![image](https://github.com/winter2048/PalServerTools/assets/31879147/0d172e70-4a87-40d3-94b3-051664bcd4d7)
+![image](https://github.com/winter2048/PalServerTools/assets/31879147/8794e5a6-252b-425c-afe5-fead6ecdb1f2)
+![image](https://github.com/winter2048/PalServerTools/assets/31879147/720b88d4-fb61-437b-ac8b-04af6b546799)
+![image](https://github.com/winter2048/PalServerTools/assets/31879147/2a764d53-0107-4791-ab5b-53f646de3727)
+![image](https://github.com/winter2048/PalServerTools/assets/31879147/eb90bf24-6b45-4580-9c04-3ded442f3abc)
 
-![image](https://github.com/winter2048/PalServerTools/assets/31879147/e805854e-28f2-4964-8df0-29112e510174)
-
-![image](https://github.com/winter2048/PalServerTools/assets/31879147/8039058d-7fd5-4749-8c52-90d221116249)
-
-![image](https://github.com/winter2048/PalServerTools/assets/31879147/7d1595a5-5213-42a0-9891-5471eac751df)
-
-![image](https://github.com/winter2048/PalServerTools/assets/31879147/2b26b7d8-b495-4839-9cf3-dc92d16defde)
 

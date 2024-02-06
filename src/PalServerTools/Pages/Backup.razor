@@ -4,72 +4,84 @@
 
 @using System.IO
 @using PalServerTools.Data
-@using PalServerTools.Models;
+@using PalServerTools.Models
+@using System.ComponentModel
+@using AntDesign.TableModels
 
 @inject IJSRuntime JS
+@inject IMessageService message
 @inject BackupService backupService
 
-<h1>存档</h1>
+<Flex Vertical="true" Class="sy-content">
+    <PageHeader Class="sy-content-title" Title="备份" Subtitle="Pal Server Tools" />
+    <div class="sy-content-body">
+        <div class="sy-content-body-search">
+            <RangePicker TValue="DateTime?[]" ShowTime='@("HH:mm")' OnChange="OnRangeChange" Value="dateTimes" />
 
-<div class="bd-example">
-    <div class="row row-cols-lg-auto g-3 align-items-center">
-        <div class="col-12">
-            <label class="visually-hidden" for="inlineFormInputGroupUsername">Username</label>
-            <div class="input-group input-group-sm">
-                <div class="input-group-text">日期</div>
-                <input type="datetime-local" class="form-control" id="inlineFormInputGroupUsername" @bind="StartTime">
-                <span class="input-group-text">-</span>
-                <input type="datetime-local" class="form-control" id="inlineFormInputGroupUsername" @bind="EndTime">
-            </div>
+            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="search" OnClick="Search">查询</Button>
+            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="reload" OnClick="Refresh" Loading="withRefreshLoading">刷新</Button>
+            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="snippets" OnClick="CurrentBackup" Loading="withBackupLoading">备份</Button>
         </div>
-
-        <div class="col-12">
-            <button class="btn btn-primary btn-sm" @onclick="Search">查询</button>
-            <button class="btn btn-primary btn-sm" @onclick="Refresh">刷新</button>
-            <button class="btn btn-primary btn-sm" @onclick="CurrentBackup">备份</button>
-        </div>
+        <br />
+        @if (backupList == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <Table @ref="table"
+               TItem="BackupModel"
+               DataSource="@backupList"
+               Total="_total"
+               @bind-PageIndex="_pageIndex"
+               @bind-PageSize="_pageSize"
+               @bind-SelectedRows="selectedRows"
+               OnChange="OnChange"
+               Size="TableSize.Default"
+               RowKey="x=>x.Name">
+                <Selection Key="@(context.Name)" />
+                <PropertyColumn Property="c=>c.Name" Sortable Title="名称" />
+                <PropertyColumn Property="c=>c.Size" Sortable Title="大小(k)" />
+                <PropertyColumn Property='c=>c.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")' Sortable Title="时间" />
+                <ActionColumn Title="操作">
+                    <Space>
+                        <SpaceItem><Button Icon="download" Type="@ButtonType.Primary" Shape="@ButtonShape.Round" OnClick="()=>DownloadBackup(context.Name)">下载</Button></SpaceItem>
+                        <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>DelBackup(context.Name)">删除</Button></SpaceItem>
+                    </Space>
+                </ActionColumn>
+            </Table>
+        }
     </div>
-</div>
-@if (backupList == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>名称</th>
-                <th>大小</th>
-                <th>时间</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var file in backupList)
-            {
-                <tr>
-                    <td>@file.Name</td>
-                    <td>@file.Size</td>
-                    <td>@file.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")</td>
-                    <td>
-                        <button type="button" class="btn btn-primary btn-sm" @onclick="()=>DownloadBackup(file.Name)">下载</button>
-                        <button type="button" class="btn btn-danger btn-sm" @onclick="()=>DelBackup(file.Name)">删除</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+</Flex>
+
+
 
 @code {
     private List<BackupModel> backupList = null;
-    private DateTime? StartTime = null;
-    private DateTime? EndTime = null;
+    private DateTime?[] dateTimes;
+    private bool withBackupLoading = false;
+    private bool withRefreshLoading = false;
+
+    IEnumerable<BackupModel> selectedRows;
+    ITable table;
+
+    int _pageIndex = 1;
+    int _pageSize = 10;
+    int _total = 0;
 
     protected override void OnInitialized()
     {
         backupList = backupService.GetBackupList();
+    }
+
+    public async Task OnChange(QueryModel<BackupModel> queryModel)
+    {
+        //Console.WriteLine(JsonSerializer.Serialize(queryModel));
+    }
+
+    private void OnRangeChange(DateRangeChangedEventArgs<DateTime?[]> args)
+    {
+        dateTimes = args.Dates;
     }
 
     private async Task DownloadBackup(string name)
@@ -81,36 +93,57 @@ else
         await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
     }
 
-    private void CurrentBackup()
+    private async Task CurrentBackup()
     {
-        backupService.Backup();
-        Refresh();
+        try
+        {
+            withBackupLoading = true;
+            backupService.Backup();
+            _ = message.Success("备份成功！");
+            Refresh();
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
+        }
+        finally
+        {
+            withBackupLoading = false;
+        }
     }
 
     private void DelBackup(string name)
     {
-        backupService.DelBackup(name);
-        Refresh();
+        try
+        {
+            backupService.DelBackup(name);
+            _ = message.Success("删除成功！");
+            Refresh();
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
+        }
     }
 
     private void Refresh()
     {
-        StartTime = null;
-        EndTime = null;
+        withRefreshLoading = true;
+        dateTimes = null;
         Search();
+        withRefreshLoading = false;
     }
 
     private void Search()
     {
         backupList = null;
         backupList = backupService.GetBackupList();
-        if (StartTime != null)
+        if (dateTimes != null && dateTimes.Length == 2)
         {
-            backupList = backupList.Where(p => p.CreateTime >= StartTime).ToList();
+            backupList = backupList.Where(p => p.CreateTime >= dateTimes[0]).ToList();
+            backupList = backupList.Where(p => p.CreateTime <= dateTimes[1]).ToList();
+
         }
-        if (EndTime != null)
-        {
-            backupList = backupList.Where(p => p.CreateTime <= EndTime).ToList();
-        }
+        _total = backupList.Count;
     }
 }

@@ -9,24 +9,29 @@ using System.Text.RegularExpressions;
 
 namespace PalServerTools.Data
 {
-    public class ConfigService
+    public class PalConfigService
     {
         private readonly IConfiguration _configuration;
 
         public PalConfigModel PalConfig;
         public ToolsConfigModel ToolsConfig;
 
-        public ConfigService(IConfiguration configuration) {
+        public PalConfigService(IConfiguration configuration)
+        {
             _configuration = configuration;
             ToolsConfig = GetToolsConfig();
             PalConfig = GetPalConfig();
-            Save();
+            //Save();
         }
 
         private PalConfigModel GetPalConfig()
         {
+            string fileContent = "";
             var palServerConfigPath = Path.Combine(ToolsConfig.PalServerPath, "Pal\\Saved\\Config\\WindowsServer\\PalWorldSettings.ini");
-            string fileContent = File.ReadAllText(palServerConfigPath);
+            if (File.Exists(palServerConfigPath))
+            {
+                fileContent = File.ReadAllText(palServerConfigPath);
+            }
 
             // 解析文件内容转换为字典格式
             Dictionary<string, string> configData = new Dictionary<string, string>();
@@ -88,7 +93,6 @@ namespace PalServerTools.Data
             }
             return toolsConfig;
         }
-
 
         public void ToolsConfigSave()
         {

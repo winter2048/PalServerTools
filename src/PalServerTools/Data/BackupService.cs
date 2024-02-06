@@ -5,9 +5,9 @@ namespace PalServerTools.Data
 {
     public class BackupService
     {
-        private readonly ConfigService _configService;
+        private readonly PalConfigService _configService;
 
-        public BackupService(ConfigService configService)
+        public BackupService(PalConfigService configService)
         {
             _configService = configService;
         }
@@ -15,15 +15,18 @@ namespace PalServerTools.Data
         public List<BackupModel> GetBackupList()
         {
             List<BackupModel> backupList = new List<BackupModel>();
-            foreach (var file in Directory.GetFiles(_configService.ToolsConfig.BackupPath, "backup*.zip"))
+            if (Directory.Exists(_configService.ToolsConfig.BackupPath))
             {
-                var fileInfo = new FileInfo(file);
-                backupList.Add(new BackupModel()
+                foreach (var file in Directory.GetFiles(_configService.ToolsConfig.BackupPath, "backup*.zip"))
                 {
-                    Name = fileInfo.Name,
-                    CreateTime = fileInfo.CreationTime,
-                    Size = fileInfo.Length / 1024
-                });
+                    var fileInfo = new FileInfo(file);
+                    backupList.Add(new BackupModel()
+                    {
+                        Name = fileInfo.Name,
+                        CreateTime = fileInfo.CreationTime,
+                        Size = fileInfo.Length / 1024
+                    });
+                }
             }
             return backupList.OrderByDescending(x => x.CreateTime).ToList();
         }
@@ -32,6 +35,16 @@ namespace PalServerTools.Data
         {
             string sourceFolderPath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Saved");
             string backupFolderPath = _configService.ToolsConfig.BackupPath;
+
+            if (!Directory.Exists(sourceFolderPath))
+            {
+                throw new Exception("存档不存在！");
+            }
+
+            if (!Directory.Exists(backupFolderPath)) {
+                throw new Exception("未配置备份路径！");
+            }
+
             string zipFilePath = Path.Combine(backupFolderPath, $"backup{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip");
 
             // 创建一个临时文件夹来存放压缩文件中的文件
@@ -76,6 +89,10 @@ namespace PalServerTools.Data
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
+            }
+            else
+            {
+                throw new Exception("文件不存在！");
             }
         }
 
