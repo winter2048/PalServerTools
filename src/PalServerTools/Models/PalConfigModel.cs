@@ -3,29 +3,29 @@
     public class PalConfigModel
     {
         public string Difficulty { get; set; }
-        public float DayTimeSpeedRate { get; set; }
-        public float NightTimeSpeedRate { get; set; }
-        public float ExpRate { get; set; }
-        public float PalCaptureRate { get; set; }
-        public float PalSpawnNumRate { get; set; }
-        public float PalDamageRateAttack { get; set; }
-        public float PalDamageRateDefense { get; set; }
-        public float PlayerDamageRateAttack { get; set; }
-        public float PlayerDamageRateDefense { get; set; }
-        public float PlayerStomachDecreaseRate { get; set; }
-        public float PlayerStaminaDecreaseRate { get; set; }
-        public float PlayerAutoHPRegeneRate { get; set; }
-        public float PlayerAutoHPRegeneRateInSleep { get; set; }
-        public float PalStomachDecreaseRate { get; set; }
-        public float PalStaminaDecreaseRate { get; set; }
-        public float PalAutoHPRegeneRate { get; set; }
-        public float PalAutoHPRegeneRateInSleep { get; set; }
-        public float BuildObjectDamageRate { get; set; }
-        public float BuildObjectDeteriorationDamageRate { get; set; }
-        public float CollectionDropRate { get; set; }
-        public float CollectionObjectHpRate { get; set; }
-        public float CollectionObjectRespawnSpeedRate { get; set; }
-        public float EnemyDropItemRate { get; set; }
+        public double DayTimeSpeedRate { get; set; }
+        public double NightTimeSpeedRate { get; set; }
+        public double ExpRate { get; set; }
+        public double PalCaptureRate { get; set; }
+        public double PalSpawnNumRate { get; set; }
+        public double PalDamageRateAttack { get; set; }
+        public double PalDamageRateDefense { get; set; }
+        public double PlayerDamageRateAttack { get; set; }
+        public double PlayerDamageRateDefense { get; set; }
+        public double PlayerStomachDecreaseRate { get; set; }
+        public double PlayerStaminaDecreaseRate { get; set; }
+        public double PlayerAutoHPRegeneRate { get; set; }
+        public double PlayerAutoHPRegeneRateInSleep { get; set; }
+        public double PalStomachDecreaseRate { get; set; }
+        public double PalStaminaDecreaseRate { get; set; }
+        public double PalAutoHPRegeneRate { get; set; }
+        public double PalAutoHPRegeneRateInSleep { get; set; }
+        public double BuildObjectDamageRate { get; set; }
+        public double BuildObjectDeteriorationDamageRate { get; set; }
+        public double CollectionDropRate { get; set; }
+        public double CollectionObjectHpRate { get; set; }
+        public double CollectionObjectRespawnSpeedRate { get; set; }
+        public double EnemyDropItemRate { get; set; }
         public string DeathPenalty { get; set; }
         public bool bEnablePlayerToPlayerDamage { get; set; }
         public bool bEnableFriendlyFire { get; set; }
@@ -37,12 +37,12 @@
         public int DropItemMaxNum_UNKO { get; set; }
         public int BaseCampMaxNum { get; set; }
         public int BaseCampWorkerMaxNum { get; set; }
-        public float DropItemAliveMaxHours { get; set; }
+        public double DropItemAliveMaxHours { get; set; }
         public bool bAutoResetGuildNoOnlinePlayers { get; set; }
-        public float AutoResetGuildTimeNoOnlinePlayers { get; set; }
+        public double AutoResetGuildTimeNoOnlinePlayers { get; set; }
         public int GuildPlayerMaxNum { get; set; }
-        public float PalEggDefaultHatchingTime { get; set; }
-        public float WorkSpeedRate { get; set; }
+        public double PalEggDefaultHatchingTime { get; set; }
+        public double WorkSpeedRate { get; set; }
         public bool bIsMultiplay { get; set; }
         public bool bIsPvP { get; set; }
         public bool bCanPickupOtherGuildDeathPenaltyDrop { get; set; }

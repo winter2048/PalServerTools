@@ -99,8 +99,8 @@ body {
 .sy-content {
     width: 100%;
     height: 100%;
-    padding-right: 10px;
-    padding-left: 10px;
+    padding-right: 15px;
+    padding-left: 15px;
 }
 
 .sy-content-title, .sy-content-title-2 {
@@ -143,3 +143,33 @@ body {
     .sy-content-tabs .ant-tabs-tabpane {
         padding-left: 0px !important;
     }
+
+.sy-slider-value-text {
+    margin: 10px 6px 10px;
+    display: inline-block;
+    height: 12px;
+    width: 70px;
+    line-height: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sy-slider-value {
+    display: inline-block;
+    width: calc(100% - 100px);
+}
+
+.sy-content-footer {
+    background: none;
+    padding: 15px 50px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sy-content-body {
+    overflow: auto;
+}
+
+.ant-tabs-content, .ant-tabs-tabpane {
+    height: 100% !important;
+}

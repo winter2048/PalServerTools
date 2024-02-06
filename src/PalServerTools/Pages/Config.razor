@@ -1,391 +1,259 @@
 ﻿@page "/config"
 
 @using PalServerTools.Data
+@using PalServerTools.Models
 @inject PalConfigService configService;
 @inject PalProcessService palProcessService
 
 <PageTitle>配置</PageTitle>
 
 <Flex Vertical="true" Class="sy-content">
-    @*<PageHeader Class="sy-content-title" Title="备份" />*@
     <Tabs Class="sy-content-tabs" DefaultActiveKey="1" TabPosition="TabPosition.Left" TabBarExtraContentLeft="leftExtra">
         <TabPane Key="基础配置" Tab="基础配置">
             <Flex Vertical="true" Class="sy-content">
                 <PageHeader Class="sy-content-title-2" Title="基础配置" />
-
-                 Content of tab Pane 基础配置
+                <Content Class="sy-content-body">
+                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@configService.ToolsConfig" OnFinish="OnFinish">
+                        <FormItem Label="PalServer根目录">
+                            <Input @bind-Value="@context.PalServerPath" />
+                        </FormItem>
+                        <FormItem Label="PalServer启动参数">
+                            <Input @bind-Value="@context.RunArguments" />
+                        </FormItem>
+                        <FormItem Label="工具密码">
+                            <InputPassword @bind-Value="@context.ToolsPassword" />
+                        </FormItem>
+                    </Form>
+                </Content>
+                <Footer Class="sy-content-footer">
+                    <Button Type="@ButtonType.Primary" OnClick="Save">
+                        保存
+                    </Button>
+                </Footer>
             </Flex>
         </TabPane>
-        <TabPane Key="游戏体验调整" Tab="游戏体验调整">
-            <Flex Vertical="true" Class="sy-content">
-                <PageHeader Class="sy-content-title-2" Title="游戏体验调整" />
-
-                Content of tab Pane 游戏体验调整
-            </Flex>
-        </TabPane>
-        <TabPane Key="游戏战斗与生存" Tab="游戏战斗与生存">
-            <Flex Vertical="true" Class="sy-content">
-                <PageHeader Class="sy-content-title-2" Title="游戏战斗与生存" />
-
-                Content of tab Pane 游戏战斗与生存
-            </Flex>
-        </TabPane>
-        <TabPane Key="游戏其他配置" Tab="游戏其他配置" >
-            <Flex Vertical="true" Class="sy-content">
-                <PageHeader Class="sy-content-title-2" Title="游戏其他配置" />
-
-                Content of tab Pane 游戏其他配置
-            </Flex>
-        </TabPane>
-        <TabPane Key="存档配置" Tab="存档配置" >
+        <TabPane Key="存档配置" Tab="存档配置">
             <Flex Vertical="true" Class="sy-content">
                 <PageHeader Class="sy-content-title-2" Title="存档配置" />
-
-                Content of tab Pane 存档配置
+                <Content Class="sy-content-body">
+                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@configService.ToolsConfig" OnFinish="OnFinish">
+                        <FormItem Label="存档备份位置">
+                            <Input @bind-Value="@context.BackupPath" />
+                        </FormItem>
+                        <FormItem Label="存档自动备份">
+                            <Checkbox @bind-Value="context.AutoBackup"></Checkbox>
+                        </FormItem>
+                        @if (configService.ToolsConfig.AutoBackup)
+                        {
+                            <FormItem Label="存档备份频率Cron">
+                                <Input @bind-Value="@context.BackupCron" />
+                            </FormItem>
+                        }
+                    </Form>
+                </Content>
+                <Footer Class="sy-content-footer">
+                    <Button Type="@ButtonType.Primary" OnClick="Save">
+                        保存
+                    </Button>
+                </Footer>
+            </Flex>
+        </TabPane>
+        <TabPane Key="服务器配置" Tab="服务器配置">
+            <Flex Vertical="true" Class="sy-content">
+                <PageHeader Class="sy-content-title-2" Title="服务器配置" />
+                <Content Class="sy-content-body">
+                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@configService.PalConfig">
+                    <FormItem Label="服务器名称">
+                        <Input @bind-Value="@context.ServerName" />
+                    </FormItem>
+                    <FormItem Label="公共IP地址">
+                        <Input @bind-Value="@context.PublicIP"></Input>
+                    </FormItem>
+                    <FormItem Label="公共IP地址">
+                        <AntDesign.InputNumber @bind-Value="@context.PublicPort" Min="1" Max="65558" DefaultValue="8211"></AntDesign.InputNumber>
+                    </FormItem>
+                    <FormItem Label="服务器密码">
+                        <InputPassword @bind-Value="@context.ServerPassword" />
+                    </FormItem>
+                    <FormItem Label="管理员密码">
+                        <InputPassword @bind-Value="@context.AdminPassword" />
+                    </FormItem>
+                    <FormItem Label="难度">
+                        <Select @bind-Value="@context.Difficulty"
+                                DefaultValue="@("None")"
+                                Style="width: 120px;"
+                                TItemValue="string"
+                                TItem="string">
+                            <SelectOptions>
+                                <SelectOption Value="@("Difficulty")" Label="困难" />
+                                <SelectOption Value="@("None")" Label="简单" />
+                            </SelectOptions>
+                        </Select>
+                    </FormItem>
+                    <FormItem Label="最大玩家数">
+                        <AntDesign.InputNumber @bind-Value="@context.ServerPlayerMaxNum" Min="1" Max="32" DefaultValue="16"></AntDesign.InputNumber>
+                    </FormItem>
+                    <FormItem Label="是否启用RCON">
+                        <Checkbox @bind-Value="context.RCONEnabled"></Checkbox>
+                    </FormItem>
+                    @if (context.RCONEnabled)
+                    {
+                        <FormItem Label="RCON端口号">
+                            <AntDesign.InputNumber @bind-Value="@context.RCONPort" Min="1" Max="32" DefaultValue="16"></AntDesign.InputNumber>
+                        </FormItem>
+                    }
+                    <FormItem Label="服务器描述">
+                        <TextArea @bind-Value="@context.ServerDescription" Placeholder="请输入..." MinRows="2" MaxRows="6" />
+                    </FormItem>
+                </Form>
+                </Content>
+                <Footer Class="sy-content-footer">
+                    <Space>
+                        <SpaceItem>
+                            <Button Type="@ButtonType.Primary" OnClick="Save">
+                                保存
+                            </Button>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Button Type="@ButtonType.Primary" Danger OnClick="SaveAndRestart">
+                                保存并重启
+                            </Button>
+                        </SpaceItem>
+                    </Space>
+                </Footer>
+            </Flex>
+        </TabPane>
+        <TabPane Key="游戏参数调整" Tab="游戏参数调整">
+            <Flex Vertical="true" Class="sy-content">
+                <PageHeader Class="sy-content-title-2" Title="游戏参数调整" />
+                <Content Class="sy-content-body">
+                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="6" WrapperColSpan="14" Model="@configService.PalConfig">
+                        <FormItem Label="白天流逝速度">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0.01" Max="5" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.DayTimeSpeedRate" />
+                            <Text Class="sy-slider-value-text">@context.DayTimeSpeedRate</Text>
+                        </FormItem>
+                        <FormItem Label="夜晚流逝速度">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0.01" Max="5" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.NightTimeSpeedRate" />
+                            <Text Class="sy-slider-value-text">@context.NightTimeSpeedRate</Text>
+                        </FormItem>
+                        <FormItem Label="经验倍率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.ExpRate" />
+                            <Text Class="sy-slider-value-text">@context.ExpRate</Text>
+                        </FormItem>
+                        <FormItem Label="帕鲁捕获概率倍率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PalCaptureRate" />
+                            <Text Class="sy-slider-value-text">@context.PalCaptureRate</Text>
+                        </FormItem>
+                        <FormItem Label="帕鲁出现概率倍率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PalSpawnNumRate" />
+                            <Text Class="sy-slider-value-text">@context.PalSpawnNumRate</Text>
+                        </FormItem>
+                        <FormItem Label="帕鲁攻击伤害倍率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PalDamageRateAttack" />
+                            <Text Class="sy-slider-value-text">@context.PalDamageRateAttack</Text>
+                        </FormItem>
+                        <FormItem Label="玩家攻击伤害倍率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PlayerDamageRateAttack" />
+                            <Text Class="sy-slider-value-text">@context.PlayerDamageRateAttack</Text>
+                        </FormItem>
+                        <FormItem Label="玩家饥饿下降率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PlayerStomachDecreaseRate" />
+                            <Text Class="sy-slider-value-text">@context.PlayerStomachDecreaseRate</Text>
+                        </FormItem>
+                        <FormItem Label="玩家耐力下降率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PlayerStaminaDecreaseRate" />
+                            <Text Class="sy-slider-value-text">@context.PlayerStaminaDecreaseRate</Text>
+                        </FormItem>
+                        <FormItem Label="帕鲁自动恢复生命值率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PalAutoHPRegeneRate" />
+                            <Text Class="sy-slider-value-text">@context.PalAutoHPRegeneRate</Text>
+                        </FormItem>
+                        <FormItem Label="玩家自动恢复生命值率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PlayerAutoHPRegeneRate" />
+                            <Text Class="sy-slider-value-text">@context.PlayerAutoHPRegeneRate</Text>
+                        </FormItem>
+                        <FormItem Label="建筑物受损伤害倍率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.BuildObjectDamageRate" />
+                            <Text Class="sy-slider-value-text">@context.BuildObjectDamageRate</Text>
+                        </FormItem>
+                        <FormItem Label="采集物品倍率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.CollectionDropRate" />
+                            <Text Class="sy-slider-value-text">@context.CollectionDropRate</Text>
+                        </FormItem>
+                        <FormItem Label="采集物品敌人掉落物品倍率倍率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.EnemyDropItemRate" />
+                            <Text Class="sy-slider-value-text">@context.EnemyDropItemRate</Text>
+                        </FormItem>
+                        <FormItem Label="死亡惩罚">
+                            <Select @bind-Value="@context.DeathPenalty"
+                                    DefaultValue="@("ItemAndEquipment")"
+                                    Style="width: 120px;"
+                                    TItemValue="string"
+                                    TItem="string">
+                                <SelectOptions>
+                                    <SelectOption Value="@("None")" Label="无惩罚" />
+                                    <SelectOption Value="@("Item")" Label="丢失物品但不丢失装备" />
+                                    <SelectOption Value="@("ItemAndEquipment")" Label="丢失物品和装备" />
+                                    <SelectOption Value="@("All")" Label="丢失所以物品、装备、伙伴" />
+                                </SelectOptions>
+                            </Select>
+                        </FormItem>
+                        <FormItem Label="启用玩家对玩家的伤害">
+                            <Checkbox @bind-Value="context.bEnablePlayerToPlayerDamage"></Checkbox>
+                        </FormItem>
+                        <FormItem Label="火焰伤害">
+                            <Checkbox @bind-Value="context.bEnableFriendlyFire"></Checkbox>
+                        </FormItem>
+                        <FormItem Label="是否发生袭击事件">
+                            <Checkbox @bind-Value="context.bEnableInvaderEnemy"></Checkbox>
+                        </FormItem>
+                        <FormItem Label="掉落物品存在最大时长">
+                            <AntDesign.InputNumber @bind-Value="@context.DropItemAliveMaxHours" Min="0" DefaultValue="1"></AntDesign.InputNumber>
+                        </FormItem>
+                        <FormItem Label="自动重置没有在线玩家的公会">
+                            <Checkbox @bind-Value="context.bAutoResetGuildNoOnlinePlayers"></Checkbox>
+                        </FormItem>
+                        <FormItem Label="无在线玩家时自动重置生成时间">
+                            <AntDesign.InputNumber @bind-Value="@context.AutoResetGuildTimeNoOnlinePlayers" Min="0" DefaultValue="1"></AntDesign.InputNumber>
+                        </FormItem>
+                        <FormItem Label="公会玩家最大数量">
+                            <AntDesign.InputNumber @bind-Value="@context.GuildPlayerMaxNum" Min="0" DefaultValue="1"></AntDesign.InputNumber>
+                        </FormItem>
+                        <FormItem Label="帕鲁蛋孵化时间">
+                            <AntDesign.InputNumber @bind-Value="@context.PalEggDefaultHatchingTime" Min="0" DefaultValue="1"></AntDesign.InputNumber>
+                        </FormItem>
+                        <FormItem Label="工作速度倍率">
+                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.WorkSpeedRate" />
+                            <Text Class="sy-slider-value-text">@context.WorkSpeedRate</Text>
+                        </FormItem>
+                    </Form>
+                </Content>
+                <Footer Class="sy-content-footer">
+                    <Space>
+                        <SpaceItem>
+                            <Button Type="@ButtonType.Primary" OnClick="Save">
+                                保存
+                            </Button>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Button Type="@ButtonType.Primary" Danger OnClick="SaveAndRestart">
+                                保存并重启
+                            </Button>
+                        </SpaceItem>
+                    </Space>
+                </Footer>
             </Flex>
         </TabPane>
     </Tabs>
 </Flex>
 
 @code {
-    RenderFragment leftExtra => @<PageHeader Class="sy-content-title" Title="设置" />;
+    RenderFragment leftExtra => @<PageHeader Class="sy-content-title" Title="配置" />;
+    private void OnFinish(EditContext editContext)
+    {
+        // Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
+    }
 
-}
-@*
-<h1>配置</h1>
-
-<div class="accordion" id="accordionPanelsStayOpenExample">
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                基础配置
-            </button>
-        </h2>
-        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
-            <div class="accordion-body">
-                <div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">PalServer根目录</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputPassword" @bind="configService.ToolsConfig.PalServerPath">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">PalServer启动参数</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputPassword" @bind="configService.ToolsConfig.RunArguments">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">服务器名称</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputPassword" @bind="configService.PalConfig.ServerName">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">公共IP地址</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputPassword" @bind="configService.PalConfig.PublicIP">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">公共端口号</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.PublicPort">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">服务器密码</label>
-                        <div class="col-sm-10">
-                            <input type="password" class="form-control" id="inputPassword" @bind="configService.PalConfig.ServerPassword">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">管理员密码</label>
-                        <div class="col-sm-10">
-                            <input type="password" class="form-control" id="inputPassword" @bind="configService.PalConfig.AdminPassword">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">工具密码</label>
-                        <div class="col-sm-10">
-                            <input type="password" class="form-control" id="inputPassword" @bind="configService.ToolsConfig.ToolsPassword">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">难度</label>
-                        <div class="col-sm-10">
-                            <select class="form-select" aria-label="Default select example" @bind="configService.PalConfig.Difficulty">
-                                <option value="Difficulty" selected>困难</option>
-                                <option value="None">简单</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">最大玩家数</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.ServerPlayerMaxNum">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">是否启用RCON</label>
-                        <div class="col-sm-10">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.PalConfig.RCONEnabled">
-                        </div>
-                    </div>
-                    @if (configService.PalConfig.RCONEnabled)
-                    {
-                        <div class="mb-3 row">
-                            <label for="difficulty" class="col-sm-2 col-form-label">RCON端口号</label>
-                            <div class="col-sm-10">
-                                <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.RCONPort">
-                            </div>
-                        </div>
-                    }
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">服务器描述</label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control" aria-label="With textarea" @bind="configService.PalConfig.ServerDescription"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                游戏体验调整
-            </button>
-        </h2>
-        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
-            <div class="accordion-body">
-                <div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">白天流逝速度(@configService.PalConfig.DayTimeSpeedRate)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="5" step="0.0001" @bind="configService.PalConfig.DayTimeSpeedRate">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">夜晚流逝速度(@configService.PalConfig.NightTimeSpeedRate)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="5" step="0.0001" @bind="configService.PalConfig.NightTimeSpeedRate">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">经验倍率(@configService.PalConfig.ExpRate)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.ExpRate">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">帕鲁捕获概率倍率(@configService.PalConfig.PalCaptureRate)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PalCaptureRate">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">帕鲁出现概率倍率(@configService.PalConfig.PalSpawnNumRate)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PalSpawnNumRate">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingThree">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                游戏战斗与生存
-            </button>
-        </h2>
-        <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
-            <div class="accordion-body">
-                <div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">帕鲁攻击伤害倍率(@configService.PalConfig.PalDamageRateAttack)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PalDamageRateAttack">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">玩家攻击伤害倍率(@configService.PalConfig.PlayerDamageRateAttack)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PlayerDamageRateAttack">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">玩家饥饿下降率(@configService.PalConfig.PlayerStomachDecreaseRate)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PlayerStomachDecreaseRate">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">玩家耐力下降率(@configService.PalConfig.PlayerStaminaDecreaseRate)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PlayerStaminaDecreaseRate">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">帕鲁自动恢复生命值率(@configService.PalConfig.PalAutoHPRegeneRate)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PalAutoHPRegeneRate">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">玩家自动恢复生命值率(@configService.PalConfig.PlayerAutoHPRegeneRate)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.PlayerAutoHPRegeneRate">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingThree2">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree2" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                游戏其他配置
-            </button>
-        </h2>
-        <div id="panelsStayOpen-collapseThree2" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree2">
-            <div class="accordion-body">
-                <div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">建筑物受损伤害倍率(@configService.PalConfig.BuildObjectDamageRate)</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.BuildObjectDamageRate">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">采集物品倍率(@configService.PalConfig.CollectionDropRate</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.CollectionDropRate">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">敌人掉落物品倍率(@configService.PalConfig.EnemyDropItemRate</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.EnemyDropItemRate">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">死亡惩罚</label>
-                        <div class="col-sm-10">
-                            <select class="form-select" aria-label="Default select example" @bind="configService.PalConfig.DeathPenalty">
-                                <option value="None" selected>无惩罚</option>
-                                <option value="Item">丢失物品但不丢失装备</option>
-                                <option value="ItemAndEquipment">丢失物品和装备</option>
-                                <option value="All">丢失所以物品、装备、伙伴</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">启用玩家对玩家的伤害</label>
-                        <div class="col-sm-10">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.PalConfig.bEnablePlayerToPlayerDamage">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">火焰伤害</label>
-                        <div class="col-sm-10">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.PalConfig.bEnableFriendlyFire">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">是否发生袭击事件</label>
-                        <div class="col-sm-10">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.PalConfig.bEnableInvaderEnemy">
-                        </div>
-                    </div>
-                        <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">掉落物品存在最大时长</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.DropItemAliveMaxHours">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">自动重置没有在线玩家的公会</label>
-                        <div class="col-sm-10">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.PalConfig.bAutoResetGuildNoOnlinePlayers">
-                        </div>
-                    </div>         
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">无在线玩家时自动重置生成时间</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.AutoResetGuildTimeNoOnlinePlayers">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">公会玩家最大数量</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.GuildPlayerMaxNum">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">帕鲁蛋孵化时间</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" id="inputPassword" @bind="configService.PalConfig.PalEggDefaultHatchingTime">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">工作速度倍率</label>
-                        <div class="col-sm-10">
-                            <input type="range" class="form-range" id="customRange1" min="0.1" max="20" step="0.0001" @bind="configService.PalConfig.WorkSpeedRate">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingThree3">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree3" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                存档配置
-            </button>
-        </h2>
-        <div id="panelsStayOpen-collapseThree3" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree3">
-            <div class="accordion-body">
-                <div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">存档备份位置</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputPassword" @bind="configService.ToolsConfig.BackupPath">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="difficulty" class="col-sm-2 col-form-label">存档自动备份</label>
-                        <div class="col-sm-10">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @bind="configService.ToolsConfig.AutoBackup">
-                        </div>
-                    </div>
-                    @if (configService.ToolsConfig.AutoBackup)
-                    {
-                        <div class="mb-3 row">
-                            <label for="difficulty" class="col-sm-2 col-form-label">存档备份频率Cron</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="inputPassword" @bind="configService.ToolsConfig.BackupCron">
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div style="margin-top:20px">
-    <button class="btn btn-primary" @onclick="Save">
-        保存
-    </button>
-    <button class="btn btn-primary" @onclick="SaveAndRestart">
-        保存并重启
-    </button>
-</div>
-
-@code {
     private void Save()
     {
         configService.Save();
@@ -404,4 +272,3 @@
         }
     }
 }
-*@

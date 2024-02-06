@@ -3,13 +3,14 @@
 <PageTitle>监控</PageTitle>
 
 @using PalServerTools.Data
+@using PalServerTools.Utils;
 @inject ConsoleService consoleService
 @inject PalRconService palRconService
 @inject PalProcessService palProcessService
 @inject PalConfigService configService
 
 <Flex Vertical="true" Class="sy-content">
-    <PageHeader Class="sy-content-title" Title="监控" Subtitle="This is a subtitle" />
+    <PageHeader Class="sy-content-title" Title="监控" Subtitle="Pal Server Tools" />
     <div class="sy-content-body">
         <Card Title="基本信息" Style="width:100%;">
             <Body>
@@ -31,18 +32,30 @@
                 </p>
             </Body>
         </Card>
+        <br />
+        <SystemMonitor></SystemMonitor>
     </div>
 </Flex>
 
 @code {
+    Timer timer;
     private string serverInfo = "";
 
     protected override async Task OnInitializedAsync()
     {
+        timer = new Timer(UpdateStateInfo, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
         if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
         {
             serverInfo = await palRconService.Info();
         }
+    }
+
+    private void UpdateStateInfo(object state)
+    {
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
     }
 
     async Task OnClickStart()

@@ -23,6 +23,7 @@ namespace PalServerTools
             builder.Services.AddAntDesign();
             builder.Services.AddScoped<ConsoleService>();
             builder.Services.AddSingleton<PalProcessService>();
+            builder.Services.AddSingleton<ServerInfo>();
             builder.Services.AddTransient<PalConfigService>();
             builder.Services.AddTransient<PalRconService>();
             builder.Services.AddTransient<BackupService>();
