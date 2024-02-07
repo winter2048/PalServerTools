@@ -78,7 +78,7 @@ namespace PalServerTools.Data
 
         public async Task CheckLatestVersion()
         {
-            if (string.IsNullOrWhiteSpace(currentVersion) && palServerState == PalServerState.Running)
+            if ((string.IsNullOrWhiteSpace(currentVersion) || !isLatestVersion) && palServerState == PalServerState.Running)
             {
                 var info = await _palRconService.Info();
                 if (!string.IsNullOrWhiteSpace(info))

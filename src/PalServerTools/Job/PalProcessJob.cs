@@ -27,7 +27,7 @@ namespace PalServerTools.Job
 
             await _palProcessService.CheckLatestVersion();
             // 如果有新版本，则升级
-            if (!_palProcessService.isLatestVersion && _configService.ToolsConfig.AutoRestart && _palProcessService.palServerUpdateState != PalServerUpdateState.Updating)
+            if (!_palProcessService.isLatestVersion && _configService.ToolsConfig.AutoUpgrade && _palProcessService.palServerUpdateState != PalServerUpdateState.Updating)
             {
                await _palProcessService.Upgrade();
             }
