@@ -7,5 +7,13 @@
             Running,
             Stopped
         }
+
+        public enum PalServerUpdateState
+        {
+            None,
+            Updating,
+            Success,
+            Failed
+        }
     }
 }

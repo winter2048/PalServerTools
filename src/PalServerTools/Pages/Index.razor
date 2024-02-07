@@ -8,15 +8,27 @@
 @inject PalRconService palRconService
 @inject PalProcessService palProcessService
 @inject PalConfigService configService
+@inject IMessageService message
 
 <Flex Vertical="true" Class="sy-content">
     <PageHeader Class="sy-content-title" Title="监控" Subtitle="Pal Server Tools" />
-    <div class="sy-content-body">
-        <Card Title="基本信息" Style="width:100%;">
+    <div class="sy-content-body sy-card">
+        <Card Title="服务器信息" Class="sy-card-item">
             <Body>
-                <p>服务器版本： @serverInfo</p>
                 <p>
-                    服务器状态： @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
+                    名称：@configService.PalConfig.ServerName
+                </p>
+                <p>版本： @palProcessService.currentVersion  
+                    @if (!palProcessService.isLatestVersion)
+                    {
+                        <div style="display:inline-block;">
+                            <Text Style="color: red; margin-left:10px;">新 @palProcessService.latestVersion</Text>
+                            <Button Type="@ButtonType.Primary" Size="small" Danger Icon="arrow-up" OnClick="OnClickUpgrade" Loading="@(palProcessService.palServerUpdateState == Models.PalEnum.PalServerUpdateState.Updating)">@(palProcessService.palServerUpdateState == Models.PalEnum.PalServerUpdateState.Updating ? "升级中" : "立即升级")</Button>
+                        </div>
+                    }
+                </p>
+                <p>
+                    状态： @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
                     <Button Type="@ButtonType.Primary" Size="small" Icon="reload" OnClick="OnClickReload">重启</Button>
                     @if (palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped)
                     {
@@ -28,7 +40,10 @@
                     }
                 </p>
                 <p>
-                    自动重启：<Switch Size="small" @bind-Checked="configService.ToolsConfig.AutoRestart" OnChange="OnChangeAutomaticRestart" />
+                    自动重启：<Switch Size="small" @bind-Checked="configService.ToolsConfig.AutoRestart" OnChange="OnChangeToolsConfig" />
+                </p>
+                <p>
+                    自动更新：<Switch Size="small" @bind-Checked="configService.ToolsConfig.AutoUpgrade" OnChange="OnChangeToolsConfig" />
                 </p>
             </Body>
         </Card>
@@ -78,9 +93,22 @@
         this.StateHasChanged();
     }
 
-    async Task OnChangeAutomaticRestart(bool value)
+    async Task OnChangeToolsConfig()
     {
-        configService.ToolsConfig.AutoRestart = Convert.ToBoolean(value);
         configService.ToolsConfigSave();
+    }
+
+    async Task OnClickUpgrade()
+    {
+        try
+        {
+          await palProcessService.Upgrade();
+            _ = message.Success("升级成功！");
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message, 10);
+        }
+        this.StateHasChanged();
     }
 }

@@ -1,0 +1,19 @@
+﻿@inherits LayoutComponentBase
+
+@using PalServerTools.Data;
+
+@inject ClientConfigService ClientConfigService
+
+<PageTitle>PalServerTools</PageTitle>
+
+<div class="App" tomato-theme="@ClientConfigService?.ClientConfig?.Theme">
+    <Space Direction="@DirectionVHType.Vertical" Style="width: 100%">
+        <Layout Style="height: 100vh;">
+            @Body
+        </Layout>
+    </Space>
+</div>
+
+@code {
+ 
+}

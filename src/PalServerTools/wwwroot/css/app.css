@@ -173,3 +173,21 @@ body {
 .ant-tabs-content, .ant-tabs-tabpane {
     height: 100% !important;
 }
+
+.sy-card {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.sy-card-item {
+    width: calc(100% / 2 - 10px);
+    margin-bottom: 10px;
+}
+
+
+@media screen and (max-width: 720px) {
+    .sy-card-item {
+        width: 100%;
+    }
+}

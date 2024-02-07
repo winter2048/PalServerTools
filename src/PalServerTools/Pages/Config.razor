@@ -23,6 +23,9 @@
                         <FormItem Label="工具密码">
                             <InputPassword @bind-Value="@context.ToolsPassword" />
                         </FormItem>
+                        <FormItem Label="内存优化">
+                            <Checkbox @bind-Value="context.MemoryClear"></Checkbox>
+                        </FormItem>
                     </Form>
                 </Content>
                 <Footer Class="sy-content-footer">
@@ -69,8 +72,8 @@
                     <FormItem Label="公共IP地址">
                         <Input @bind-Value="@context.PublicIP"></Input>
                     </FormItem>
-                    <FormItem Label="公共IP地址">
-                        <AntDesign.InputNumber @bind-Value="@context.PublicPort" Min="1" Max="65558" DefaultValue="8211"></AntDesign.InputNumber>
+                    <FormItem Label="公共端口号">
+                            <AntDesign.InputNumber @bind-Value="@context.PublicPort" Min="0" Max="65535" DefaultValue="8211"></AntDesign.InputNumber>
                     </FormItem>
                     <FormItem Label="服务器密码">
                         <InputPassword @bind-Value="@context.ServerPassword" />
@@ -99,7 +102,7 @@
                     @if (context.RCONEnabled)
                     {
                         <FormItem Label="RCON端口号">
-                            <AntDesign.InputNumber @bind-Value="@context.RCONPort" Min="1" Max="32" DefaultValue="16"></AntDesign.InputNumber>
+                                <AntDesign.InputNumber @bind-Value="@context.RCONPort" Min="0" Max="65535" DefaultValue="25575"></AntDesign.InputNumber>
                         </FormItem>
                     }
                     <FormItem Label="服务器描述">
