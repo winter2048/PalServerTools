@@ -1,5 +1,9 @@
-﻿using System;
+﻿using AntDesign;
+using PalServerTools.Utils;
+using System;
 using System.Diagnostics;
+using System.Reactive.Joins;
+using System.Text.RegularExpressions;
 using static PalServerTools.Models.PalEnum;
 
 namespace PalServerTools.Data
@@ -7,12 +11,21 @@ namespace PalServerTools.Data
     public class PalProcessService
     {
         private readonly PalConfigService _configService;
+        private readonly PalRconService _palRconService;
+        private readonly ServerInfo _serverInfo;
         private string processName = "PalServer";
 
-        public PalServerState palServerState;
+        public PalServerUpdateState palServerUpdateState = PalServerUpdateState.None;
+        public PalServerState palServerState = PalServerState.Stopped;
+        public bool isLatestVersion = true;
+        public string latestVersion = "";
+        public string currentVersion = "";
 
-        public PalProcessService(PalConfigService configService) {
+        public PalProcessService(PalConfigService configService, PalRconService palRconService, ServerInfo serverInfo)
+        {
             _configService = configService;
+            _palRconService = palRconService;
+            _serverInfo = serverInfo;
         }
 
         // 启动进程
@@ -47,6 +60,90 @@ namespace PalServerTools.Data
             catch (Exception ex)
             {
                 Console.WriteLine("启动进程失败: " + ex.Message);
+            }
+        }    
+        
+        // 检查进程是否存在
+        public bool IsProcessRunning()
+        {
+            Process[] processes = Process.GetProcessesByName(processName);
+            return processes.Length > 0;
+        }
+
+        public void CheckProcessStatus()
+        {
+            bool isProcessRunning = IsProcessRunning();
+            palServerState = isProcessRunning ? PalServerState.Running : PalServerState.Stopped;
+        }
+
+        public async Task CheckLatestVersion()
+        {
+            if (string.IsNullOrWhiteSpace(currentVersion) && palServerState == PalServerState.Running)
+            {
+                var info = await _palRconService.Info();
+                if (!string.IsNullOrWhiteSpace(info))
+                {
+                    Match match = Regex.Match(info, @"v\d+\.\d+\.\d+\.\d+");
+                    if (match.Success)
+                    {
+                        currentVersion = match.Value;
+                    }
+                }
+            }
+
+            if (isLatestVersion)
+            {
+                var rssItem = RssUtil.ReadRss("https://store.steampowered.com/feeds/news/app/1623730/?cc=CN&l=schinese&snr=1_2108_9__2107");
+                var rssTitle = rssItem.FirstOrDefault()?.Title?.Text;
+                if (rssTitle != null)
+                {
+                    Match match = Regex.Match(rssTitle, @"v\d+\.\d+\.\d+\.\d+");
+                    if (match.Success)
+                    {
+                        latestVersion = match.Value;
+                        if (latestVersion == currentVersion)
+                        {
+                            isLatestVersion = true;
+                        }
+                        else
+                        {
+                            isLatestVersion = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        public async Task Upgrade()
+        {
+            palServerUpdateState = PalServerUpdateState.Updating;
+            try
+            {
+                if (palServerState == PalServerState.Running)
+                {
+                    CloseProcess();
+                }
+
+                var res = await SteamCmdUtil.AppUpdate(2394010);
+                if (!res.Item1)
+                {
+                    throw new Exception(res.Item2);
+                }
+                palServerUpdateState = PalServerUpdateState.Success;
+                StartProcess();
+            }
+            catch (Exception)
+            {
+                palServerUpdateState = PalServerUpdateState.Failed;
+                throw;
+            }
+        }
+    
+        public void ClearProcessMemory()
+        {
+            if (_serverInfo.GetMemoryUsage() >= 80)
+            {
+                MemoryUtil.ClearProcessWorkingSet(processName);
             }
         }
     }

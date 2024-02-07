@@ -9,7 +9,6 @@ namespace PalServerTools.Job
     {
         private readonly PalProcessService _palProcessService;
         private readonly PalConfigService _configService;
-        private string processName = "PalServer";
 
         public PalProcessJob(PalProcessService palProcessService, PalConfigService configService)
         {
@@ -19,26 +18,25 @@ namespace PalServerTools.Job
 
         public async Task RunAsync()
         {
-            CheckProcessStatus();
-        }
-
-        // 检查进程状态的方法
-        public void CheckProcessStatus()
-        {
-            bool isProcessRunning = IsProcessRunning();
-            _palProcessService.palServerState = isProcessRunning ? PalServerState.Running : PalServerState.Stopped;
+            _palProcessService.CheckProcessStatus();
             // 如果进程不存在，则启动进程
-            if (!isProcessRunning && _configService.ToolsConfig.AutoRestart)
+            if (_palProcessService.palServerState == PalServerState.Stopped && _configService.ToolsConfig.AutoRestart && _palProcessService.palServerUpdateState != PalServerUpdateState.Updating)
             {
                 _palProcessService.StartProcess();
             }
-        }
 
-        // 检查进程是否存在
-        public bool IsProcessRunning()
-        {
-            Process[] processes = Process.GetProcessesByName(processName);
-            return processes.Length > 0;
+            await _palProcessService.CheckLatestVersion();
+            // 如果有新版本，则升级
+            if (!_palProcessService.isLatestVersion && _configService.ToolsConfig.AutoRestart && _palProcessService.palServerUpdateState != PalServerUpdateState.Updating)
+            {
+               await _palProcessService.Upgrade();
+            }
+
+            // 开启内存优化
+            if (_palProcessService.palServerState == PalServerState.Running && _configService.ToolsConfig.MemoryClear)
+            {
+                _palProcessService.ClearProcessMemory();
+            }
         }
     }
 }

@@ -105,7 +105,12 @@ namespace PalServerTools.Data
 
         public void PalConfigSave()
         {
-            var palServerConfigPath = Path.Combine(ToolsConfig.PalServerPath, "Pal\\Saved\\Config\\WindowsServer\\PalWorldSettings.ini");
+            var palServerConfigDir = Path.Combine(ToolsConfig.PalServerPath, "Pal\\Saved\\Config\\WindowsServer");
+            if (!Directory.Exists(palServerConfigDir))
+            {
+                Directory.CreateDirectory(palServerConfigDir);
+            }
+            var palServerConfigPath = Path.Combine(palServerConfigDir, "PalWorldSettings.ini");
 
             // 将PalConfigModel转换为Ini文件格式的字符串
             StringBuilder configBuilder = new StringBuilder();
@@ -131,7 +136,7 @@ namespace PalServerTools.Data
                 }
             }
             configBuilder.AppendLine($"OptionSettings=({string.Join(",", optionSettings)})");
-
+          
             // 保存到PalWorldSettings.ini文件
             File.WriteAllText(palServerConfigPath, configBuilder.ToString());
         }

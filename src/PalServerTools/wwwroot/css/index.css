@@ -2,15 +2,6 @@
     margin: 0;
 }
 
-/*body {
-    --bg-color: #fff;
-    --color-text-1: rgba(0, 0, 0, 0.88) --color-text-2: rgba(0, 0, 0, 0.45);
-    --ant-color-primary-hover: #4096ff;
-    --ant-color-primary: #1677ff;
-    --ant-layout-light-sider-bg: #ffffff;
-    --ant-layout-body-bg: #f5f5f5;
-}*/
-
 .App[tomato-theme="dark"] {
     --bg-color: #141414;
     --color-text-1: rgba(255, 255, 255, 0.85);

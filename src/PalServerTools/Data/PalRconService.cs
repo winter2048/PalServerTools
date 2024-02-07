@@ -1,21 +1,24 @@
-﻿using PalServerTools.Utils;
+﻿using AntDesign;
+using PalServerTools.Utils;
 
 namespace PalServerTools.Data
 {
     public class PalRconService
     {
-        private readonly PalConfigService _configService;
+        private readonly IServiceProvider _serviceProvider;
+        private PalConfigService _configService;
 
         public RconClient client;
     
-        public PalRconService(PalConfigService configService)
+        public PalRconService(IServiceProvider serviceProvider)
         {
-            this._configService = configService;
+            _serviceProvider = serviceProvider;
             this.client = new RconClient();
         }
 
         private async Task Connect()
         {
+            _configService = _serviceProvider.GetService<PalConfigService>();
             await client.ConnectAsync("127.0.0.1", this._configService.PalConfig.RCONPort, this._configService.PalConfig.AdminPassword);
         }
 

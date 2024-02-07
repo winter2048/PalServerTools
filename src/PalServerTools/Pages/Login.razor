@@ -5,22 +5,35 @@
 
 @layout LoginLayout
 @inject NavigationManager nvm
-@inject ImitateAuthStateProvider AuthStateProvider;
+@inject ImitateAuthStateProvider AuthStateProvider
+@inject IMessageService message
 
-<div class="card align-items-center">
-    <div class="card-body my-2">
-        <h3>登录</h3>
-        <EditForm Model="loginModel" OnValidSubmit="SubmitHandler" OnInvalidSubmit="InvalidHandler">
-            <div class="form-gourp">
-                <input type="password" class="form-control" id="inputPassword" @bind="loginModel.Password">
-            </div>
-            <span class="form-control-plaintext"></span>
-            <div class="form-group">
-                <div class="col-sm-10">
-                    <button class="btn btn-primary">登录</button>
-                </div>
-            </div>
-        </EditForm>
+<div class="container">
+    <div class="login-wrapper">
+        <div class="header">Pal Server Tools</div>
+        <div class="header-subtitle">登录</div>
+        <div class="form-wrapper">
+            <Form Model="@loginModel"
+                  Layout="@FormLayout.Vertical"
+                  Size="@AntSizeLDSType.Large"
+                  OnFinish="SubmitHandler">
+                <FormItem>
+                    <InputPassword Placeholder="请输入密码..." @bind-Value="@context.Password" />
+                </FormItem>
+
+                <FormItem WrapperColOffset="1" WrapperColSpan="22">
+                    <Button Type="@ButtonType.Primary" Shape="@ButtonShape.Round" HtmlType="submit" Block Size="@ButtonSize.Default" Loading="isAuthLoading">
+                        登录
+                    </Button>
+                </FormItem>
+            </Form>
+        </div>
+        <div class="msg">
+            没有帐户
+            <a href="#1" style="margin-left: 5px;">
+                注册
+            </a>
+        </div>
     </div>
 </div>
 
@@ -35,19 +48,24 @@
         {
             if (await AuthStateProvider.Login(new UserInfo() { Password = loginModel.Password }))
             {
+                _ = message.Success("登录成功！");
                 nvm.NavigateTo("/");
             }
+            else
+            {
+                _ = message.Error("密码错误！");
+            }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            System.Console.WriteLine(ex.Message);
+            _ = message.Error(ex.Message);
         }
         finally
         {
             isAuthLoading = false;
         }
     }
-   
+
     private void InvalidHandler()
     {
         nvm.NavigateTo("/Login");

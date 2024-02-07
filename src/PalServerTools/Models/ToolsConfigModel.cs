@@ -14,5 +14,9 @@
         public string BackupCron { get; set; }
 
         public string BackupPath { get; set; }
+
+        public bool AutoUpgrade { get; set; }
+
+        public bool MemoryClear { get; set; }
     }
 }
