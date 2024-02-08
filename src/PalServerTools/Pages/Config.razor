@@ -59,6 +59,24 @@
                             <FormItem Label="存档备份频率Cron">
                                 <Input @bind-Value="@context.BackupCron" />
                             </FormItem>
+                            <FormItem Label="存档保留策略">
+                                <Select @bind-Value="@context.BackupClearType"
+                                    DefaultValue="@(0)"
+                                    Style="width: 160px;"
+                                    TItemValue="int"
+                                    TItem="int">
+                                    <SelectOptions>
+                                        <SelectOption Value="@(0)" Label="保留全部" />
+                                        <SelectOption Value="@(1)" Label="保留指定数量" />
+                                    </SelectOptions>
+                                </Select>
+                            </FormItem>
+                            if (@context.BackupClearType == 1)
+                            {
+                                <FormItem Label="保留数量">
+                                    <AntDesign.InputNumber @bind-Value="@context.BackupCount" Min="1" DefaultValue="1"></AntDesign.InputNumber>
+                                </FormItem>
+                            }
                         }
                     </Form>
                 </Content>
