@@ -1,22 +1,36 @@
 ﻿@namespace PalServerTools.Components
-@using PalServerTools.Utils;
+@using PalServerTools.Data;
 @inherits AntDomComponentBase
 
-@inject ServerInfo serverInfo
+@inject SystemInfoService systemInfoService
 
 <Card Title="性能监控" Class="sy-card-item">
     <Body>
-        <p>操作系统版本： @serverInfo.GetOSVersion()</p>
-        <p>处理器数量： @serverInfo.GetCPUCount() 核</p>
-        <p>总内存大小：@serverInfo.GetTotalMemory() MB</p>
+        <Flex Wrap="wrap" Gap="10">
+            <div>
+                <p>操作系统版本： @systemInfoService.Info.OSVersion</p>
+                <p>处理器数量： @systemInfoService.Info.CPUCount 核</p>
+                <p>总内存大小：@systemInfoService.Info.TotalMemory MB</p>
 
-        <p>CPU利用率：@serverInfo.GetCPUUsage() %</p>
-        <p>内存使用率：@serverInfo.GetMemoryUsage() %</p>
+                <p>CPU利用率：@systemInfoService.Info.CPUUsage %</p>
+                <p>内存使用率：@systemInfoService.Info.MemoryUsage %</p>
+            </div>
+            <Flex Wrap="wrap" Gap="10">
+                <Progress Class="sy-progress" Type=ProgressType.Line StrokeColor="_gradients" Percent="systemInfoService.Info.CPUUsage" Format="@((p) => { return "CPU\n" + p + "%"; })" />
+                <Progress Class="sy-progress" Type=ProgressType.Line StrokeColor="_gradients" Percent="systemInfoService.Info.MemoryUsage" Format="@((p)=> {return "RAM\n" + p + "%";})" />
+            </Flex>
+        </Flex>
     </Body>
 </Card>
 
 @code {
     Timer timer;
+
+    private Dictionary<string, string> _gradients = new()
+    {
+        { "0%", "#33FF33" },
+        { "100%", "#fb0000" }
+    };
 
     protected override Task OnInitializedAsync()
     {

@@ -1,4 +1,5 @@
 
+using BlazorPro.BlazorSize;
 using CronQuery.Mvc.Jobs;
 using CronQuery.Mvc.Options;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -21,9 +22,10 @@ namespace PalServerTools
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
             builder.Services.AddAntDesign();
+            builder.Services.AddMediaQueryService();
             builder.Services.AddScoped<ConsoleService>();
             builder.Services.AddSingleton<PalProcessService>();
-            builder.Services.AddSingleton<ServerInfo>();
+            builder.Services.AddSingleton<SystemInfoService>();
             builder.Services.AddTransient<PalConfigService>();
             builder.Services.AddTransient<PalRconService>();
             builder.Services.AddTransient<BackupService>();
@@ -39,6 +41,7 @@ namespace PalServerTools
             builder.Services.Configure<JobRunnerOptions>((option) =>
             {
                 option.Running = true;
+                // 自动备份Job
                 var backupJob = option.Jobs.FirstOrDefault(p => p.Name == "BackupJob");
                 if (backupJob == null)
                 {
@@ -48,8 +51,8 @@ namespace PalServerTools
                     option.Jobs.Add(backupJob);
                 }
                 backupJob.Cron = builder.Configuration.GetValue<string>("ToolsConfig:BackupCron", "0 0/30 * * * *");
-                backupJob.Running = builder.Configuration.GetValue<bool>("ToolsConfig:AutoBackup", true);
-
+                backupJob.Running = builder.Configuration.GetValue<bool>("ToolsConfig:AutoBackup", false);
+                // 进程检测Job
                 var palProcessJob = option.Jobs.FirstOrDefault(p => p.Name == "PalProcessJob");
                 if (palProcessJob == null)
                 {
@@ -61,6 +64,18 @@ namespace PalServerTools
                     };
                     option.Jobs.Add(palProcessJob);
                 }
+                // 自动更新版本Job
+                var autoUpgradeJob = option.Jobs.FirstOrDefault(p => p.Name == "AutoUpgradeJob");
+                if (autoUpgradeJob == null)
+                {
+                    autoUpgradeJob = new JobOptions()
+                    {
+                        Cron = "0 0/10 * * * *",
+                        Name = "AutoUpgradeJob"
+                    };
+                    option.Jobs.Add(autoUpgradeJob);
+                }
+                autoUpgradeJob.Running = builder.Configuration.GetValue<bool>("ToolsConfig:AutoUpgrade", false);
             });
             builder.Services.AddSingleton<JobRunner>();
             builder.Services.AddSingleton((IServiceProvider serviceProvider) => new JobCollection(builder.Services));
@@ -68,6 +83,7 @@ namespace PalServerTools
 
             builder.Services.AddTransient<BackupJob>();
             builder.Services.AddTransient<PalProcessJob>();
+            builder.Services.AddTransient<AutoUpgradeJob>();
 
             var app = builder.Build();
 

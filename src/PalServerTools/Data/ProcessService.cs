@@ -12,7 +12,7 @@ namespace PalServerTools.Data
     {
         private readonly PalConfigService _configService;
         private readonly PalRconService _palRconService;
-        private readonly ServerInfo _serverInfo;
+        private readonly SystemInfoService _systemInfoService;
         private string processName = "PalServer";
 
         public PalServerUpdateState palServerUpdateState = PalServerUpdateState.None;
@@ -21,11 +21,11 @@ namespace PalServerTools.Data
         public string latestVersion = "";
         public string currentVersion = "";
 
-        public PalProcessService(PalConfigService configService, PalRconService palRconService, ServerInfo serverInfo)
+        public PalProcessService(PalConfigService configService, PalRconService palRconService, SystemInfoService systemInfoService)
         {
             _configService = configService;
             _palRconService = palRconService;
-            _serverInfo = serverInfo;
+            _systemInfoService = systemInfoService;
         }
 
         // 启动进程
@@ -91,7 +91,7 @@ namespace PalServerTools.Data
                 }
             }
 
-            if (isLatestVersion)
+            if (isLatestVersion && palServerState == PalServerState.Running)
             {
                 var rssItem = RssUtil.ReadRss("https://store.steampowered.com/feeds/news/app/1623730/?cc=CN&l=schinese&snr=1_2108_9__2107");
                 var rssTitle = rssItem.FirstOrDefault()?.Title?.Text;
@@ -141,7 +141,7 @@ namespace PalServerTools.Data
     
         public void ClearProcessMemory()
         {
-            if (_serverInfo.GetMemoryUsage() >= 80)
+            if (_systemInfoService.Info.MemoryUsage >= 80)
             {
                 MemoryUtil.ClearProcessWorkingSet(processName);
             }

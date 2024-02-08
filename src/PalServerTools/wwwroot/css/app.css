@@ -185,9 +185,38 @@ body {
     margin-bottom: 10px;
 }
 
+.sy-content-body-search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
 
-@media screen and (max-width: 720px) {
+.sy-table-max .ant-table-body {
+    height: calc(100vh - 275px) !important;
+    overflow-y: scroll !important;
+    max-height: 100% !important;
+}
+
+.sy-progress .ant-progress-text {
+    width: 70px;
+}
+
+@media(max-width: 767.98px) {
+    .sy-layout-content{
+        margin: 5px;
+    }
+
     .sy-card-item {
         width: 100%;
+    }
+
+    .sy-content-tabs .ant-tabs-nav {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .sy-content-tabs .ant-tabs-nav-operations {
+        display: none !important;
     }
 }

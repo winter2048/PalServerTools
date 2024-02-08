@@ -14,7 +14,7 @@
 
 <Flex Vertical="true" Class="sy-content">
     <PageHeader Class="sy-content-title" Title="备份" Subtitle="Pal Server Tools" />
-    <div class="sy-content-body">
+    <Content Class="sy-content-body">
         <div class="sy-content-body-search">
             <RangePicker TValue="DateTime?[]" ShowTime='@("HH:mm")' OnChange="OnRangeChange" Value="dateTimes" />
 
@@ -22,7 +22,6 @@
             <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="reload" OnClick="Refresh" Loading="withRefreshLoading">刷新</Button>
             <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="snippets" OnClick="CurrentBackup" Loading="withBackupLoading">备份</Button>
         </div>
-        <br />
         @if (backupList == null)
         {
             <p><em>Loading...</em></p>
@@ -30,28 +29,31 @@
         else
         {
             <Table @ref="table"
-               TItem="BackupModel"
-               DataSource="@backupList"
-               Total="_total"
-               @bind-PageIndex="_pageIndex"
-               @bind-PageSize="_pageSize"
-               @bind-SelectedRows="selectedRows"
-               OnChange="OnChange"
-               Size="TableSize.Default"
-               RowKey="x=>x.Name">
-                <Selection Key="@(context.Name)" />
-                <PropertyColumn Property="c=>c.Name" Sortable Title="名称" />
-                <PropertyColumn Property="c=>c.Size" Sortable Title="大小(k)" />
-                <PropertyColumn Property='c=>c.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")' Sortable Title="时间" />
-                <ActionColumn Title="操作">
-                    <Space>
-                        <SpaceItem><Button Icon="download" Type="@ButtonType.Primary" Shape="@ButtonShape.Round" OnClick="()=>DownloadBackup(context.Name)">下载</Button></SpaceItem>
-                        <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>DelBackup(context.Name)">删除</Button></SpaceItem>
-                    </Space>
-                </ActionColumn>
-            </Table>
+                   TItem="BackupModel"
+                   DataSource="@backupList"
+                   Total="_total"
+                   @bind-PageIndex="_pageIndex"
+                   @bind-PageSize="_pageSize"
+                   @bind-SelectedRows="selectedRows"
+                   OnChange="OnChange"
+                   Size="TableSize.Default"
+                   ScrollY="1"
+                   RowKey="x=>x.Name"
+                   Class="sy-table-max"
+                   Responsive>
+             <Selection Key="@(context.Name)" />
+             <PropertyColumn Property="c=>c.Name" Sortable Title="名称" />
+                 <PropertyColumn Property="c=>c.Size" Sortable Title="大小(k)" />
+                 <PropertyColumn Property='c=>c.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")' Sortable Title="时间" />
+                 <ActionColumn Title="操作">
+                     <Space>
+                         <SpaceItem><Button Icon="download" Type="@ButtonType.Primary" Shape="@ButtonShape.Round" OnClick="()=>DownloadBackup(context.Name)">下载</Button></SpaceItem>
+                         <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>DelBackup(context.Name)">删除</Button></SpaceItem>
+                     </Space>
+                 </ActionColumn>
+             </Table>
         }
-    </div>
+    </Content>
 </Flex>
 
 

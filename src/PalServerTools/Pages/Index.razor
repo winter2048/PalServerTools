@@ -18,13 +18,20 @@
                 <p>
                     名称：@configService.PalConfig.ServerName
                 </p>
-                <p>版本： @palProcessService.currentVersion  
+                <p>
+                    版本： @palProcessService.currentVersion
                     @if (!palProcessService.isLatestVersion)
                     {
                         <div style="display:inline-block;">
                             <Text Style="color: red; margin-left:10px;">新 @palProcessService.latestVersion</Text>
-                            <Button Type="@ButtonType.Primary" Size="small" Danger Icon="arrow-up" OnClick="OnClickUpgrade" Loading="@(palProcessService.palServerUpdateState == Models.PalEnum.PalServerUpdateState.Updating)">@(palProcessService.palServerUpdateState == Models.PalEnum.PalServerUpdateState.Updating ? "升级中" : "立即升级")</Button>
-                        </div>
+                                <Button Type="@ButtonType.Primary" Size="small" Danger Icon="arrow-up" OnClick="OnClickUpgrade" Loading="@(palProcessService.palServerUpdateState == Models.PalEnum.PalServerUpdateState.Updating)">@(palProcessService.palServerUpdateState == Models.PalEnum.PalServerUpdateState.Updating ? "升级中" : "立即升级")</Button>
+                         </div>
+                    }
+                    else
+                    {
+                        <div style="display:inline-block;">
+                            <Button Type="@ButtonType.Primary" Size="small" Icon="cloud-sync" OnClick="OnClickCheckLatestVersion" Loading="withCheckLatestVersionLoading">检查版本</Button>
+                         </div>
                     }
                 </p>
                 <p>
@@ -55,6 +62,7 @@
 @code {
     Timer timer;
     private string serverInfo = "";
+    private bool withCheckLatestVersionLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,6 +70,7 @@
         if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
         {
             serverInfo = await palRconService.Info();
+            await palProcessService.CheckLatestVersion();
         }
     }
 
@@ -102,7 +111,7 @@
     {
         try
         {
-          await palProcessService.Upgrade();
+            await palProcessService.Upgrade();
             _ = message.Success("升级成功！");
         }
         catch (Exception ex)
@@ -110,5 +119,30 @@
             _ = message.Error(ex.Message, 10);
         }
         this.StateHasChanged();
+    }
+
+    async Task OnClickCheckLatestVersion()
+    {
+        try
+        {
+            withCheckLatestVersionLoading = true;
+            if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
+            {
+                await palProcessService.CheckLatestVersion();
+                _ = message.Success(palProcessService.isLatestVersion ? "已经是最新版本！" : "发现新版本！");
+            }
+            else
+            {
+                _ = message.Error("服务器未运行！");
+            }
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message, 10);
+        }
+        finally
+        {
+            withCheckLatestVersionLoading = false;
+        }
     }
 }

@@ -9,27 +9,23 @@ namespace PalServerTools.Job
     {
         private readonly PalProcessService _palProcessService;
         private readonly PalConfigService _configService;
+        private readonly SystemInfoService _systemInfoService;
 
-        public PalProcessJob(PalProcessService palProcessService, PalConfigService configService)
+        public PalProcessJob(PalProcessService palProcessService, PalConfigService configService, SystemInfoService systemInfoService)
         {
             _palProcessService = palProcessService;
             _configService = configService;
+            _systemInfoService = systemInfoService;
         }
 
         public async Task RunAsync()
         {
+            _systemInfoService.RefreshInfo();
             _palProcessService.CheckProcessStatus();
             // 如果进程不存在，则启动进程
             if (_palProcessService.palServerState == PalServerState.Stopped && _configService.ToolsConfig.AutoRestart && _palProcessService.palServerUpdateState != PalServerUpdateState.Updating)
             {
                 _palProcessService.StartProcess();
-            }
-
-            await _palProcessService.CheckLatestVersion();
-            // 如果有新版本，则升级
-            if (!_palProcessService.isLatestVersion && _configService.ToolsConfig.AutoUpgrade && _palProcessService.palServerUpdateState != PalServerUpdateState.Updating)
-            {
-               await _palProcessService.Upgrade();
             }
 
             // 开启内存优化
