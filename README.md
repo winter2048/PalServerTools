@@ -25,7 +25,7 @@
 - 使用`appsettings.json`文件中配置的密码`ToolsPassword`登录PalServerTools，默认密码`123456`
 
 # 预览
-![image](https://github.com/winter2048/PalServerTools/assets/31879147/4bf0cbf5-c19f-4818-a1c3-16b4d6609a04)
+![image](https://github.com/winter2048/PalServerTools/assets/31879147/1c7fc6ba-2acd-43eb-84cf-d88bd6b67968)
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/8794e5a6-252b-425c-afe5-fead6ecdb1f2)
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/720b88d4-fb61-437b-ac8b-04af6b546799)
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/2a764d53-0107-4791-ab5b-53f646de3727)

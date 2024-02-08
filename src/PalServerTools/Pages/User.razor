@@ -9,15 +9,13 @@
 
 <Flex Vertical="true" Class="sy-content">
     <PageHeader Class="sy-content-title" Title="玩家" Subtitle="@("当前在线人数(" + (players == null ? 0 : players.Count) + ")")" />
-    <div class="sy-content-body">
+    <Content Class="sy-content-body">
         <div class="sy-content-body-search">
             <Search Placeholder="输入名称" WrapperStyle="width: 200px;" ClassicSearchIcon Value="@keywords" />
 
             <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="search" OnClick="Search">查询</Button>
             <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="reload" OnClick="Refresh" Loading="withRefreshLoading">刷新</Button>
-         
         </div>
-        <br />
         @if (players == null)
         {
             <p><em>Loading...</em></p>
@@ -33,7 +31,10 @@
                @bind-SelectedRows="selectedRows"
                OnChange="OnChange"
                Size="TableSize.Default"
-               RowKey="x=>x.Name">
+               ScrollY="1"
+               RowKey="x=>x.Name"
+               Class="sy-table-max"
+               Responsive>
                 <Selection Key="@(context.PlayerUid)" />
                 <PropertyColumn Property="c=>c.PlayerUid" Sortable Title="Id" />
                 <PropertyColumn Property="c=>c.Name" Sortable Title="名称" />
@@ -46,7 +47,7 @@
                 </ActionColumn>
             </Table>
         }
-    </div>
+    </Content>
 </Flex>
 
 

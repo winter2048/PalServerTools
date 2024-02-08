@@ -1,10 +1,11 @@
 ﻿.container {
     height: 100vh;
-    background-image: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    background-image: var(--sy-login-bg);
 }
 
 .login-wrapper {
-    background-color: #fff;
+    background-color: var(--sy-login-from-bg);
+    max-width: 458px;
     width: 458px;
     height: 458px;
     border-radius: 15px;
@@ -59,4 +60,15 @@
 a {
     text-decoration-line: none;
     color: #abc1ee;
+}
+
+@media(max-width: 767.98px) {
+    .login-wrapper {
+        width: 90%;
+        padding: 0 30px;
+    }
+
+    .header {
+        font-size: 36px;
+    }
 }

@@ -18,25 +18,32 @@
                 <p>
                     名称：@configService.PalConfig.ServerName
                 </p>
-                <p>版本： @palProcessService.currentVersion  
+                <p>
+                    版本： @palProcessService.currentVersion
                     @if (!palProcessService.isLatestVersion)
                     {
-                        <div style="display:inline-block;">
-                            <Text Style="color: red; margin-left:10px;">新 @palProcessService.latestVersion</Text>
+                        <div style="display:inline-block;margin-left:10px;">
+                            <Text Style="color: red; ">新 @palProcessService.latestVersion</Text>
                             <Button Type="@ButtonType.Primary" Size="small" Danger Icon="arrow-up" OnClick="OnClickUpgrade" Loading="@(palProcessService.palServerUpdateState == Models.PalEnum.PalServerUpdateState.Updating)">@(palProcessService.palServerUpdateState == Models.PalEnum.PalServerUpdateState.Updating ? "升级中" : "立即升级")</Button>
-                        </div>
+                         </div>
+                    }
+                    else
+                    {
+                        <div style="display:inline-block;margin-left:10px;">
+                            <Button Type="@ButtonType.Primary" Size="small" Icon="cloud-sync" OnClick="OnClickCheckLatestVersion" Loading="withCheckLatestVersionLoading">检查版本</Button>
+                         </div>
                     }
                 </p>
                 <p>
                     状态： @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
-                    <Button Type="@ButtonType.Primary" Size="small" Icon="reload" OnClick="OnClickReload">重启</Button>
                     @if (palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped)
                     {
-                        <Button Type="@ButtonType.Primary" Size="small" Icon="poweroff" OnClick="OnClickStart">开机</Button>
+                        <Button Type="@ButtonType.Primary" Size="small" Icon="poweroff" OnClick="OnClickStart" Loading="withStartLoading">开机</Button>
                     }
                     else
                     {
-                        <Button Type="@ButtonType.Primary" Danger Icon="poweroff" Size="small" OnClick="OnClickClose">关机</Button>
+                        <Button Type="@ButtonType.Primary" Danger Icon="poweroff" Size="small" OnClick="OnClickClose" Loading="withCloseLoading">关机</Button>
+                        <Button Type="@ButtonType.Primary" Size="small" Icon="reload" OnClick="OnClickReload" Loading="withReloadLoading">重启</Button>
                     }
                 </p>
                 <p>
@@ -55,6 +62,10 @@
 @code {
     Timer timer;
     private string serverInfo = "";
+    private bool withCheckLatestVersionLoading = false;
+    private bool withReloadLoading = false;
+    private bool withStartLoading = false;
+    private bool withCloseLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,6 +73,7 @@
         if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
         {
             serverInfo = await palRconService.Info();
+            await palProcessService.CheckLatestVersion();
         }
     }
 
@@ -75,22 +87,64 @@
 
     async Task OnClickStart()
     {
-        palProcessService.StartProcess();
+        try
+        {
+            withStartLoading = true;
+            palProcessService.StartProcess();
+            await palProcessService.CheckLatestVersion();
+            _ = message.Success("开机成功！");
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
+        }
+        finally
+        {
+            withStartLoading = false;
+        }
         this.StateHasChanged();
     }
 
     async Task OnClickClose()
     {
-        palProcessService.CloseProcess();
+        try
+        {
+            withCloseLoading = true;
+            palProcessService.CloseProcess();
+            _ = message.Success("关机成功！");
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
+        }
+        finally
+        {
+            withCloseLoading = false;
+        }
         this.StateHasChanged();
     }
 
     async Task OnClickReload()
     {
-        palProcessService.CloseProcess();
-        this.StateHasChanged();
-        palProcessService.StartProcess();
-        this.StateHasChanged();
+        try
+        {
+            withReloadLoading = true;
+            this.StateHasChanged();
+            palProcessService.CloseProcess();
+            this.StateHasChanged();
+            palProcessService.StartProcess();
+            await palProcessService.CheckLatestVersion();
+            this.StateHasChanged();
+            _ = message.Success("重启成功！");
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
+        }
+        finally
+        {
+            withReloadLoading = false;
+        }
     }
 
     async Task OnChangeToolsConfig()
@@ -102,7 +156,7 @@
     {
         try
         {
-          await palProcessService.Upgrade();
+            await palProcessService.Upgrade();
             _ = message.Success("升级成功！");
         }
         catch (Exception ex)
@@ -110,5 +164,30 @@
             _ = message.Error(ex.Message, 10);
         }
         this.StateHasChanged();
+    }
+
+    async Task OnClickCheckLatestVersion()
+    {
+        try
+        {
+            withCheckLatestVersionLoading = true;
+            if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
+            {
+                await palProcessService.CheckLatestVersion();
+                _ = message.Success(palProcessService.isLatestVersion ? "已经是最新版本！" : "发现新版本！");
+            }
+            else
+            {
+                _ = message.Error("服务器未运行！");
+            }
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message, 10);
+        }
+        finally
+        {
+            withCheckLatestVersionLoading = false;
+        }
     }
 }

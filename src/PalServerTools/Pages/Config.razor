@@ -4,14 +4,19 @@
 @using PalServerTools.Models
 @inject PalConfigService configService;
 @inject PalProcessService palProcessService
+@inject IMessageService message
 
 <PageTitle>配置</PageTitle>
 
 <Flex Vertical="true" Class="sy-content">
-    <Tabs Class="sy-content-tabs" DefaultActiveKey="1" TabPosition="TabPosition.Left" TabBarExtraContentLeft="leftExtra">
+    <MediaQuery Media="@Breakpoints.SmallDown" @bind-Matches="IsSmall" />
+    <Tabs Class="sy-content-tabs" DefaultActiveKey="1" TabPosition="@(IsSmall ? TabPosition.Top:TabPosition.Left)" Size="@(IsSmall ? TabSize.Small:TabSize.Default)" TabBarExtraContentLeft="leftExtra">
         <TabPane Key="基础配置" Tab="基础配置">
             <Flex Vertical="true" Class="sy-content">
-                <PageHeader Class="sy-content-title-2" Title="基础配置" />
+                @if (!IsSmall)
+                {
+                    <PageHeader Class="sy-content-title-2" Title="基础配置" />
+                }
                 <Content Class="sy-content-body">
                     <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@configService.ToolsConfig" OnFinish="OnFinish">
                         <FormItem Label="PalServer根目录">
@@ -29,7 +34,7 @@
                     </Form>
                 </Content>
                 <Footer Class="sy-content-footer">
-                    <Button Type="@ButtonType.Primary" OnClick="Save">
+                    <Button Type="@ButtonType.Primary" OnClick="Save" Loading="withButtonLoading">
                         保存
                     </Button>
                 </Footer>
@@ -37,7 +42,10 @@
         </TabPane>
         <TabPane Key="存档配置" Tab="存档配置">
             <Flex Vertical="true" Class="sy-content">
-                <PageHeader Class="sy-content-title-2" Title="存档配置" />
+                @if (!IsSmall)
+                {
+                    <PageHeader Class="sy-content-title-2" Title="存档配置" />
+                }
                 <Content Class="sy-content-body">
                     <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@configService.ToolsConfig" OnFinish="OnFinish">
                         <FormItem Label="存档备份位置">
@@ -55,7 +63,7 @@
                     </Form>
                 </Content>
                 <Footer Class="sy-content-footer">
-                    <Button Type="@ButtonType.Primary" OnClick="Save">
+                    <Button Type="@ButtonType.Primary" OnClick="Save" Loading="withButtonLoading">
                         保存
                     </Button>
                 </Footer>
@@ -63,7 +71,10 @@
         </TabPane>
         <TabPane Key="服务器配置" Tab="服务器配置">
             <Flex Vertical="true" Class="sy-content">
-                <PageHeader Class="sy-content-title-2" Title="服务器配置" />
+                @if (!IsSmall)
+                {
+                    <PageHeader Class="sy-content-title-2" Title="服务器配置" />
+                }
                 <Content Class="sy-content-body">
                     <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@configService.PalConfig">
                     <FormItem Label="服务器名称">
@@ -113,12 +124,12 @@
                 <Footer Class="sy-content-footer">
                     <Space>
                         <SpaceItem>
-                            <Button Type="@ButtonType.Primary" OnClick="Save">
+                            <Button Type="@ButtonType.Primary" OnClick="Save" Loading="withButtonLoading">
                                 保存
                             </Button>
                         </SpaceItem>
                         <SpaceItem>
-                            <Button Type="@ButtonType.Primary" Danger OnClick="SaveAndRestart">
+                            <Button Type="@ButtonType.Primary" Danger OnClick="SaveAndRestart" Loading="withButtonLoading">
                                 保存并重启
                             </Button>
                         </SpaceItem>
@@ -128,7 +139,10 @@
         </TabPane>
         <TabPane Key="游戏参数调整" Tab="游戏参数调整">
             <Flex Vertical="true" Class="sy-content">
-                <PageHeader Class="sy-content-title-2" Title="游戏参数调整" />
+                 @if (!IsSmall)
+                {
+                    <PageHeader Class="sy-content-title-2" Title="游戏参数调整" />
+                }
                 <Content Class="sy-content-body">
                     <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="6" WrapperColSpan="14" Model="@configService.PalConfig">
                         <FormItem Label="白天流逝速度">
@@ -234,12 +248,12 @@
                 <Footer Class="sy-content-footer">
                     <Space>
                         <SpaceItem>
-                            <Button Type="@ButtonType.Primary" OnClick="Save">
+                                <Button Type="@ButtonType.Primary" OnClick="Save" Loading="withButtonLoading">
                                 保存
                             </Button>
                         </SpaceItem>
                         <SpaceItem>
-                            <Button Type="@ButtonType.Primary" Danger OnClick="SaveAndRestart">
+                                <Button Type="@ButtonType.Primary" Danger OnClick="SaveAndRestart" Loading="withButtonLoading">
                                 保存并重启
                             </Button>
                         </SpaceItem>
@@ -251,6 +265,8 @@
 </Flex>
 
 @code {
+    private bool IsSmall = false;
+    private bool withButtonLoading = false;
     RenderFragment leftExtra => @<PageHeader Class="sy-content-title" Title="配置" />;
     private void OnFinish(EditContext editContext)
     {
@@ -259,19 +275,40 @@
 
     private void Save()
     {
-        configService.Save();
+        try
+        {
+            configService.Save();
+            _ = message.Success("保存成功！");
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error("保存失败：" + ex.Message);
+        }
     }
 
     private void SaveAndRestart()
     {
-        configService.Save();
-        if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
+        try
         {
-            palProcessService.CloseProcess();
+            withButtonLoading = true;
+            configService.Save();
+            if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
+            {
+                palProcessService.CloseProcess();
+            }
+            if (!configService.ToolsConfig.AutoRestart)
+            {
+                palProcessService.StartProcess();
+            }
+            _ = message.Success("成功！");
         }
-        if (!configService.ToolsConfig.AutoRestart)
+        catch (Exception ex)
         {
-            palProcessService.StartProcess();
+            _ = message.Error("失败：" + ex.Message);
+        }
+        finally
+        {
+            withButtonLoading = false;
         }
     }
 }
