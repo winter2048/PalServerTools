@@ -15,6 +15,10 @@
 
         public string BackupPath { get; set; }
 
+        public int BackupClearType { get; set; }
+
+        public int BackupCount { get; set; }
+
         public bool AutoUpgrade { get; set; }
 
         public bool MemoryClear { get; set; }
