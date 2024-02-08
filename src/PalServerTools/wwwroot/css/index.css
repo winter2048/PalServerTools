@@ -11,6 +11,10 @@
     --ant-layout-light-sider-bg: #141414;
     --ant-layout-body-bg: #000000;
     --ant-blue-1: #111a2c;
+    --sy-login-bg: linear-gradient(to right, #332323, #0a2a39);
+    --sy-login-from-bg: #0000004d;
+    --sy-menu-oc-bg: #ffffff4d;
+    --sy-menu-oc-hover-bg: #ffffff9c;
 }
 
 .App[tomato-theme="light"] {
@@ -23,6 +27,10 @@
     --ant-layout-body-bg: #f5f5f5;
     --ant-blue-1: #e6f4ff;
     --ant-color-border: #d9d9d9;
+    --sy-login-bg: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    --sy-login-from-bg: #ffffff4f;
+    --sy-menu-oc-bg: #0000003d;
+    --sy-menu-oc-hover-bg: #0000007d;
 }
 
 .sy-common-center {

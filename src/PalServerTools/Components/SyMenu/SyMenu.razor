@@ -6,32 +6,50 @@
 @inject NavigationManager nvm
 @inject IJSRuntime JSRuntime;
 
-<Flex Vertical="@true" Align="center" Style="height: 100%;" Justify="space-between">
-    <Flex Vertical="@true" Align="center">
-        <div class="sy-layout-menu-avatar">
-            <Avatar Size="32">Pal</Avatar>
-        </div>
-        @foreach (var menu in SyValue.menuItems)
-        {
-            <SyMenuItem Path="@menu.Path" Title="@menu.Title" Icon="@menu.Icon" Active="@(this.CurrentPath == menu.Path)" OnClick="()=>{ this.CurrentPath = menu.Path; this.StateHasChanged();}"></SyMenuItem>
-        }
-    </Flex>
+<Sider Width="60" Class="@($"sy-layout-menu {(isClose ? "sy-layout-menu-close":"")}")">
+    <Flex Vertical="@true" Align="center" Style="height: 100%;" Justify="space-between">
+        <Flex Vertical="@true" Align="center">
+            <div class="sy-layout-menu-avatar">
+                <Avatar Size="32">Pal</Avatar>
+            </div>
+            @foreach (var menu in SyValue.menuItems)
+            {
+                <SyMenuItem Path="@menu.Path" Title="@menu.Title" Icon="@menu.Icon" Active="@(this.CurrentPath == menu.Path)" OnClick="()=>{ this.CurrentPath = menu.Path; this.StateHasChanged();}"></SyMenuItem>
+            }
+        </Flex>
 
-    <Flex Vertical="@true" Align="center">
-        <Tooltip Placement="@Placement.Right" Title="退出登录">
-            <Button Class="sy-layout-menu-btn"
-                    Icon="logout"
-                    OnClick="async () => {await this.SignOut();}"></Button>
-        </Tooltip>
-        <Tooltip Placement="@Placement.Right" Title="@(_clientConfigService?.ClientConfig?.Theme == "dark" ? "亮色模式" : "暗色模式")">
-            <Button Class="sy-layout-menu-btn"
-                    Icon="alert"
-                    OnClick="ChangeGlobalTheme"></Button>
-        </Tooltip>
-        <Tooltip Placement="@Placement.Right" Title="GitHub">
-            <Button Class="sy-layout-menu-btn"
-                    Icon="github"
-                    OnClick="@(()=>JSRuntime.InvokeVoidAsync("window.open", "https://github.com/winter2048/PalServerTools", "_blank"))"></Button>
-        </Tooltip>
+        <Flex Vertical="@true" Align="center">
+            <Tooltip Placement="@Placement.Right" Title="退出登录">
+                <Button Class="sy-layout-menu-btn"
+                        Icon="logout"
+                        OnClick="async () => {await this.SignOut();}"></Button>
+            </Tooltip>
+            <Tooltip Placement="@Placement.Right" Title="@(_clientConfigService?.ClientConfig?.Theme == "dark" ? "亮色模式" : "暗色模式")">
+                <Button Class="sy-layout-menu-btn"
+                        Icon="alert"
+                        OnClick="ChangeGlobalTheme"></Button>
+            </Tooltip>
+            <Tooltip Placement="@Placement.Right" Title="GitHub">
+                <Button Class="sy-layout-menu-btn"
+                        Icon="github"
+                        OnClick="@(()=>JSRuntime.InvokeVoidAsync("window.open", "https://github.com/winter2048/PalServerTools", "_blank"))"></Button>
+            </Tooltip>
+        </Flex>
+
+        <div class="sy-layout-menu-oc" onclick="@OnCloseClick">
+             <Tooltip Placement="@Placement.BottomLeft" Title="@(isClose?"打开菜单":"关闭菜单")">
+                <Icon Type="@(isClose?"right":"left")" Theme="outline" />
+            </Tooltip>
+         </div>
     </Flex>
-</Flex>
+</Sider>
+
+@code {
+    private bool isClose = false;
+
+    private void OnCloseClick()
+    {
+        isClose = !isClose;
+    }
+
+}

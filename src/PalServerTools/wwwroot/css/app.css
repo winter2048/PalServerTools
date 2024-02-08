@@ -200,6 +200,7 @@ body {
 
 .sy-progress .ant-progress-text {
     width: 70px;
+    font-size: 0.7em;
 }
 
 @media(max-width: 767.98px) {
@@ -219,4 +220,81 @@ body {
     .sy-content-tabs .ant-tabs-nav-operations {
         display: none !important;
     }
+
+    .sy-content-tabs .ant-tabs-tab + .ant-tabs-tab {
+        margin: 0 0 0 10px !important;
+    }
+
+    .sy-content-tabs .ant-tabs-nav-wrap {
+        overflow-y: hidden !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+        .sy-content-tabs .ant-tabs-nav-wrap::-webkit-scrollbar {
+            display: none;
+        }
+
+    .sy-content-tabs .ant-tabs-tab {
+        padding: 8px 8px !important;
+    }
+
+    .sy-content-tabs .ant-tabs-nav-wrap::after {
+        display: none !important;
+    }
+
+    .sy-content-tabs .ant-tabs-nav-wrap::before {
+        display: none !important;
+    }
+
+    .sy-content-tabs .ant-tabs-nav-list {
+        transform: none !important;
+    }
+}
+
+.sy-progress-high .ant-progress-inner:not(.ant-progress-circle-gradient) .ant-progress-circle-path {
+    stroke: #db0e0e !important;
+}
+
+.sy-progress-low .ant-progress-inner:not(.ant-progress-circle-gradient) .ant-progress-circle-path {
+    stroke: #35d120 !important;
+}
+
+/*.sy-card .ant-card-body {
+    padding: 20px;
+}*/
+
+.sy-layout-menu-oc {
+    width: 25px;
+    height: 30px;
+    position: absolute;
+    left: 60px;
+    top: 45px;
+    background-color: var(--sy-menu-oc-bg);
+    z-index: 1000;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    border-bottom-right-radius: 6px;
+    border-top-right-radius: 6px;
+    font-size: 20px;
+}
+
+    .sy-layout-menu-oc:hover {
+        background-color: var(--sy-menu-oc-hover-bg);
+    }
+
+    .sy-layout-menu-oc:active {
+        background-color: var(--sy-menu-oc-bg);
+    }
+
+
+.sy-layout-menu-close {
+    transform: translate(-60px, 0px);
+    position: absolute;
+}
+
+.sy-layout-menu-oc span {
+    color: #fff;
 }

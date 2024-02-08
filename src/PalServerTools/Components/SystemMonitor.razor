@@ -15,9 +15,9 @@
                 <p>CPU利用率：@systemInfoService.Info.CPUUsage %</p>
                 <p>内存使用率：@systemInfoService.Info.MemoryUsage %</p>
             </div>
-            <Flex Wrap="wrap" Gap="10">
-                <Progress Class="sy-progress" Type=ProgressType.Line StrokeColor="_gradients" Percent="systemInfoService.Info.CPUUsage" Format="@((p) => { return "CPU\n" + p + "%"; })" />
-                <Progress Class="sy-progress" Type=ProgressType.Line StrokeColor="_gradients" Percent="systemInfoService.Info.MemoryUsage" Format="@((p)=> {return "RAM\n" + p + "%";})" />
+            <Flex Wrap="wrap" Gap="10" Align="center" Justify="center">
+                <Progress Class="@GetProgressClass(systemInfoService.Info.CPUUsage)" GapDegree=30 Type=ProgressType.Dashboard Percent="systemInfoService.Info.CPUUsage" Format="@((p) => { return "CPU\n" + p + "%"; })" />
+                <Progress Class="@GetProgressClass(systemInfoService.Info.MemoryUsage)" GapDegree=30 Type=ProgressType.Dashboard Percent="systemInfoService.Info.MemoryUsage" Format="@((p)=> {return "RAM\n" + p + "%";})" />
             </Flex>
         </Flex>
     </Body>
@@ -26,11 +26,10 @@
 @code {
     Timer timer;
 
-    private Dictionary<string, string> _gradients = new()
+    private string GetProgressClass(double percent)
     {
-        { "0%", "#33FF33" },
-        { "100%", "#fb0000" }
-    };
+        return percent > 80 ? "sy-progress sy-progress-high" : "sy-progress sy-progress-low";
+    }
 
     protected override Task OnInitializedAsync()
     {
