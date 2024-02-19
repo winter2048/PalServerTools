@@ -94,20 +94,24 @@ namespace PalServerTools.Data
             if (isLatestVersion && palServerState == PalServerState.Running)
             {
                 var rssItem = RssUtil.ReadRss("https://store.steampowered.com/feeds/news/app/1623730/?cc=CN&l=schinese&snr=1_2108_9__2107");
-                var rssTitle = rssItem.FirstOrDefault()?.Title?.Text;
-                if (rssTitle != null)
+                foreach (var item in rssItem)
                 {
-                    Match match = Regex.Match(rssTitle, @"v\d+\.\d+\.\d+\.\d+");
-                    if (match.Success)
+                    var rssTitle = item.Title.Text;
+                    if (rssTitle != null)
                     {
-                        latestVersion = match.Value;
-                        if (latestVersion == currentVersion)
+                        Match match = Regex.Match(rssTitle, @"v\d+\.\d+\.\d+\.\d+");
+                        if (match.Success)
                         {
-                            isLatestVersion = true;
-                        }
-                        else
-                        {
-                            isLatestVersion = false;
+                            latestVersion = match.Value;
+                            if (latestVersion == currentVersion)
+                            {
+                                isLatestVersion = true;
+                            }
+                            else
+                            {
+                                isLatestVersion = false;
+                            }
+                            break;
                         }
                     }
                 }
