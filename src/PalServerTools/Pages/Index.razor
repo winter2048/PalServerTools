@@ -69,11 +69,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-        timer = new Timer(UpdateStateInfo, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
         if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
         {
             serverInfo = await palRconService.Info();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            timer = new Timer(UpdateStateInfo, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
+            await CheckLatestVersion();
+        }
+    }
+
+    async Task CheckLatestVersion()
+    {
+        try
+        {
             await palProcessService.CheckLatestVersion();
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
         }
     }
 
@@ -91,7 +110,6 @@
         {
             withStartLoading = true;
             palProcessService.StartProcess();
-            await palProcessService.CheckLatestVersion();
             _ = message.Success("开机成功！");
         }
         catch (Exception ex)
@@ -100,7 +118,8 @@
         }
         finally
         {
-            withStartLoading = false;
+            withStartLoading = false; 
+            await CheckLatestVersion();
         }
         this.StateHasChanged();
     }
@@ -133,7 +152,6 @@
             palProcessService.CloseProcess();
             this.StateHasChanged();
             palProcessService.StartProcess();
-            await palProcessService.CheckLatestVersion();
             this.StateHasChanged();
             _ = message.Success("重启成功！");
         }
@@ -144,6 +162,7 @@
         finally
         {
             withReloadLoading = false;
+            await CheckLatestVersion();
         }
     }
 

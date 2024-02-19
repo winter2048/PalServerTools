@@ -9,14 +9,21 @@ namespace PalServerTools.Utils
         {
             List<SyndicationItem> items = new List<SyndicationItem>();
 
-            using (XmlReader reader = XmlReader.Create(rssUrl))
+            try
             {
-                SyndicationFeed feed = SyndicationFeed.Load(reader);
-
-                foreach (SyndicationItem item in feed.Items)
+                using (XmlReader reader = XmlReader.Create(rssUrl))
                 {
-                    items.Add(item);
+                    SyndicationFeed feed = SyndicationFeed.Load(reader);
+
+                    foreach (SyndicationItem item in feed.Items)
+                    {
+                        items.Add(item);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"读取Rss({rssUrl})失败:{ex.Message}");
             }
 
             return items;

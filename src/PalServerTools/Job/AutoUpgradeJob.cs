@@ -18,7 +18,14 @@ namespace PalServerTools.Job
 
         public async Task RunAsync()
         {
-            await _palProcessService.CheckLatestVersion();
+            try
+            {
+                await _palProcessService.CheckLatestVersion();
+            }
+            catch(Exception ex) 
+            {
+                Console.WriteLine(ex.Message);
+            }
             // 如果有新版本，则升级
             if (!_palProcessService.isLatestVersion && _palProcessService.palServerUpdateState != PalServerUpdateState.Updating)
             {
