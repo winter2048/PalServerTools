@@ -11,18 +11,42 @@
 - [x] UI暗色模式
 - [x] 自动更新游戏版本
 - [x] 内存优化
+- [x] 一键安装脚本
 - [ ] 代理配置(frpc)
 - [ ] 服务器崩溃时提醒在线玩家即将重启
-- [ ] 一键安装脚本
 - [ ] Linux支持
 
 # 安装
-- 安装ASP.NET Core 运行时 6.0.26 [下载](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-aspnetcore-6.0.26-windows-x64-installer)
+
+## 一键安装&升级
+
+打开 Windows PowerShell 窗口并定位至安装目录，执行安装&升级命令。
+
+- 安装
+``` powershell
+iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/master/install.ps1) }"
+```
+
+- 安装指定版本
+``` powershell
+iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/master/install.ps1) } -Version v2.0.0"
+```
+
+- 升级
+``` powershell
+iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/master/install.ps1) } -Update"
+```
+
+## 手动安装
+
+- 安装.NET 6.0 Runtime [下载](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-6.0.26-windows-x64-installer)
+- 安装ASP.NET Core 6.0 Runtime [下载](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-aspnetcore-6.0.26-windows-x64-installer)
 - 下载[PalServerTools.zip](https://github.com/winter2048/PalServerTools/releases)并解压
 - 修改配置文件`appsettings.json`中的幻兽帕鲁服务器根路径文件夹`PalServerPath`
 - 双击运行`PalServerTools.exe`
-- 使用浏览器打开[127.0.0.1:5000](http:127.0.0.1:5000)
-- 使用`appsettings.json`文件中配置的密码`ToolsPassword`登录PalServerTools，默认密码`123456`
+- 使用浏览器打开[127.0.0.1:5000](http:127.0.0.1:5000)，默认密码`123456`
+
+> 密码可在appsettings.json文件中配置`ToolsConfig.ToolsPassword`
 
 # 预览
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/1c7fc6ba-2acd-43eb-84cf-d88bd6b67968)
