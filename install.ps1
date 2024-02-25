@@ -17,7 +17,11 @@ function Install-DotNetRuntime {
     
     if (-not (Get-Command dotnet -ErrorAction SilentlyContinue) -or -not (dotnet --list-runtimes | Where-Object { $_ -match "$Name $SdkVersion" })) {
         Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "$env:TEMP\dotnet-install.ps1"
-        & "$env:TEMP\dotnet-install.ps1" -Channel $SdkVersion -Runtime dotnet
+        $runtimeName = "dotnet"
+        if ($Name -like "*Microsoft.AspNetCore.App*") {
+            $runtimeName = "aspnetcore"
+        }
+        & "$env:TEMP\dotnet-install.ps1" -Channel $SdkVersion -Runtime $runtimeName
         Write-Host "$Name $SdkVersion Runtime 安装成功" -ForegroundColor Green
     }
     else {
