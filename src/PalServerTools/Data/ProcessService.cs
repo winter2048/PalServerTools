@@ -10,10 +10,11 @@ namespace PalServerTools.Data
 {
     public class PalProcessService
     {
-        private readonly PalConfigService _configService;
         private readonly PalRconService _palRconService;
         private readonly SystemInfoService _systemInfoService;
+        private readonly IServiceProvider _serviceProvider;
         private string processName = "PalServer";
+        private PalConfigService _configService => _serviceProvider.GetRequiredService<PalConfigService>();
 
         public PalServerUpdateState palServerUpdateState = PalServerUpdateState.None;
         public PalServerState palServerState = PalServerState.Stopped;
@@ -21,48 +22,63 @@ namespace PalServerTools.Data
         public string latestVersion = "";
         public string currentVersion = "";
 
-        public PalProcessService(PalConfigService configService, PalRconService palRconService, SystemInfoService systemInfoService)
+        public PalProcessService(PalRconService palRconService, SystemInfoService systemInfoService, IServiceProvider serviceProvider)
         {
-            _configService = configService;
+            _serviceProvider = serviceProvider;
             _palRconService = palRconService;
             _systemInfoService = systemInfoService;
         }
 
         // 启动进程
-        public void StartProcess()
+        public async Task StartProcess()
         {
-            try
+            await Task.Run(() =>
             {
-                Process.Start(Path.Combine(_configService.ToolsConfig.PalServerPath, "PalServer.exe"), _configService.ToolsConfig.RunArguments);
-                palServerState = PalServerState.Running;
-                Console.WriteLine("启动进程 " + processName + ".exe");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("启动进程失败: " + ex.Message);
-            }
+                try
+                {
+                    string runArguments = _configService.ToolsConfig.RunArguments;
+                    if (!runArguments.Contains("-rconport"))
+                    {
+                        runArguments += $" -rconport {_configService.PalConfig.RCONPort}";
+                    }
+                    else if (runArguments.GetArgumentValue("-rconport") != _configService.PalConfig.RCONPort.ToString())
+                    {
+                        throw new Exception($"启动参数-rconport {runArguments.GetArgumentValue("-rconport")}与服务器配置中的RCON端口号({_configService.PalConfig.RCONPort})不一致！");
+                    }
+                    Process.Start(Path.Combine(_configService.ToolsConfig.PalServerPath, "PalServer.exe"), runArguments);
+                    palServerState = PalServerState.Running;
+                    Console.WriteLine("启动进程 " + processName + ".exe");
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("启动进程失败: " + ex.Message);
+                }
+            });
         }
 
         // 结束进程
-        public void CloseProcess()
+        public async Task CloseProcess()
         {
-            try
+            await Task.Run(() =>
             {
-                Process[] processes = Process.GetProcesses().Where(p => p.ProcessName == "PalServer-Win64-Test-Cmd" || p.ProcessName == "PalServer-Win64-Test" || p.ProcessName == "PalServer").ToArray();
-                foreach (Process process in processes)
+                try
                 {
-                    process.Kill();
-                    process.WaitForExit();
-                    palServerState = PalServerState.Stopped;
-                    Console.WriteLine("进程 " + processName + ".exe 已关闭");
+                    Process[] processes = Process.GetProcesses().Where(p => p.ProcessName == "PalServer-Win64-Test-Cmd" || p.ProcessName == "PalServer-Win64-Test" || p.ProcessName == "PalServer").ToArray();
+                    foreach (Process process in processes)
+                    {
+                        process.Kill();
+                        process.WaitForExit();
+                        palServerState = PalServerState.Stopped;
+                        Console.WriteLine("进程 " + processName + ".exe 已关闭");
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("启动进程失败: " + ex.Message);
-            }
-        }    
-        
+                catch (Exception ex)
+                {
+                    Console.WriteLine("启动进程失败: " + ex.Message);
+                }
+            });
+        }
+
         // 检查进程是否存在
         public bool IsProcessRunning()
         {
@@ -93,7 +109,7 @@ namespace PalServerTools.Data
 
             if (isLatestVersion && palServerState == PalServerState.Running)
             {
-                var rssItem = RssUtil.ReadRss("https://store.steampowered.com/feeds/news/app/1623730/?cc=CN&l=schinese&snr=1_2108_9__2107");
+                var rssItem = await RssUtil.ReadRss("https://store.steampowered.com/feeds/news/app/1623730/?cc=CN&l=schinese&snr=1_2108_9__2107");
                 foreach (var item in rssItem)
                 {
                     var rssTitle = item.Title.Text;
@@ -125,7 +141,7 @@ namespace PalServerTools.Data
             {
                 if (palServerState == PalServerState.Running)
                 {
-                    CloseProcess();
+                   await CloseProcess();
                 }
 
                 var res = await SteamCmdUtil.AppUpdate(2394010);
@@ -134,7 +150,7 @@ namespace PalServerTools.Data
                     throw new Exception(res.Item2);
                 }
                 palServerUpdateState = PalServerUpdateState.Success;
-                StartProcess();
+                await StartProcess();
             }
             catch (Exception)
             {

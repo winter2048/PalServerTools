@@ -20,7 +20,7 @@ namespace PalServerTools.Job
         {
             if (_palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
             {
-                _backupService.Backup();
+               await _backupService.Backup();
             }
             if (_configService.ToolsConfig.BackupClearType == 1)
             {

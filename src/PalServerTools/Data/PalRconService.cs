@@ -6,7 +6,7 @@ namespace PalServerTools.Data
     public class PalRconService
     {
         private readonly IServiceProvider _serviceProvider;
-        private PalConfigService _configService;
+        private PalConfigService _configService => _serviceProvider.GetRequiredService<PalConfigService>();
 
         public RconClient client;
     
@@ -18,7 +18,6 @@ namespace PalServerTools.Data
 
         private async Task Connect()
         {
-            _configService = _serviceProvider.GetService<PalConfigService>();
             await client.ConnectAsync("127.0.0.1", this._configService.PalConfig.RCONPort, this._configService.PalConfig.AdminPassword);
         }
 

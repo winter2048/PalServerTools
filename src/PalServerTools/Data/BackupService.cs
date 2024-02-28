@@ -31,55 +31,58 @@ namespace PalServerTools.Data
             return backupList.OrderByDescending(x => x.CreateTime).ToList();
         }
 
-        public void Backup()
+        public async Task Backup()
         {
-            string sourceFolderPath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Saved");
-            string backupFolderPath = _configService.ToolsConfig.BackupPath;
+           await Task.Run(() => {
+                string sourceFolderPath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Saved");
+                string backupFolderPath = _configService.ToolsConfig.BackupPath;
 
-            if (!Directory.Exists(sourceFolderPath))
-            {
-                throw new Exception("存档不存在！");
-            }
+                if (!Directory.Exists(sourceFolderPath))
+                {
+                    throw new Exception("存档不存在！");
+                }
 
-            if (!Directory.Exists(backupFolderPath)) {
-                throw new Exception("未配置备份路径！");
-            }
+                if (!Directory.Exists(backupFolderPath))
+                {
+                    throw new Exception("未配置备份路径！");
+                }
 
-            string zipFilePath = Path.Combine(backupFolderPath, $"backup{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip");
+                string zipFilePath = Path.Combine(backupFolderPath, $"backup{DateTime.Now.ToString("yyyyMMddHHmmss")}.zip");
 
-            // 创建一个临时文件夹来存放压缩文件中的文件
-            string tempFolderPath = Path.Combine(backupFolderPath, "temp");
-            Directory.CreateDirectory(tempFolderPath);
+                // 创建一个临时文件夹来存放压缩文件中的文件
+                string tempFolderPath = Path.Combine(backupFolderPath, "temp");
+                Directory.CreateDirectory(tempFolderPath);
 
-            try
-            {
-                // 压缩Config文件夹
-                string configFolderPath = Path.Combine(sourceFolderPath, "Config");
-                string tempConfigFolderPath = Path.Combine(tempFolderPath, "Config");
-                Directory.CreateDirectory(tempConfigFolderPath);
-                CopyDirectory(configFolderPath, tempConfigFolderPath);
+                try
+                {
+                    // 压缩Config文件夹
+                    string configFolderPath = Path.Combine(sourceFolderPath, "Config");
+                    string tempConfigFolderPath = Path.Combine(tempFolderPath, "Config");
+                    Directory.CreateDirectory(tempConfigFolderPath);
+                    CopyDirectory(configFolderPath, tempConfigFolderPath);
 
-                // 压缩SaveGames文件夹
-                string saveGamesFolderPath = Path.Combine(sourceFolderPath, "SaveGames");
-                string tempSaveGamesFolderPath = Path.Combine(tempFolderPath, "SaveGames");
-                Directory.CreateDirectory(tempSaveGamesFolderPath);
-                CopyDirectory(saveGamesFolderPath, tempSaveGamesFolderPath);
+                    // 压缩SaveGames文件夹
+                    string saveGamesFolderPath = Path.Combine(sourceFolderPath, "SaveGames");
+                    string tempSaveGamesFolderPath = Path.Combine(tempFolderPath, "SaveGames");
+                    Directory.CreateDirectory(tempSaveGamesFolderPath);
+                    CopyDirectory(saveGamesFolderPath, tempSaveGamesFolderPath);
 
-                // 压缩临时文件夹
-                ZipFile.CreateFromDirectory(tempFolderPath, zipFilePath);
+                    // 压缩临时文件夹
+                    ZipFile.CreateFromDirectory(tempFolderPath, zipFilePath);
 
-                // 删除临时文件夹
-                Directory.Delete(tempFolderPath, true);
+                    // 删除临时文件夹
+                    Directory.Delete(tempFolderPath, true);
 
-                // 移动压缩文件到目标位置
-                //File.Move(zipFilePath, Path.Combine(backupFolderPath, "backup.zip"));
+                    // 移动压缩文件到目标位置
+                    //File.Move(zipFilePath, Path.Combine(backupFolderPath, "backup.zip"));
 
-                Console.WriteLine("压缩并移动成功！");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("错误：" + ex.Message);
-            }
+                    Console.WriteLine("压缩并移动成功！");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("错误：" + ex.Message);
+                }
+            });
         }
 
 
@@ -95,6 +98,45 @@ namespace PalServerTools.Data
                 throw new Exception("文件不存在！");
             }
         }
+
+        public async Task RestoreBackup(string backupName)
+        {
+            await Task.Run(() => {
+                string sourceBackupPath = Path.Combine(_configService.ToolsConfig.BackupPath, backupName);
+                string palServerSavePath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Saved");
+                string saveGamesPath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Saved\SaveGames");
+
+                string tempZipFolderPath = Path.Combine(palServerSavePath, "backup");
+
+                if (!File.Exists(sourceBackupPath))
+                {
+                    throw new Exception("备份文件不存在！");
+                }
+
+                if (!Directory.Exists(palServerSavePath))
+                {
+                    throw new Exception("服务器存档路径不存在！");
+                }
+
+                // 删除现有的服务器存档文件夹
+                if (Directory.Exists(saveGamesPath))
+                {
+                    Directory.Delete(saveGamesPath, true);
+                }
+
+                // 将备份文件解压到临时目录
+                Directory.CreateDirectory(tempZipFolderPath);
+                ZipFile.ExtractToDirectory(sourceBackupPath, tempZipFolderPath);
+                // 还原存档
+                CopyDirectory(Path.Combine(tempZipFolderPath, "SaveGames"), saveGamesPath);
+                // 删除临时文件夹
+                Directory.Delete(tempZipFolderPath, true);
+
+                Console.WriteLine("存档恢复成功！");
+            });
+        }
+
+
 
         public Stream GetBackupStream(string name)
         {

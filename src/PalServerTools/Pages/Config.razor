@@ -291,11 +291,11 @@
         // Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
     }
 
-    private void Save()
+    private async Task Save()
     {
         try
         {
-            configService.Save();
+            await configService.Save();
             _ = message.Success("保存成功！");
         }
         catch (Exception ex)
@@ -304,19 +304,19 @@
         }
     }
 
-    private void SaveAndRestart()
+    private async Task SaveAndRestart()
     {
         try
         {
             withButtonLoading = true;
-            configService.Save();
+            await configService.Save();
             if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
             {
-                palProcessService.CloseProcess();
+               await palProcessService.CloseProcess();
             }
             if (!configService.ToolsConfig.AutoRestart)
             {
-                palProcessService.StartProcess();
+                await palProcessService.StartProcess();
             }
             _ = message.Success("成功！");
         }

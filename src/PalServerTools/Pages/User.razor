@@ -6,7 +6,6 @@
 @using PalServerTools.Data
 @using PalServerTools.Models
 @inject PalRconService palRconService
-
 <Flex Vertical="true" Class="sy-content">
     <PageHeader Class="sy-content-title" Title="玩家" Subtitle="@("当前在线人数(" + (players == null ? 0 : players.Count) + ")")" />
     <Content Class="sy-content-body">
@@ -70,9 +69,9 @@
         await this.Refresh();
     }
 
-    public async Task OnChange(QueryModel<PlayerModel> queryModel)
+    public void OnChange(QueryModel<PlayerModel> queryModel)
     {
-        //Console.WriteLine(JsonSerializer.Serialize(queryModel));
+        System.Console.WriteLine(queryModel.StartIndex);
     }
 
     private async Task Search()

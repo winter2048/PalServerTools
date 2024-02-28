@@ -5,19 +5,36 @@ namespace PalServerTools.Utils
 {
     public class RssUtil
     {
-        public static List<SyndicationItem> ReadRss(string rssUrl)
+        public static async Task<List<SyndicationItem>> ReadRss(string rssUrl)
         {
             List<SyndicationItem> items = new List<SyndicationItem>();
 
             try
             {
-                using (XmlReader reader = XmlReader.Create(rssUrl))
+                using (var httpClient = new HttpClient())
                 {
-                    SyndicationFeed feed = SyndicationFeed.Load(reader);
+                    HttpResponseMessage response = await httpClient.GetAsync(rssUrl);
 
-                    foreach (SyndicationItem item in feed.Items)
+                    if (response.IsSuccessStatusCode)
                     {
-                        items.Add(item);
+                        // 从HttpResponseMessage中读取流
+                        Stream stream = await response.Content.ReadAsStreamAsync();
+
+                        // 创建一个XML阅读器用于解析载入的流
+                        using (XmlReader reader = XmlReader.Create(stream))
+                        {
+                            // 使用SyndicationFeed解析RSS
+                            SyndicationFeed feed = SyndicationFeed.Load(reader);
+
+                            foreach (SyndicationItem item in feed.Items)
+                            {
+                                items.Add(item);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error retrieving content.");
                     }
                 }
             }

@@ -25,7 +25,7 @@ namespace PalServerTools.Job
             // 如果进程不存在，则启动进程
             if (_palProcessService.palServerState == PalServerState.Stopped && _configService.ToolsConfig.AutoRestart && _palProcessService.palServerUpdateState != PalServerUpdateState.Updating)
             {
-                _palProcessService.StartProcess();
+               await  _palProcessService.StartProcess();
             }
 
             // 开启内存优化
