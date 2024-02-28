@@ -38,11 +38,11 @@
                     状态： @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
                     @if (palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped)
                     {
-                        <Button Type="@ButtonType.Primary" Size="small" Icon="poweroff" OnClick="OnClickStart" Loading="withStartLoading">开机</Button>
+                        <Button Type="@ButtonType.Primary" Size="small" Icon="poweroff" OnClick="OnClickStart" Loading="withStartLoading">启动</Button>
                     }
                     else
                     {
-                        <Button Type="@ButtonType.Primary" Danger Icon="poweroff" Size="small" OnClick="OnClickClose" Loading="withCloseLoading">关机</Button>
+                        <Button Type="@ButtonType.Primary" Danger Icon="poweroff" Size="small" OnClick="OnClickClose" Loading="withCloseLoading">关闭</Button>
                         <Button Type="@ButtonType.Primary" Size="small" Icon="reload" OnClick="OnClickReload" Loading="withReloadLoading">重启</Button>
                     }
                 </p>
@@ -109,8 +109,8 @@
         try
         {
             withStartLoading = true;
-            palProcessService.StartProcess();
-            _ = message.Success("开机成功！");
+            await palProcessService.StartProcess();
+            _ = message.Success("启动成功！");
         }
         catch (Exception ex)
         {
@@ -129,8 +129,8 @@
         try
         {
             withCloseLoading = true;
-            palProcessService.CloseProcess();
-            _ = message.Success("关机成功！");
+            await palProcessService.CloseProcess();
+            _ = message.Success("关闭成功！");
         }
         catch (Exception ex)
         {
@@ -148,11 +148,8 @@
         try
         {
             withReloadLoading = true;
-            this.StateHasChanged();
-            palProcessService.CloseProcess();
-            this.StateHasChanged();
-            palProcessService.StartProcess();
-            this.StateHasChanged();
+            await palProcessService.CloseProcess();
+            await palProcessService.StartProcess();
             _ = message.Success("重启成功！");
         }
         catch (Exception ex)
@@ -168,7 +165,7 @@
 
     async Task OnChangeToolsConfig()
     {
-        configService.ToolsConfigSave();
+        await configService.ToolsConfigSave();
     }
 
     async Task OnClickUpgrade()

@@ -21,7 +21,6 @@ namespace PalServerTools.Data
             _configuration = configuration;
             ToolsConfig = GetToolsConfig();
             PalConfig = GetPalConfig();
-            //Save();
         }
 
         private PalConfigModel GetPalConfig()
@@ -94,16 +93,16 @@ namespace PalServerTools.Data
             return toolsConfig;
         }
 
-        public void ToolsConfigSave()
+        public async Task ToolsConfigSave()
         {
             var appSettingsJson = File.ReadAllText("appsettings.json");
             JObject configJson = JObject.Parse(appSettingsJson);
             configJson["ToolsConfig"] = JObject.FromObject(ToolsConfig);
             var modifiedAppSettingsJson = JsonConvert.SerializeObject(configJson, Formatting.Indented);
-            File.WriteAllText("appsettings.json", modifiedAppSettingsJson);
+            await File.WriteAllTextAsync("appsettings.json", modifiedAppSettingsJson);
         }
 
-        public void PalConfigSave()
+        public async Task PalConfigSave()
         {
             var palServerConfigDir = Path.Combine(ToolsConfig.PalServerPath, "Pal\\Saved\\Config\\WindowsServer");
             if (!Directory.Exists(palServerConfigDir))
@@ -138,18 +137,18 @@ namespace PalServerTools.Data
             configBuilder.AppendLine($"OptionSettings=({string.Join(",", optionSettings)})");
           
             // 保存到PalWorldSettings.ini文件
-            File.WriteAllText(palServerConfigPath, configBuilder.ToString());
+            await File.WriteAllTextAsync(palServerConfigPath, configBuilder.ToString());
         }
 
-        public void Save()
+        public async Task Save()
         {
             if (!ObjectUtil.CompareModels(ToolsConfig, GetToolsConfig()))
             {
-                ToolsConfigSave();
+                 await ToolsConfigSave();
             }
             if (!ObjectUtil.CompareModels(PalConfig, GetPalConfig()))
             {
-                PalConfigSave();
+                await PalConfigSave();
             }
         }
     }

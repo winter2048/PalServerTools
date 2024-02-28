@@ -10,6 +10,7 @@
 
 @inject IJSRuntime JS
 @inject IMessageService message
+@inject ModalService _modalService
 @inject BackupService backupService
 
 <Flex Vertical="true" Class="sy-content">
@@ -48,6 +49,7 @@
                  <ActionColumn Title="操作">
                      <Space>
                          <SpaceItem><Button Icon="download" Type="@ButtonType.Primary" Shape="@ButtonShape.Round" OnClick="()=>DownloadBackup(context.Name)">下载</Button></SpaceItem>
+                        <SpaceItem><Button Icon="history" Type="@ButtonType.Primary" Shape="@ButtonShape.Round" OnClick="()=>ShowRestoreBackupConfirm(context.Name)">恢复</Button></SpaceItem>
                          <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>DelBackup(context.Name)">删除</Button></SpaceItem>
                      </Space>
                  </ActionColumn>
@@ -76,7 +78,7 @@
         backupList = backupService.GetBackupList();
     }
 
-    public async Task OnChange(QueryModel<BackupModel> queryModel)
+    public void OnChange(QueryModel<BackupModel> queryModel)
     {
         //Console.WriteLine(JsonSerializer.Serialize(queryModel));
     }
@@ -95,12 +97,41 @@
         await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
     }
 
+    private void ShowRestoreBackupConfirm(string name)
+    {
+        RenderFragment icon =@<Icon Type="exclamation-circle" Theme="outline"></Icon>;
+
+        _modalService.Confirm(new ConfirmOptions()
+            {
+                Title = "确认恢复此存档?",
+                Icon = icon,
+                Content = "注意：该操作会覆盖当前存档，请谨慎操作，建议先对当前存档进行备份操作。",
+                OnOk = async (e) => { await RestoreBackup(name); },
+                OkText = "确认",
+                CancelText = "取消"
+            });
+    }
+
+    private async Task RestoreBackup(string name)
+    {
+        try
+        {
+            await backupService.RestoreBackup(name);
+            _ = message.Success("存档恢复成功！");
+            Refresh();
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
+        }
+    }
+
     private async Task CurrentBackup()
     {
         try
         {
             withBackupLoading = true;
-            backupService.Backup();
+            await backupService.Backup();
             _ = message.Success("备份成功！");
             Refresh();
         }
