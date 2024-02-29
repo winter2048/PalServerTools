@@ -3,14 +3,28 @@
 @inject NavigationManager nvm
 
 <Button Icon="@this.Icon"
-        Class="@("sy-layout-menu-btn" + ((this.Active) ? " sy-layout-menu-btn-active ": " ") + this.Class)"
+        Class="@("sy-layout-menu-btn" + ((new Uri(nvm.Uri).LocalPath == this.Path) ? " sy-layout-menu-btn-active ": " ") + this.Class)"
         OnClick="@(async (e) => {
-          await this.HandleOnClick(e);
           if (!string.IsNullOrWhiteSpace(this.Path))
             {
                 nvm.NavigateTo(this.Path);
-                this.StateHasChanged();
             }
         })">
     @this.Title
 </Button>
+
+@code {
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            nvm.LocationChanged += (e, w) =>
+            {
+                this.StateHasChanged();
+            };
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+}

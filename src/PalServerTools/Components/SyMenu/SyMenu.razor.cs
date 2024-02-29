@@ -15,8 +15,6 @@ namespace PalServerTools.Components
         [Inject]
         private ClientConfigService _clientConfigService { get; set; }
 
-        public string CurrentPath { get; set; } = "";
-
         public SyMenu()
         {
         }
@@ -24,7 +22,6 @@ namespace PalServerTools.Components
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-            this.CurrentPath = new Uri(nvm.Uri).LocalPath;
         }
 
         public async Task SignOut()

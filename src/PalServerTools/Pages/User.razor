@@ -6,22 +6,37 @@
 @using PalServerTools.Data
 @using PalServerTools.Models
 @inject PalRconService palRconService
+@inject NavigationManager nvm
+
 <Flex Vertical="true" Class="sy-content">
     <PageHeader Class="sy-content-title" Title="玩家" Subtitle="@("当前在线人数(" + (players == null ? 0 : players.Count) + ")")" />
     <Content Class="sy-content-body">
-        <div class="sy-content-body-search">
-            <Search Placeholder="输入名称" WrapperStyle="width: 200px;" ClassicSearchIcon Value="@keywords" />
 
-            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="search" OnClick="Search">查询</Button>
-            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="reload" OnClick="Refresh" Loading="withRefreshLoading">刷新</Button>
-        </div>
-        @if (players == null)
+        @if (!isCanConnect)
         {
-            <p><em>Loading...</em></p>
+            <Result Status="warning"
+                Title="RCON连接失败！"
+                SubTitle="提示：请先在 配置/服务器配置 页面启用RCON。如果已经完成配置，请尝试重启PalServer。">
+                <Extra>
+                    <Button Type="primary" OnClick="@(()=>{ nvm.NavigateTo("/config#service");})">去启用RCON</Button>
+                </Extra>
+            </Result>
         }
         else
         {
-            <Table @ref="table"
+            <div class="sy-content-body-search">
+                <Search Placeholder="输入名称" WrapperStyle="width: 200px;" ClassicSearchIcon Value="@keywords" />
+
+                <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="search" OnClick="Search">查询</Button>
+                <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="reload" OnClick="Refresh" Loading="withRefreshLoading">刷新</Button>
+            </div>
+            if (players == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <Table @ref="table"
                TItem="PlayerModel"
                DataSource="@players"
                Total="_total"
@@ -34,17 +49,18 @@
                RowKey="x=>x.Name"
                Class="sy-table-max"
                Responsive>
-                <Selection Key="@(context.PlayerUid)" />
-                <PropertyColumn Property="c=>c.PlayerUid" Sortable Title="Id" />
-                <PropertyColumn Property="c=>c.Name" Sortable Title="名称" />
-                <PropertyColumn Property='c=>c.SteamId' Sortable Title="SteamId" />
-                <ActionColumn Title="操作">
-                    <Space>
-                        <SpaceItem><Button Icon="download" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>palRconService.KickPlayer(context.SteamId)">踢出</Button></SpaceItem>
-                        <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>palRconService.BanPlayer(context.SteamId)">封禁</Button></SpaceItem>
-                    </Space>
-                </ActionColumn>
-            </Table>
+                    <Selection Key="@(context.PlayerUid)" />
+                    <PropertyColumn Property="c=>c.PlayerUid" Sortable Title="Id" />
+                    <PropertyColumn Property="c=>c.Name" Sortable Title="名称" />
+                    <PropertyColumn Property='c=>c.SteamId' Sortable Title="SteamId" />
+                    <ActionColumn Title="操作">
+                        <Space>
+                            <SpaceItem><Button Icon="download" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>palRconService.KickPlayer(context.SteamId)">踢出</Button></SpaceItem>
+                            <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>palRconService.BanPlayer(context.SteamId)">封禁</Button></SpaceItem>
+                        </Space>
+                    </ActionColumn>
+                </Table>
+            }
         }
     </Content>
 </Flex>
@@ -56,6 +72,7 @@
     private List<PlayerModel> players;
     private string keywords = "";
     private bool withRefreshLoading = false;
+    private bool isCanConnect = true;
 
     IEnumerable<PlayerModel> selectedRows;
     ITable table;
@@ -66,6 +83,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        isCanConnect = await palRconService.IsCanConnect();
         await this.Refresh();
     }
 

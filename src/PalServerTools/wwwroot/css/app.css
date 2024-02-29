@@ -298,3 +298,7 @@ body {
 .sy-layout-menu-oc span {
     color: #fff;
 }
+
+.ant-alert{
+    margin-bottom: 5px;
+}

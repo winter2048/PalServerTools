@@ -37,13 +37,16 @@ namespace PalServerTools.Data
                 try
                 {
                     string runArguments = _configService.ToolsConfig.RunArguments;
-                    if (!runArguments.Contains("-rconport"))
+                    if (_configService.PalConfig.RCONEnabled)
                     {
-                        runArguments += $" -rconport {_configService.PalConfig.RCONPort}";
-                    }
-                    else if (runArguments.GetArgumentValue("-rconport") != _configService.PalConfig.RCONPort.ToString())
-                    {
-                        throw new Exception($"启动参数-rconport {runArguments.GetArgumentValue("-rconport")}与服务器配置中的RCON端口号({_configService.PalConfig.RCONPort})不一致！");
+                        if (!runArguments.Contains("-rconport"))
+                        {
+                            runArguments += $" -rconport {_configService.PalConfig.RCONPort}";
+                        }
+                        else if (runArguments.GetArgumentValue("-rconport") != _configService.PalConfig.RCONPort.ToString())
+                        {
+                            throw new Exception($"启动参数-rconport {runArguments.GetArgumentValue("-rconport")}与服务器配置中的RCON端口号({_configService.PalConfig.RCONPort})不一致！");
+                        }
                     }
                     Process.Start(Path.Combine(_configService.ToolsConfig.PalServerPath, "PalServer.exe"), runArguments);
                     palServerState = PalServerState.Running;
@@ -119,18 +122,15 @@ namespace PalServerTools.Data
                         if (match.Success)
                         {
                             latestVersion = match.Value;
-                            if (latestVersion == currentVersion)
-                            {
-                                isLatestVersion = true;
-                            }
-                            else
-                            {
-                                isLatestVersion = false;
-                            }
                             break;
                         }
                     }
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(latestVersion) && !string.IsNullOrWhiteSpace(currentVersion))
+            {
+                isLatestVersion = (latestVersion == currentVersion);
             }
         }
 

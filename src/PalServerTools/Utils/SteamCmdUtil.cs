@@ -6,6 +6,35 @@ namespace PalServerTools.Utils
 {
     public class SteamCmdUtil
     {
+        public static bool HasSteamCMD()
+        {
+            bool found = false;
+            // 获取系统的PATH环境变量
+            var pathVariable = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
+
+            if (pathVariable != null)
+            {
+                // 拆分PATH环境变量为单独的目录路径
+                string[] paths = pathVariable.Split(Path.PathSeparator);
+               
+                // 遍历每个目录路径
+                foreach (var path in paths)
+                {
+                    // 构建steamcmd.exe的完整路径
+                    string steamCmdPath = Path.Combine(path, "steamcmd.exe");
+
+                    // 检查文件是否存在
+                    if (File.Exists(steamCmdPath))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            return found;
+        }
+
         public static async Task<Tuple<bool, string>> AppUpdate(int appId)
         {
             string msg = "";

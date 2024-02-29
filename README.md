@@ -49,6 +49,10 @@ iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/maste
 
 > 密码可在appsettings.json文件中配置`ToolsConfig.ToolsPassword`
 
+# 更新内容查看
+
+[查看最新版本更新内容](./ReleaseNotes.md)
+
 # 预览
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/1c7fc6ba-2acd-43eb-84cf-d88bd6b67968)
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/8794e5a6-252b-425c-afe5-fead6ecdb1f2)

@@ -2,16 +2,18 @@
 
 @using PalServerTools.Data
 @using PalServerTools.Models
-@inject PalConfigService configService;
+@inject PalConfigService configService
 @inject PalProcessService palProcessService
 @inject IMessageService message
+@inject ModalService _modalService
+@inject NavigationManager nvm
 
 <PageTitle>配置</PageTitle>
 
 <Flex Vertical="true" Class="sy-content">
     <MediaQuery Media="@Breakpoints.SmallDown" @bind-Matches="IsSmall" />
-    <Tabs Class="sy-content-tabs" DefaultActiveKey="1" TabPosition="@(IsSmall ? TabPosition.Top:TabPosition.Left)" Size="@(IsSmall ? TabSize.Small:TabSize.Default)" TabBarExtraContentLeft="leftExtra">
-        <TabPane Key="基础配置" Tab="基础配置">
+    <Tabs Class="sy-content-tabs" DefaultActiveKey="@(nvm.Uri.Split("#").LastOrDefault("basic"))" TabPosition="@(IsSmall ? TabPosition.Top:TabPosition.Left)" Size="@(IsSmall ? TabSize.Small:TabSize.Default)" TabBarExtraContentLeft="leftExtra">
+        <TabPane Key="basic" Tab="基础配置">
             <Flex Vertical="true" Class="sy-content">
                 @if (!IsSmall)
                 {
@@ -34,13 +36,13 @@
                     </Form>
                 </Content>
                 <Footer Class="sy-content-footer">
-                    <Button Type="@ButtonType.Primary" OnClick="Save" Loading="withButtonLoading">
+                    <Button Type="@ButtonType.Primary" OnClick="BasicSave" Loading="withButtonLoading">
                         保存
                     </Button>
                 </Footer>
             </Flex>
         </TabPane>
-        <TabPane Key="存档配置" Tab="存档配置">
+        <TabPane Key="backup" Tab="存档配置">
             <Flex Vertical="true" Class="sy-content">
                 @if (!IsSmall)
                 {
@@ -87,7 +89,7 @@
                 </Footer>
             </Flex>
         </TabPane>
-        <TabPane Key="服务器配置" Tab="服务器配置">
+        <TabPane Key="service" Tab="服务器配置">
             <Flex Vertical="true" Class="sy-content">
                 @if (!IsSmall)
                 {
@@ -142,6 +144,11 @@
                 <Footer Class="sy-content-footer">
                     <Space>
                         <SpaceItem>
+                            <Button Type="@ButtonType.Dashed" OnClick="ShowRestoreDefaultPalConfigConfirm" Loading="withButtonLoading">
+                                恢复默认参数
+                            </Button>
+                        </SpaceItem>
+                        <SpaceItem>
                             <Button Type="@ButtonType.Primary" OnClick="Save" Loading="withButtonLoading">
                                 保存
                             </Button>
@@ -155,7 +162,7 @@
                 </Footer>
             </Flex>
         </TabPane>
-        <TabPane Key="游戏参数调整" Tab="游戏参数调整">
+        <TabPane Key="game" Tab="游戏参数调整">
             <Flex Vertical="true" Class="sy-content">
                  @if (!IsSmall)
                 {
@@ -266,6 +273,11 @@
                 <Footer Class="sy-content-footer">
                     <Space>
                         <SpaceItem>
+                            <Button Type="@ButtonType.Dashed" OnClick="ShowRestoreDefaultPalConfigConfirm" Loading="withButtonLoading">
+                                恢复默认参数
+                            </Button>
+                        </SpaceItem>
+                        <SpaceItem>
                                 <Button Type="@ButtonType.Primary" OnClick="Save" Loading="withButtonLoading">
                                 保存
                             </Button>
@@ -289,6 +301,40 @@
     private void OnFinish(EditContext editContext)
     {
         // Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
+    }
+
+    private void ShowRestoreDefaultPalConfigConfirm()
+    {
+        RenderFragment icon =@<Icon Type="exclamation-circle" Theme="outline"></Icon>;
+
+        _modalService.Confirm(new ConfirmOptions()
+            {
+                Title = "是否恢复默认参数?",
+                Icon = icon,
+                Content = @"注意：该操作会重置 ""服务器配置"" 和 ""游戏参数调整"" 的参数，不会进行保存操作。",
+                OnOk = async (e) =>
+                {
+                    await Task.Run(() => { configService.RestoreDefaultPalConfig(); });
+                    this.StateHasChanged();
+                    _ = message.Success("已恢复！");
+                },
+                OkText = "确认",
+                CancelText = "取消"
+            });
+    }
+
+    private async Task BasicSave()
+    {
+        try
+        {
+            await configService.ToolsConfigSave();
+            configService.ReloadPalConfig();
+            _ = message.Success("保存成功！");
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error("保存失败：" + ex.Message);
+        }
     }
 
     private async Task Save()
