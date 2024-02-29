@@ -21,6 +21,23 @@ namespace PalServerTools.Data
             await client.ConnectAsync("127.0.0.1", this._configService.PalConfig.RCONPort, this._configService.PalConfig.AdminPassword);
         }
 
+        public async Task<bool> IsCanConnect()
+        {
+            try
+            {
+                await this.Connect();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            finally
+            {
+                client.Disconnect();
+            }
+            return true;
+        }
+
         public async Task<string> ExecuteCommand(string command)
         {
             string res = "";

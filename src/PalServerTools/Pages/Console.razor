@@ -5,17 +5,30 @@
 @using PalServerTools.Data
 @inject ConsoleService consoleService
 @inject PalRconService palRconService
+@inject NavigationManager nvm
 
 <Flex Vertical="true" Class="sy-content">
     <PageHeader Class="sy-content-title" Title="控制台" Subtitle="Pal Server Tools" />
-     <Content Class="sy-content-body">
-        <TextArea Style="height:100%" ReadOnly Value="@string.Join("\n", consoleService.msgList)"></TextArea>
-     </Content>
-    <Footer Class="sy-content-footer" Style="padding: 15px 0px;">
-        <InputGroup Compact>
-            <SimpleSelect DefaultValue="@("")" Style="width: 150px;" @bind-Value="cmdType">
-                <SelectOptions>
-                    <SimpleSelectOption Value="Broadcast" Label="Broadcast"></SimpleSelectOption>
+    @if (!isCanConnect)
+    {
+        <Result Status="warning"
+            Title="RCON连接失败！"
+            SubTitle="提示：请先在 配置/服务器配置 页面启用RCON。如果已经完成配置，请尝试重启PalServer。">
+            <Extra>
+                <Button Type="primary" OnClick="@(()=>{ nvm.NavigateTo("/config#service");})">去启用RCON</Button>
+            </Extra>
+        </Result>
+    }
+    else
+    {
+        <Content Class="sy-content-body">
+            <TextArea Style="height:100%" ReadOnly Value="@string.Join("\n", consoleService.msgList)"></TextArea>
+        </Content>
+        <Footer Class="sy-content-footer" Style="padding: 15px 0px;">
+            <InputGroup Compact>
+                <SimpleSelect DefaultValue="@("")" Style="width: 150px;" @bind-Value="cmdType">
+                    <SelectOptions>
+                        <SimpleSelectOption Value="Broadcast" Label="Broadcast"></SimpleSelectOption>
                         <SimpleSelectOption Value="Shutdown" Label="Shutdown"></SimpleSelectOption>
                         <SimpleSelectOption Value="DoExit" Label="DoExit"></SimpleSelectOption>
                         <SimpleSelectOption Value="KickPlayer" Label="KickPlayer"></SimpleSelectOption>
@@ -26,50 +39,15 @@
                         <SimpleSelectOption Value="Info" Label="Info"></SimpleSelectOption>
                         <SimpleSelectOption Value="Save" Label="Save"></SimpleSelectOption>
                         <SimpleSelectOption Value="" Label="自定义"></SimpleSelectOption>
-                </SelectOptions>
-            </SimpleSelect>
-            <Input DefaultValue="@("Xihu District, Hangzhou")" Style="width: 100%;" Placeholder="输入命令..." @bind-Value="cmd" />
-            <Button Type="@ButtonType.Primary" OnClick="SendCommand">
-                发送
-            </Button>
-        </InputGroup>
-    </Footer>
-@*    <div class="sy-content-body">
-        <div class="mb-3 row">
-            <div class="col-sm-12">
-                <textarea class="form-control" aria-label="With textarea" style="height:calc(100vh - 200px)" readonly>@foreach (var msg in consoleService.msgList)
-                    {
-                        @(msg + "\n")
-                    }</textarea>
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-12">
-                <label class="visually-hidden" for="inlineFormInputGroupUsername">Username</label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text">
-                        <select class="form-select form-select-sm" id="inputGroupSelect02" @bind="cmdType">
-                            <option value="Broadcast">Broadcast</option>
-                            <option value="Shutdown">Shutdown</option>
-                            <option value="DoExit">DoExit</option>
-                            <option value="KickPlayer">KickPlayer</option>
-                            <option value="BanPlayer">BanPlayer</option>
-                            <option value="TeleportToPlayer">TeleportToPlayer</option>
-                            <option value="TeleportToMe">TeleportToMe</option>
-                            <option value="ShowPlayers">ShowPlayers</option>
-                            <option value="Info">Info</option>
-                            <option value="Save">Save</option>
-                            <option value="" selected>自定义</option>
-                        </select>
-                    </span>
-                    <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="输入命令..." @bind="cmd">
-                    <button class="btn btn-primary" @onclick="SendCommand">
-                        发送
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>*@
+                    </SelectOptions>
+                </SimpleSelect>
+                <Input DefaultValue="@("Xihu District, Hangzhou")" Style="width: 100%;" Placeholder="输入命令..." @bind-Value="cmd" />
+                <Button Type="@ButtonType.Primary" OnClick="SendCommand">
+                    发送
+                </Button>
+            </InputGroup>
+        </Footer>
+    }
 </Flex>
 
 
@@ -77,6 +55,12 @@
 @code {
     private string cmdType = "";
     private string cmd = "";
+    private bool isCanConnect = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isCanConnect = await palRconService.IsCanConnect();
+    }
 
     public async Task SendCommand()
     {

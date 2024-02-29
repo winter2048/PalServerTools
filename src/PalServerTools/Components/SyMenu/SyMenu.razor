@@ -14,7 +14,7 @@
             </div>
             @foreach (var menu in SyValue.menuItems)
             {
-                <SyMenuItem Path="@menu.Path" Title="@menu.Title" Icon="@menu.Icon" Active="@(this.CurrentPath == menu.Path)" OnClick="()=>{ this.CurrentPath = menu.Path; this.StateHasChanged();}"></SyMenuItem>
+                <SyMenuItem Path="@menu.Path" Title="@menu.Title" Icon="@menu.Icon"></SyMenuItem>
             }
         </Flex>
 
@@ -51,5 +51,6 @@
     {
         isClose = !isClose;
     }
+
 
 }

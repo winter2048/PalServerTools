@@ -57,6 +57,24 @@
         <br />
         <SystemMonitor></SystemMonitor>
     </div>
+    @if (!File.Exists(Path.Combine(configService.ToolsConfig.PalServerPath, "PalServer.exe")))
+    {
+        <Alert Type="@AlertType.Error" ShowIcon="true">
+            <MessageTemplate> PalServer根目录未配置！<NavLink href="/config#basic">去配置</NavLink></MessageTemplate>
+        </Alert>
+    }
+    @if (!configService.PalConfig.RCONEnabled)
+    {
+        <Alert Type="@AlertType.Warning" ShowIcon="true">
+            <MessageTemplate> RCON未启用！<NavLink href="/config#service">去配置</NavLink></MessageTemplate>
+        </Alert>
+    }
+    @if (!SteamCmdUtil.HasSteamCMD())
+    {
+        <Alert Type="@AlertType.Warning" ShowIcon="true">
+            <MessageTemplate> SteamCMD未添加到系统环境变量中！</MessageTemplate>
+        </Alert>
+    }
 </Flex>
 
 @code {
@@ -66,6 +84,7 @@
     private bool withReloadLoading = false;
     private bool withStartLoading = false;
     private bool withCloseLoading = false;
+    private bool isCanConnect = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,6 +92,7 @@
         {
             serverInfo = await palRconService.Info();
         }
+        isCanConnect = await palRconService.IsCanConnect();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
