@@ -12,19 +12,17 @@ namespace PalServerTools.Data
 
         public ClientConfigModel ClientConfig;
 
-        internal event Action OnSave;
+        internal event Action? OnSave;
 
         public ClientConfigService(ICookieUtil cookieUtil)
         {
             _cookieUtil = cookieUtil;
+            ClientConfig= new ClientConfigModel();
         }
 
         public async Task Init()
         {
-            if (ClientConfig == null)
-            {
-                ClientConfig = await GetClientConfig();
-            }
+            ClientConfig = await GetClientConfig();
         }
 
         private async Task<ClientConfigModel> GetClientConfig()
@@ -57,7 +55,7 @@ namespace PalServerTools.Data
                 var value = property.GetValue(ClientConfig);
                 if (value != null)
                 {
-                    string valueStr = Convert.ChangeType(value, property.PropertyType).ToString();
+                    string valueStr = Convert.ChangeType(value, property.PropertyType).ToString() ?? "";
                     await _cookieUtil.SetValueAsync(property.Name, valueStr);
                 }
             }

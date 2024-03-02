@@ -2,7 +2,7 @@
 {
     public class SystemInfo
     {
-        public string OSVersion { get; set; }
+        public string OSVersion { get; set; } = "";
 
         public int CPUCount { get; set; }
 

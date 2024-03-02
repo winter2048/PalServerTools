@@ -85,7 +85,6 @@ namespace PalServerTools.Data
             });
         }
 
-
         public void DelBackup(string name)
         {
             var filePath = Path.Combine(_configService.ToolsConfig.BackupPath, name);
@@ -136,9 +135,7 @@ namespace PalServerTools.Data
             });
         }
 
-
-
-        public Stream GetBackupStream(string name)
+        public Stream? GetBackupStream(string name)
         {
             var filePath = Path.Combine(_configService.ToolsConfig.BackupPath, name);
             if (File.Exists(filePath))

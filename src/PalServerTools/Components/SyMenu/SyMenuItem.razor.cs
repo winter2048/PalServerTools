@@ -11,19 +11,19 @@ namespace PalServerTools.Components
         /// Set the icon component of button.
         /// </summary>
         [Parameter]
-        public string Path { get; set; }
+        public string? Path { get; set; }
 
         /// <summary>
         /// Set the icon component of button.
         /// </summary>
         [Parameter]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         /// <summary>
         /// Set the icon component of button.
         /// </summary>
         [Parameter]
-        public string Icon { get; set; }
+        public string? Icon { get; set; }
 
         [Parameter]
         public bool Active { get; set; }

@@ -179,7 +179,7 @@ namespace PalServerTools.Data
                     }
                     else
                     {
-                        valueStr = Convert.ChangeType(value, property.PropertyType).ToString();
+                        valueStr = Convert.ChangeType(value, property.PropertyType).ToString() ?? "";
                     }
 
                     optionSettings.Add($"{property.Name}={valueStr}");

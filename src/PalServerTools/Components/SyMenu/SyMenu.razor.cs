@@ -15,10 +15,6 @@ namespace PalServerTools.Components
         [Inject]
         private ClientConfigService _clientConfigService { get; set; }
 
-        public SyMenu()
-        {
-        }
-
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();

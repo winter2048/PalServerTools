@@ -16,12 +16,12 @@ namespace PalServerTools.Utils
             _settings = options.Value;
         }
 
-        public Task SetValueAsync(string key, object value, TimeSpan? span = null, string path = null, string domain = null, bool? secure = null)
+        public Task SetValueAsync(string key, object value, TimeSpan? span = null, string? path = null, string? domain = null, bool? secure = null)
         {
             return SetValueAsync(key, JsonConvert.SerializeObject(value), span, path, domain, secure);
         }
 
-        public async Task SetValueAsync(string key, string value, TimeSpan? span = null, string path = null, string domain = null, bool? secure = null)
+        public async Task SetValueAsync(string key, string value, TimeSpan? span = null, string? path = null, string? domain = null, bool? secure = null)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -61,7 +61,7 @@ namespace PalServerTools.Utils
             await SetCookie(string.Join(";", list));
         }
 
-        public async Task RemoveAsync(string key, string path = null)
+        public async Task RemoveAsync(string key, string? path = null)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -75,13 +75,9 @@ namespace PalServerTools.Utils
             await SetCookie(string.Join(";", list));
         }
 
-        public async Task<T> GetValueAsync<T>(string key) where T : class
+        public async Task<T?> GetValueAsync<T>(string key) where T : class
         {
             string text = await GetValueAsync(key);
-            if (text == null)
-            {
-                return null;
-            }
 
             return JsonConvert.DeserializeObject<T>(text);
         }
@@ -89,10 +85,6 @@ namespace PalServerTools.Utils
         public async Task<string> GetValueAsync(string key)
         {
             string text = await GetCookie();
-            if (string.IsNullOrEmpty(text))
-            {
-                return null;
-            }
 
             string[] array = text.Split(new char[1] { ';' });
             foreach (string text2 in array)
@@ -103,7 +95,7 @@ namespace PalServerTools.Utils
                 }
             }
 
-            return null;
+            return "";
         }
 
         private async Task SetCookie(string value)

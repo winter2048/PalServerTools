@@ -78,7 +78,7 @@
 </Flex>
 
 @code {
-    Timer timer;
+    Timer? timer;
     private string serverInfo = "";
     private bool withCheckLatestVersionLoading = false;
     private bool withReloadLoading = false;
@@ -116,7 +116,7 @@
         }
     }
 
-    private void UpdateStateInfo(object state)
+    private void UpdateStateInfo(object? state)
     {
         InvokeAsync(() =>
         {
