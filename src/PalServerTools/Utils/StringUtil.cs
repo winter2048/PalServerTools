@@ -21,7 +21,7 @@ namespace PalServerTools.Utils
             }
         }
 
-        public static string GetArgumentValue(this string commandLine, string argumentName)
+        public static string? GetArgumentValue(this string commandLine, string argumentName)
         {
             if (string.IsNullOrEmpty(commandLine))
                 throw new ArgumentException("commandLine cannot be null or empty.", nameof(commandLine));
@@ -35,10 +35,10 @@ namespace PalServerTools.Utils
             // 分割命令行字符串以获取参数列表
             var parts = commandLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             // Dict to hold argument-value pairs
-            var argumentsDict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var argumentsDict = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 
             // 遍历所有的部分来填充字典
-            string lastKey = null;
+            string? lastKey = null;
             foreach (var part in parts)
             {
                 if (part.StartsWith("-"))

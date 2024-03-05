@@ -69,13 +69,13 @@
 
 
 @code {
-    private List<PlayerModel> players;
+    private List<PlayerModel>? players;
     private string keywords = "";
     private bool withRefreshLoading = false;
     private bool isCanConnect = true;
 
-    IEnumerable<PlayerModel> selectedRows;
-    ITable table;
+    IEnumerable<PlayerModel>? selectedRows;
+    ITable? table;
 
     int _pageIndex = 1;
     int _pageSize = 10;

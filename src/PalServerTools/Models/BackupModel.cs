@@ -2,7 +2,7 @@
 {
     public class BackupModel
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         public long Size { get; set; }
 

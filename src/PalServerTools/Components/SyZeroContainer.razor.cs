@@ -8,7 +8,6 @@ namespace PalServerTools.Components
     {
         [Inject]
         private ClientConfigService _clientConfigService { get; set; }
-        public SyZeroContainer() { }
 
         protected override async Task OnInitializedAsync()
         {

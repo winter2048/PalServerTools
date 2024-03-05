@@ -2,7 +2,7 @@
 {
     public class PalConfigModel
     {
-        public string Difficulty { get; set; }
+        public string Difficulty { get; set; } = "";
         public double DayTimeSpeedRate { get; set; }
         public double NightTimeSpeedRate { get; set; }
         public double ExpRate { get; set; }
@@ -26,7 +26,7 @@
         public double CollectionObjectHpRate { get; set; }
         public double CollectionObjectRespawnSpeedRate { get; set; }
         public double EnemyDropItemRate { get; set; }
-        public string DeathPenalty { get; set; }
+        public string DeathPenalty { get; set; } = "";
         public bool bEnablePlayerToPlayerDamage { get; set; }
         public bool bEnableFriendlyFire { get; set; }
         public bool bEnableInvaderEnemy { get; set; }
@@ -53,16 +53,16 @@
         public bool bEnableDefenseOtherGuildPlayer { get; set; }
         public int CoopPlayerMaxNum { get; set; }
         public int ServerPlayerMaxNum { get; set; }
-        public string ServerName { get; set; }
-        public string ServerDescription { get; set; }
-        public string AdminPassword { get; set; }
-        public string ServerPassword { get; set; }
+        public string ServerName { get; set; } = "";
+        public string ServerDescription { get; set; } = "";
+        public string AdminPassword { get; set; } = "";
+        public string ServerPassword { get; set; } = "";
         public int PublicPort { get; set; }
-        public string PublicIP { get; set; }
+        public string PublicIP { get; set; } = "";
         public bool RCONEnabled { get; set; }
         public int RCONPort { get; set; }
-        public string Region { get; set; }
+        public string Region { get; set; } = "";
         public bool bUseAuth { get; set; }
-        public string BanListURL { get; set; }
+        public string BanListURL { get; set; } = "";
     }
 }

@@ -61,13 +61,13 @@
 
 
 @code {
-    private List<BackupModel> backupList = null;
-    private DateTime?[] dateTimes;
+    private List<BackupModel>? backupList = null;
+    private DateTime?[]? dateTimes;
     private bool withBackupLoading = false;
     private bool withRefreshLoading = false;
 
-    IEnumerable<BackupModel> selectedRows;
-    ITable table;
+    IEnumerable<BackupModel>? selectedRows;
+    ITable? table;
 
     int _pageIndex = 1;
     int _pageSize = 10;
@@ -92,9 +92,12 @@
     {
         var fileStream = backupService.GetBackupStream(name);
 
-        using var streamRef = new DotNetStreamReference(stream: fileStream);
+        if (fileStream != null)
+        {
+            using var streamRef = new DotNetStreamReference(stream: fileStream);
 
-        await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+            await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+        }
     }
 
     private void ShowRestoreBackupConfirm(string name)

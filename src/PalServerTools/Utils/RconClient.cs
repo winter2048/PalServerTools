@@ -8,9 +8,9 @@
 
     public class RconClient
     {
-        private TcpClient tcpClient;
-        private NetworkStream networkStream;
-        private byte[] receiveBuffer;
+        private TcpClient? tcpClient;
+        private NetworkStream? networkStream;
+        private byte[]? receiveBuffer;
 
         public async Task ConnectAsync(string serverIp, int port, string password)
         {
@@ -27,11 +27,11 @@
 
             if (packet.type == RconPacketType.AuthResponse)
             {
-                Console.WriteLine("Authentication successful.");
+                Console.WriteLine("Rcon Authentication successful.");
             }
             else
             {
-                Console.WriteLine("Authentication failed.");
+                Console.WriteLine("Rcon Authentication failed.");
                 Disconnect();
             }
         }
@@ -90,11 +90,20 @@
             packet[12 + payloadBytes.Length] = 0;
             packet[13 + payloadBytes.Length] = 0;
 
+            if (networkStream == null)
+            {
+                throw new Exception("No ConnectAsync");
+            }
             await networkStream.WriteAsync(packet, 0, packet.Length);
         }
 
         private async Task<(int requestId, RconPacketType type, string payload)> ReceivePacketAsync()
         {
+            if (networkStream == null || receiveBuffer == null)
+            {
+                throw new Exception("No ConnectAsync");
+            }
+
             int packetSize = await networkStream.ReadAsync(receiveBuffer, 0, receiveBuffer.Length);
 
             // Read Request ID (little-endian)

@@ -24,7 +24,7 @@
 </Card>
 
 @code {
-    Timer timer;
+    Timer? timer;
 
     private string GetProgressClass(double percent)
     {
@@ -37,7 +37,7 @@
         return Task.CompletedTask;
     }
 
-    private void UpdatePerformanceInfo(object state)
+    private void UpdatePerformanceInfo(object? state)
     {
         InvokeAsync(() =>
         {
