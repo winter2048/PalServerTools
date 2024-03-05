@@ -9,6 +9,7 @@ using PalServerTools.Components;
 using PalServerTools.Data;
 using PalServerTools.Job;
 using PalServerTools.Utils;
+using System.Diagnostics;
 
 namespace PalServerTools
 {
@@ -84,7 +85,6 @@ namespace PalServerTools
             builder.Services.AddTransient<BackupJob>();
             builder.Services.AddTransient<PalProcessJob>();
             builder.Services.AddTransient<AutoUpgradeJob>();
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -100,7 +100,6 @@ namespace PalServerTools
             app.MapBlazorHub();
             app.MapFallbackToPage("/_Host");
             app.Urls.Add(builder.Configuration.GetValue<string>("ASPNETCORE_URLS"));
-
             app.Run();
         }
     }

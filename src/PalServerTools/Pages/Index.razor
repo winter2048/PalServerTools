@@ -2,12 +2,16 @@
 
 <PageTitle>监控</PageTitle>
 
+@using Newtonsoft.Json;
 @using PalServerTools.Data
 @using PalServerTools.Utils;
+@using System.Diagnostics;
+@using System.Reflection;
 @inject ConsoleService consoleService
 @inject PalRconService palRconService
 @inject PalProcessService palProcessService
 @inject PalConfigService configService
+@inject IHostApplicationLifetime lifetime
 @inject IMessageService message
 
 <Flex Vertical="true" Class="sy-content">
@@ -66,13 +70,27 @@
     @if (!configService.PalConfig.RCONEnabled)
     {
         <Alert Type="@AlertType.Warning" ShowIcon="true">
-            <MessageTemplate> RCON未启用！<NavLink href="/config#service">去配置</NavLink></MessageTemplate>
+            <MessageTemplate> RCON未启用！<NavLink href="/config#service">去开启</NavLink></MessageTemplate>
         </Alert>
     }
     @if (!SteamCmdUtil.HasSteamCMD())
     {
         <Alert Type="@AlertType.Warning" ShowIcon="true">
-            <MessageTemplate> SteamCMD未添加到系统环境变量中！</MessageTemplate>
+            <MessageTemplate> SteamCMD未添加到系统环境变量PATH中！<a target="_blank" href="https://www.leyongdm.com/213440.html">帮助</a></MessageTemplate>
+        </Alert>
+    }
+
+    @if (!isToolsLatestVersion.Item1)
+    {
+        <Alert Type="@AlertType.Warning" ShowIcon="true">
+            <MessageTemplate>
+                PalServerTools 发现新版本 <a target="_blank" href="https://github.com/winter2048/PalServerTools/releases/tag/@(isToolsLatestVersion.Item2)">@(isToolsLatestVersion.Item2)</a> ！
+                <Tooltip Placement="@Placement.Right" Title="提示：更新过程中页面会未响应，请耐心等待。如果长时间未响应请尝试刷新页面！">
+                    <Button Type="@ButtonType.Primary" Size="small" OnClick="UpdateTools">
+                        立即更新
+                    </Button>
+                </Tooltip>
+            </MessageTemplate>
         </Alert>
     }
 </Flex>
@@ -85,6 +103,7 @@
     private bool withStartLoading = false;
     private bool withCloseLoading = false;
     private bool isCanConnect = true;
+    private Tuple<bool, string> isToolsLatestVersion = new Tuple<bool, string>(true, "");
 
     protected override async Task OnInitializedAsync()
     {
@@ -101,7 +120,39 @@
         {
             timer = new Timer(UpdateStateInfo, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
             await CheckLatestVersion();
+            isToolsLatestVersion = await GetToolsVersion();
         }
+    }
+
+    async Task<Tuple<bool, string>> GetToolsVersion()
+    {
+        bool isLatestVersion = true;
+        string latestVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
+        latestVersion = latestVersion.Substring(0, latestVersion.LastIndexOf('.'));
+        string currentVersion = "v" + latestVersion;
+
+        try
+        {
+            string apiUrl = "https://api.github.com/repos/winter2048/PalServerTools/releases/latest";
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
+                HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = response.Content.ReadAsStringAsync().Result;
+                    dynamic data = JsonConvert.DeserializeObject(json);
+                    latestVersion = data.tag_name;
+                }
+            }
+        }
+        catch
+        {
+            
+        }
+
+        return new Tuple<bool, string>(currentVersion == latestVersion, latestVersion);
     }
 
     async Task CheckLatestVersion()
@@ -225,5 +276,22 @@
         {
             withCheckLatestVersionLoading = false;
         }
+    }
+
+    void UpdateTools()
+    {
+        ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "powershell",
+                Arguments = "./update.ps1",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WorkingDirectory = AppContext.BaseDirectory
+            };
+
+        Process process = Process.Start(psi);
+
+        lifetime.StopApplication();
     }
 }

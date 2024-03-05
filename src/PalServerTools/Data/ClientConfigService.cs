@@ -34,7 +34,7 @@ namespace PalServerTools.Data
                 try
                 {
                     var value = await _cookieUtil.GetValueAsync(property.Name);
-                    if (value != null)
+                    if (!string.IsNullOrWhiteSpace(value))
                     {
                         var targetType = property.PropertyType;
                         property.SetValue(clientConfig, Convert.ChangeType(value, targetType));

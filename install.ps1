@@ -79,8 +79,14 @@ function Update-PalServerTools {
         return $null
     }
 
-    if (Get-Process PalServerTools -ErrorAction SilentlyContinue) {
-        Write-Error "PalServerTools 正在运行，请关闭后重试。"
+    while ($true) {
+        if (Get-Process PalServerTools -ErrorAction SilentlyContinue) {
+            Write-Warning "PalServerTools 正在运行，等待关闭后继续。"
+            Start-Sleep -Seconds 2 
+        }
+        else {
+            break
+        }
     }
 
     $downloadUrl = $response.assets[0].browser_download_url
