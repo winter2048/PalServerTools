@@ -14,8 +14,12 @@ $apiUrl = "https://api.github.com/repos/$Owner/$RepoName/releases/latest"
 $response = Invoke-WebRequest -Uri $apiUrl -UseBasicParsing | ConvertFrom-Json
 $latestFileVersion = $response.tag_name
 Write-Output "最新版本号: $latestFileVersion"
-if ($fileVersion -ge $latestFileVersion) {
+if ($fileVersion -eq $latestFileVersion) {
     Write-Host "PalServerTools 已是最新版本"
+    if (!(Get-Process PalServerTools -ErrorAction SilentlyContinue)) {
+        Start-Sleep -Seconds 2 
+        Start-Process -FilePath  ".\PalServerTools.exe"
+    }
     return $null
 }
 
