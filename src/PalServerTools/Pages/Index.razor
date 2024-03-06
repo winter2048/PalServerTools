@@ -85,6 +85,7 @@
         <Alert Type="@AlertType.Warning" ShowIcon="true">
             <MessageTemplate>
                 PalServerTools 发现新版本 <a target="_blank" href="https://github.com/winter2048/PalServerTools/releases/tag/@(isToolsLatestVersion.Item2)">@(isToolsLatestVersion.Item2)</a> ！
+                <pre style="margin: 5px 0px;">@isToolsLatestVersion.Item3</pre>
                 <Tooltip Placement="@Placement.Right" Title="提示：更新过程中页面会未响应，请耐心等待。如果长时间未响应请尝试刷新页面！">
                     <Button Type="@ButtonType.Primary" Size="small" OnClick="UpdateTools">
                         立即更新
@@ -103,7 +104,7 @@
     private bool withStartLoading = false;
     private bool withCloseLoading = false;
     private bool isCanConnect = true;
-    private Tuple<bool, string> isToolsLatestVersion = new Tuple<bool, string>(true, "");
+    private Tuple<bool, string, string> isToolsLatestVersion = new Tuple<bool, string, string>(true, "", "");
 
     protected override async Task OnInitializedAsync()
     {
@@ -124,12 +125,12 @@
         }
     }
 
-    async Task<Tuple<bool, string>> GetToolsVersion()
+    async Task<Tuple<bool, string, string>> GetToolsVersion()
     {
-        bool isLatestVersion = true;
         string latestVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
-        latestVersion = latestVersion.Substring(0, latestVersion.LastIndexOf('.'));
-        string currentVersion = "v" + latestVersion;
+        latestVersion = "v" + latestVersion.Substring(0, latestVersion.LastIndexOf('.'));
+        string currentVersion = latestVersion;
+        string body = "";
 
         try
         {
@@ -144,6 +145,14 @@
                     string json = response.Content.ReadAsStringAsync().Result;
                     dynamic data = JsonConvert.DeserializeObject(json);
                     latestVersion = data.tag_name;
+                    body = data.body;
+                    if (!string.IsNullOrWhiteSpace(body))
+                    {
+                        var updateText = new List<string>();
+                        updateText.Add("更新内容：");
+                        updateText.AddRange(body.Split("\r\n").Skip(1).Where(p => !string.IsNullOrWhiteSpace(p)));
+                        body = string.Join("\r\n", updateText);
+                    }
                 }
             }
         }
@@ -152,7 +161,7 @@
             
         }
 
-        return new Tuple<bool, string>(currentVersion == latestVersion, latestVersion);
+        return new Tuple<bool, string, string>(currentVersion == latestVersion, latestVersion, body);
     }
 
     async Task CheckLatestVersion()
