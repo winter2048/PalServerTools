@@ -1,4 +1,8 @@
 [返回 README](./README.md)
+### v2.0.11
+
+- 完善游戏参数配置，参数参考pal.palu123.com (@wifidofs1提供)
+---
 ### v2.0.10
 
 - 修复当无法访问api.github.com时导致一直提示更新版本的问题

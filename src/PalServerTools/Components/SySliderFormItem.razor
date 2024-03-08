@@ -1,0 +1,17 @@
+﻿@namespace PalServerTools.Components
+@inherits AntInputComponentBase<double>
+
+<FormItem Label="@Label">
+    <AntDesign.InputNumber Class="sy-slider-value-input" @bind-Value="@CurrentValue" Min="@Min" Max="@Max" DefaultValue="@DefaultValue"></AntDesign.InputNumber>
+    <Slider Class="sy-slider-value" TValue="double" DefaultValue="@this.DefaultValue" Min="@Min" Max="@Max" TooltipPlacement="@Placement.Top" Step="@Step" @bind-Value="@CurrentValue" />
+    <Tooltip Placement="@Placement.Right" Title="重置">
+        <Button Class="sy-slider-value-reload" Type="@ButtonType.Text" Icon="reload" OnClick="ReloadValue" />
+    </Tooltip>
+</FormItem>
+
+@code {
+    void ReloadValue()
+    {
+        CurrentValue = DefaultValue;
+    }
+}
