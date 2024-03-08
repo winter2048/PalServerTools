@@ -97,49 +97,56 @@
                 }
                 <Content Class="sy-content-body">
                     <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@configService.PalConfig">
-                    <FormItem Label="服务器名称">
-                        <Input @bind-Value="@context.ServerName" />
-                    </FormItem>
-                    <FormItem Label="公共IP地址">
-                        <Input @bind-Value="@context.PublicIP"></Input>
-                    </FormItem>
-                    <FormItem Label="公共端口号">
-                            <AntDesign.InputNumber @bind-Value="@context.PublicPort" Min="0" Max="65535" DefaultValue="8211"></AntDesign.InputNumber>
-                    </FormItem>
-                    <FormItem Label="服务器密码">
-                        <InputPassword @bind-Value="@context.ServerPassword" />
-                    </FormItem>
-                    <FormItem Label="管理员密码">
-                        <InputPassword @bind-Value="@context.AdminPassword" />
-                    </FormItem>
-                    <FormItem Label="难度">
-                        <Select @bind-Value="@context.Difficulty"
-                                DefaultValue="@("None")"
-                                Style="width: 120px;"
-                                TItemValue="string"
-                                TItem="string">
-                            <SelectOptions>
-                                <SelectOption Value="@("Difficulty")" Label="困难" />
-                                <SelectOption Value="@("None")" Label="简单" />
-                            </SelectOptions>
-                        </Select>
-                    </FormItem>
-                    <FormItem Label="最大玩家数">
-                        <AntDesign.InputNumber @bind-Value="@context.ServerPlayerMaxNum" Min="1" Max="32" DefaultValue="16"></AntDesign.InputNumber>
-                    </FormItem>
-                    <FormItem Label="是否启用RCON">
-                        <Checkbox @bind-Value="context.RCONEnabled"></Checkbox>
-                    </FormItem>
-                    @if (context.RCONEnabled)
-                    {
-                        <FormItem Label="RCON端口号">
-                                <AntDesign.InputNumber @bind-Value="@context.RCONPort" Min="0" Max="65535" DefaultValue="25575"></AntDesign.InputNumber>
+                        <FormItem Label="服务器名称">
+                            <Input @bind-Value="@context.ServerName" />
                         </FormItem>
-                    }
-                    <FormItem Label="服务器描述">
-                        <TextArea @bind-Value="@context.ServerDescription" Placeholder="请输入..." MinRows="2" MaxRows="6" />
-                    </FormItem>
-                </Form>
+                        <FormItem Label="公共IP地址">
+                            <Input @bind-Value="@context.PublicIP"></Input>
+                        </FormItem>
+                        <FormItem Label="公共端口号">
+                            <AntDesign.InputNumber @bind-Value="@context.PublicPort" Min="0" Max="65535" DefaultValue="8211"></AntDesign.InputNumber>
+                        </FormItem>
+                        <FormItem Label="使用授权">
+                            <Checkbox @bind-Value="context.bUseAuth"></Checkbox>
+                        </FormItem>
+                        <FormItem Label="服务器密码">
+                            <InputPassword @bind-Value="@context.ServerPassword" />
+                        </FormItem>
+                        <FormItem Label="管理员密码">
+                            <InputPassword @bind-Value="@context.AdminPassword" />
+                        </FormItem>
+                        <FormItem Label="难度">
+                            <Select @bind-Value="@context.Difficulty"
+                                    DefaultValue="@("None")"
+                                    Style="width: 120px;"
+                                    TItemValue="string"
+                                    TItem="string">
+                                <SelectOptions>
+                                    <SelectOption Value="@("Difficulty")" Label="困难" />
+                                    <SelectOption Value="@("None")" Label="简单" />
+                                </SelectOptions>
+                            </Select>
+                        </FormItem>
+                        <SySliderFormItem Label="最大玩家数" DefaultValue="@configService.DefaultPalConfig.ServerPlayerMaxNum" Min="0" Max="512" Step="1" @bind-Value="@context.ServerPlayerMaxNum"></SySliderFormItem>
+                        <FormItem Label="是否启用RCON">
+                            <Checkbox @bind-Value="context.RCONEnabled"></Checkbox>
+                        </FormItem>
+                        @if (context.RCONEnabled)
+                        {
+                            <FormItem Label="RCON端口号">
+                                <AntDesign.InputNumber @bind-Value="@context.RCONPort" Min="0" Max="65535" DefaultValue="25575"></AntDesign.InputNumber>
+                            </FormItem>
+                        }
+                        <FormItem Label="地区">
+                            <Input @bind-Value="@context.Region" />
+                        </FormItem>
+                        <FormItem Label="封禁列表 URL">
+                            <Input @bind-Value="@context.BanListURL" />
+                        </FormItem>
+                        <FormItem Label="服务器描述">
+                            <TextArea @bind-Value="@context.ServerDescription" Placeholder="请输入..." MinRows="2" MaxRows="6" />
+                        </FormItem>
+                    </Form>
                 </Content>
                 <Footer Class="sy-content-footer">
                     <Space>
@@ -170,66 +177,39 @@
                 }
                 <Content Class="sy-content-body">
                     <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="6" WrapperColSpan="14" Model="@configService.PalConfig">
-                        <FormItem Label="白天流逝速度">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0.01" Max="5" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.DayTimeSpeedRate" />
-                            <Text Class="sy-slider-value-text">@context.DayTimeSpeedRate</Text>
-                        </FormItem>
-                        <FormItem Label="夜晚流逝速度">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0.01" Max="5" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.NightTimeSpeedRate" />
-                            <Text Class="sy-slider-value-text">@context.NightTimeSpeedRate</Text>
-                        </FormItem>
-                        <FormItem Label="经验倍率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.ExpRate" />
-                            <Text Class="sy-slider-value-text">@context.ExpRate</Text>
-                        </FormItem>
-                        <FormItem Label="帕鲁捕获概率倍率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PalCaptureRate" />
-                            <Text Class="sy-slider-value-text">@context.PalCaptureRate</Text>
-                        </FormItem>
-                        <FormItem Label="帕鲁出现概率倍率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PalSpawnNumRate" />
-                            <Text Class="sy-slider-value-text">@context.PalSpawnNumRate</Text>
-                        </FormItem>
-                        <FormItem Label="帕鲁攻击伤害倍率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PalDamageRateAttack" />
-                            <Text Class="sy-slider-value-text">@context.PalDamageRateAttack</Text>
-                        </FormItem>
-                        <FormItem Label="玩家攻击伤害倍率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PlayerDamageRateAttack" />
-                            <Text Class="sy-slider-value-text">@context.PlayerDamageRateAttack</Text>
-                        </FormItem>
-                        <FormItem Label="玩家饥饿下降率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PlayerStomachDecreaseRate" />
-                            <Text Class="sy-slider-value-text">@context.PlayerStomachDecreaseRate</Text>
-                        </FormItem>
-                        <FormItem Label="玩家耐力下降率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PlayerStaminaDecreaseRate" />
-                            <Text Class="sy-slider-value-text">@context.PlayerStaminaDecreaseRate</Text>
-                        </FormItem>
-                        <FormItem Label="帕鲁自动恢复生命值率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PalAutoHPRegeneRate" />
-                            <Text Class="sy-slider-value-text">@context.PalAutoHPRegeneRate</Text>
-                        </FormItem>
-                        <FormItem Label="玩家自动恢复生命值率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.PlayerAutoHPRegeneRate" />
-                            <Text Class="sy-slider-value-text">@context.PlayerAutoHPRegeneRate</Text>
-                        </FormItem>
-                        <FormItem Label="建筑物受损伤害倍率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.BuildObjectDamageRate" />
-                            <Text Class="sy-slider-value-text">@context.BuildObjectDamageRate</Text>
-                        </FormItem>
-                        <FormItem Label="采集物品倍率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.CollectionDropRate" />
-                            <Text Class="sy-slider-value-text">@context.CollectionDropRate</Text>
-                        </FormItem>
-                        <FormItem Label="采集物品敌人掉落物品倍率倍率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.EnemyDropItemRate" />
-                            <Text Class="sy-slider-value-text">@context.EnemyDropItemRate</Text>
+                        <SySliderFormItem Label="白天流逝速度" DefaultValue="@configService.DefaultPalConfig.DayTimeSpeedRate" Min="0.01" Max="15" Step="0.01" @bind-Value="@context.DayTimeSpeedRate"></SySliderFormItem>
+                        <SySliderFormItem Label="夜晚流逝速度" DefaultValue="@configService.DefaultPalConfig.NightTimeSpeedRate" Min="0.01" Max="15" Step="0.01" @bind-Value="@context.NightTimeSpeedRate"></SySliderFormItem>
+                        <SySliderFormItem Label="经验值倍率" DefaultValue="@configService.DefaultPalConfig.ExpRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.ExpRate"></SySliderFormItem>
+                        <SySliderFormItem Label="捕捉概率倍率" DefaultValue="@configService.DefaultPalConfig.PalCaptureRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.PalCaptureRate"></SySliderFormItem>
+                        <SySliderFormItem Label="帕鲁出现概率倍率" DefaultValue="@configService.DefaultPalConfig.PalSpawnNumRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.PalSpawnNumRate"></SySliderFormItem>
+                        <SySliderFormItem Label="帕鲁攻击伤害倍率" DefaultValue="@configService.DefaultPalConfig.PalDamageRateAttack" Min="0" Max="20" Step="0.01" @bind-Value="@context.PalDamageRateAttack"></SySliderFormItem>
+                        <SySliderFormItem Label="帕鲁承受伤害倍率" DefaultValue="@configService.DefaultPalConfig.PalDamageRateDefense" Min="0" Max="20" Step="0.01" @bind-Value="@context.PalDamageRateDefense"></SySliderFormItem>
+                        <SySliderFormItem Label="帕鲁饱食度降低倍率" DefaultValue="@configService.DefaultPalConfig.PalStomachDecreaceRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.PalStomachDecreaceRate"></SySliderFormItem>
+                        <SySliderFormItem Label="帕鲁耐力降低倍率" DefaultValue="@configService.DefaultPalConfig.PalStaminaDecreaceRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.PalStaminaDecreaceRate"></SySliderFormItem>
+                        <SySliderFormItem Label="帕鲁生命值自然回复倍率" DefaultValue="@configService.DefaultPalConfig.PalAutoHPRegeneRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.PalAutoHPRegeneRate"></SySliderFormItem>
+                        <SySliderFormItem Label="帕鲁睡眠时/终端中生命值回复倍率" DefaultValue="@configService.DefaultPalConfig.PalAutoHpRegeneRateInSleep" Min="0" Max="20" Step="0.01" @bind-Value="@context.PalAutoHpRegeneRateInSleep"></SySliderFormItem>
+                        <SySliderFormItem Label="玩家攻击伤害倍率" DefaultValue="@configService.DefaultPalConfig.PlayerDamageRateAttack" Min="0" Max="20" Step="0.01" @bind-Value="@context.PlayerDamageRateAttack"></SySliderFormItem>
+                        <SySliderFormItem Label="玩家承受伤害倍率" DefaultValue="@configService.DefaultPalConfig.PlayerDamageRateDefense" Min="0" Max="20" Step="0.01" @bind-Value="@context.PlayerDamageRateDefense"></SySliderFormItem>
+                        <SySliderFormItem Label="玩家饱食度降低倍率" DefaultValue="@configService.DefaultPalConfig.PlayerStomachDecreaceRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.PlayerStomachDecreaceRate"></SySliderFormItem>
+                        <SySliderFormItem Label="玩家耐力降低倍率" DefaultValue="@configService.DefaultPalConfig.PlayerStaminaDecreaceRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.PlayerStaminaDecreaceRate"></SySliderFormItem>
+                        <SySliderFormItem Label="玩家生命值自然回复倍率" DefaultValue="@configService.DefaultPalConfig.PlayerAutoHPRegeneRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.PlayerAutoHPRegeneRate"></SySliderFormItem>
+                        <SySliderFormItem Label="玩家睡眠时生命值回复倍率" DefaultValue="@configService.DefaultPalConfig.PlayerAutoHpRegeneRateInSleep" Min="0" Max="20" Step="0.01" @bind-Value="@context.PlayerAutoHpRegeneRateInSleep"></SySliderFormItem>
+                        <SySliderFormItem Label="对建筑物伤害倍率" DefaultValue="@configService.DefaultPalConfig.BuildObjectDamageRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.BuildObjectDamageRate"></SySliderFormItem>
+                        <SySliderFormItem Label="非基地圈内建筑物的劣化速度倍率" DefaultValue="@configService.DefaultPalConfig.BuildObjectDeteriorationDamageRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.BuildObjectDeteriorationDamageRate"></SySliderFormItem>
+                        <SySliderFormItem Label="掉落物品最大存在数量" DefaultValue="@configService.DefaultPalConfig.DropItemMaxNum" Min="0" Max="10000" Step="1" @bind-Value="@context.DropItemMaxNum"></SySliderFormItem>
+                        <SySliderFormItem Label="道具采集量倍率" DefaultValue="@configService.DefaultPalConfig.CollectionDropRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.CollectionDropRate"></SySliderFormItem>
+                        <SySliderFormItem Label="可采集物品生命值倍率" DefaultValue="@configService.DefaultPalConfig.CollectionObjectHpRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.CollectionObjectHpRate"></SySliderFormItem>
+                        <SySliderFormItem Label="可采集物品重生间隔倍率" DefaultValue="@configService.DefaultPalConfig.CollectionObjectRespawnSpeedRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.CollectionObjectRespawnSpeedRate"></SySliderFormItem>
+                        <SySliderFormItem Label="道具掉落量倍率" DefaultValue="@configService.DefaultPalConfig.EnemyDropItemRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.EnemyDropItemRate"></SySliderFormItem>
+                        <SySliderFormItem Label="巨大蛋孵化所需时间(小时)" DefaultValue="@configService.DefaultPalConfig.PalEggDefaultHatchingTime" Min="0" Max="240" Step="0.01" @bind-Value="@context.PalEggDefaultHatchingTime"></SySliderFormItem>
+
+                        <FormItem Label="启用袭击事件">
+                            <Checkbox @bind-Value="context.bEnableInvaderEnemy"></Checkbox>
                         </FormItem>
                         <FormItem Label="死亡惩罚">
                             <Select @bind-Value="@context.DeathPenalty"
                                     DefaultValue="@("ItemAndEquipment")"
-                                    Style="width: 120px;"
+                                    Style="width: 200px;"
                                     TItemValue="string"
                                     TItem="string">
                                 <SelectOptions>
@@ -240,33 +220,58 @@
                                 </SelectOptions>
                             </Select>
                         </FormItem>
+                        <SySliderFormItem Label="公会玩家最大数量" DefaultValue="@configService.DefaultPalConfig.GuildPlayerMaxNum" Min="0" Max="100" Step="1" @bind-Value="@context.GuildPlayerMaxNum"></SySliderFormItem>
+                        <SySliderFormItem Label="可分配至据点工作的帕鲁数量上限" DefaultValue="@configService.DefaultPalConfig.BaseCampWorkerMaxNum" Min="0" Max="20" Step="1" @bind-Value="@context.BaseCampWorkerMaxNum"></SySliderFormItem>
+
                         <FormItem Label="启用玩家对玩家的伤害">
                             <Checkbox @bind-Value="context.bEnablePlayerToPlayerDamage"></Checkbox>
                         </FormItem>
-                        <FormItem Label="火焰伤害">
+                        <FormItem Label="启用友伤">
                             <Checkbox @bind-Value="context.bEnableFriendlyFire"></Checkbox>
                         </FormItem>
-                        <FormItem Label="是否发生袭击事件">
-                            <Checkbox @bind-Value="context.bEnableInvaderEnemy"></Checkbox>
+                        <FormItem Label="激活帕鲁便便">
+                            <Checkbox @bind-Value="context.bActiveUNKO"></Checkbox>
                         </FormItem>
-                        <FormItem Label="掉落物品存在最大时长">
-                            <AntDesign.InputNumber @bind-Value="@context.DropItemAliveMaxHours" Min="0" DefaultValue="1"></AntDesign.InputNumber>
+                        <FormItem Label="启用手柄瞄准辅助">
+                            <Checkbox @bind-Value="context.bEnableAimAssistPad"></Checkbox>
                         </FormItem>
+                        <FormItem Label="启用键盘瞄准辅助">
+                            <Checkbox @bind-Value="context.bEnableAimAssistKeyboard"></Checkbox>
+                        </FormItem>
+                        <SySliderFormItem Label="帕鲁便便掉落最大数量" DefaultValue="@configService.DefaultPalConfig.DropItemMaxNum_UNKO" Min="0" Max="5000" Step="1" @bind-Value="@context.DropItemMaxNum_UNKO"></SySliderFormItem>
+                        <SySliderFormItem Label="全地图据点最大数量" DefaultValue="@configService.DefaultPalConfig.BaseCampMaxNum" Min="0" Max="10240" Step="1" @bind-Value="@context.BaseCampMaxNum"></SySliderFormItem>
+                        <SySliderFormItem Label="掉落物品存活最大小时数" DefaultValue="@configService.DefaultPalConfig.DropItemAliveMaxHours" Min="0" Max="240" Step="1" @bind-Value="@context.DropItemAliveMaxHours"></SySliderFormItem>
                         <FormItem Label="自动重置没有在线玩家的公会">
                             <Checkbox @bind-Value="context.bAutoResetGuildNoOnlinePlayers"></Checkbox>
                         </FormItem>
-                        <FormItem Label="无在线玩家时自动重置生成时间">
-                            <AntDesign.InputNumber @bind-Value="@context.AutoResetGuildTimeNoOnlinePlayers" Min="0" DefaultValue="1"></AntDesign.InputNumber>
+                        <SySliderFormItem Label="自动重置无在线玩家的公会时间(小时)" DefaultValue="@configService.DefaultPalConfig.AutoResetGuildTimeNoOnlinePlayers" Min="0" Max="240" Step="1" @bind-Value="@context.AutoResetGuildTimeNoOnlinePlayers"></SySliderFormItem>
+                        <SySliderFormItem Label="工作速率" DefaultValue="@configService.DefaultPalConfig.WorkSpeedRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.WorkSpeedRate"></SySliderFormItem>
+                        <FormItem Label="是否多人游戏">
+                            <Checkbox @bind-Value="context.bIsMultiplay"></Checkbox>
                         </FormItem>
-                        <FormItem Label="公会玩家最大数量">
-                            <AntDesign.InputNumber @bind-Value="@context.GuildPlayerMaxNum" Min="0" DefaultValue="1"></AntDesign.InputNumber>
+                        <FormItem Label="是否 PvP">
+                            <Checkbox @bind-Value="context.bIsPvP"></Checkbox>
                         </FormItem>
-                        <FormItem Label="帕鲁蛋孵化时间">
-                            <AntDesign.InputNumber @bind-Value="@context.PalEggDefaultHatchingTime" Min="0" DefaultValue="1"></AntDesign.InputNumber>
+                        <FormItem Label="能否拾取其他公会玩家的死亡惩罚掉落物">
+                            <Checkbox @bind-Value="context.bCanPickupOtherGuildDeathPenaltyDrop"></Checkbox>
                         </FormItem>
-                        <FormItem Label="工作速度倍率">
-                            <Slider Class="sy-slider-value" TValue="double" DefaultValue="1" Min="0" Max="20" TooltipPlacement="@Placement.Top" Step="0.01" @bind-Value="@context.WorkSpeedRate" />
-                            <Text Class="sy-slider-value-text">@context.WorkSpeedRate</Text>
+                        <FormItem Label="启用超时未登录惩罚">
+                            <Checkbox @bind-Value="context.bEnableNonLoginPenalty"></Checkbox>
+                        </FormItem>
+                        <FormItem Label="启用快速传送">
+                            <Checkbox @bind-Value="context.bEnableFastTravel"></Checkbox>
+                        </FormItem>
+                        <FormItem Label="是否通过地图选择复活位置">
+                            <Checkbox @bind-Value="context.bIsStartLocationSelectByMap"></Checkbox>
+                        </FormItem>
+                        <FormItem Label="登出后玩家人物是否存在">
+                            <Checkbox @bind-Value="context.bExistPlayerAfterLogout"></Checkbox>
+                        </FormItem>
+                        <FormItem Label="启用据点内防御其他公会玩家">
+                            <Checkbox @bind-Value="context.bEnableDefenseOtherGuildPlayer"></Checkbox>
+                        </FormItem>
+                        <FormItem Label="启用服务器内可以查看其他玩家列表">
+                            <Checkbox @bind-Value="context.bShowPlayerList"></Checkbox>
                         </FormItem>
                     </Form>
                 </Content>

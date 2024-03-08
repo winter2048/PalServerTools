@@ -156,7 +156,7 @@ body {
 
 .sy-slider-value {
     display: inline-block;
-    width: calc(100% - 100px);
+    width: calc(100% - 120px);
 }
 
 .sy-content-footer {
@@ -302,3 +302,24 @@ body {
 .ant-alert{
     margin-bottom: 5px;
 }
+
+.sy-slider-value-input {
+    display: inline-block;
+    width: 70px;
+    line-height: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sy-slider-value-reload {
+    width: 25px;
+    font-size: 24px;
+    float: right;
+    height: 32px;
+    line-height: 1.5715;
+    transform: rotateY(180deg);
+}
+
+    .sy-slider-value-reload span {
+        font-size: 24px;
+    }

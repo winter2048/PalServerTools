@@ -13,6 +13,7 @@ namespace PalServerTools.Data
     {
         private readonly IConfiguration _configuration;
 
+        public PalConfigModel DefaultPalConfig;
         public PalConfigModel PalConfig;
         public ToolsConfigModel ToolsConfig;
 
@@ -20,7 +21,61 @@ namespace PalServerTools.Data
         {
             _configuration = configuration;
             ToolsConfig = GetToolsConfig();
+            DefaultPalConfig = GetDefaultPalConfig();
             PalConfig = GetPalConfig();
+        }
+
+        private PalConfigModel GetDefaultPalConfig()
+        {
+            // 解析文件内容转换为字典格式 - 默认配置 DefaultPalWorldSettings.ini
+            string defaultFileContent = "";
+            var defaultPalServerConfigPath = Path.Combine(ToolsConfig.PalServerPath, "DefaultPalWorldSettings.ini");
+            if (File.Exists(defaultPalServerConfigPath))
+            {
+                defaultFileContent = File.ReadAllText(defaultPalServerConfigPath);
+            }
+            Dictionary<string, string> defaultConfigData = new Dictionary<string, string>();
+            string[] defaultLines = defaultFileContent.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string line in defaultLines)
+            {
+                if (line.StartsWith("OptionSettings="))
+                {
+                    Match match = Regex.Match(line, @"(?<=OptionSettings=\()(.*?)(?=\))");
+                    if (match.Success)
+                    {
+                        string optionSettings = match.Groups[0].Value;
+                        string[] keyValuePairs = optionSettings.Split(',');
+                        foreach (string keyValuePair in keyValuePairs)
+                        {
+                            string[] keyValue = keyValuePair.Split('=');
+                            if (keyValue.Length == 2)
+                            {
+                                string key = keyValue[0].Trim();
+                                string value = keyValue[1].Trim();
+                                defaultConfigData[key] = value.Replace(@"""", "");
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            // 将字典转换为PalConfigModel对象
+            PalConfigModel palConfig = new PalConfigModel();
+            // 设置默认值
+            foreach (var kvp in defaultConfigData)
+            {
+                // 利用反射找到属性，并设置它们的值
+                var property = typeof(PalConfigModel).GetProperty(kvp.Key);
+                if (property != null)
+                {
+                    // 根据属性的类型进行相应的值转换
+                    var targetType = property.PropertyType;
+                    var value = Convert.ChangeType(kvp.Value, targetType);
+                    property.SetValue(palConfig, value);
+                }
+            }
+
+            return palConfig;
         }
 
         private PalConfigModel GetPalConfig()
@@ -58,54 +113,9 @@ namespace PalServerTools.Data
                 }
             }
 
-            // 解析文件内容转换为字典格式 - 默认配置 DefaultPalWorldSettings.ini
-            string defaultFileContent = "";
-            var defaultPalServerConfigPath = Path.Combine(ToolsConfig.PalServerPath, "DefaultPalWorldSettings.ini");
-            if (File.Exists(defaultPalServerConfigPath))
-            {
-                defaultFileContent = File.ReadAllText(defaultPalServerConfigPath);
-            }
-            Dictionary<string, string> defaultConfigData = new Dictionary<string, string>();
-            string[] defaultLines = defaultFileContent.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string line in defaultLines)
-            {
-                if (line.StartsWith("OptionSettings="))
-                {
-                    Match match = Regex.Match(line, @"(?<=OptionSettings=\()(.*?)(?=\))");
-                    if (match.Success)
-                    {
-                        string optionSettings = match.Groups[0].Value;
-                        string[] keyValuePairs = optionSettings.Split(',');
-                        foreach (string keyValuePair in keyValuePairs)
-                        {
-                            string[] keyValue = keyValuePair.Split('=');
-                            if (keyValue.Length == 2)
-                            {
-                                string key = keyValue[0].Trim();
-                                string value = keyValue[1].Trim();
-                                defaultConfigData[key] = value.Replace(@"""", "");
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
-
             // 将字典转换为PalConfigModel对象
-            PalConfigModel palConfig = new PalConfigModel();
-            // 设置默认值
-            foreach (var kvp in defaultConfigData)
-            {
-                // 利用反射找到属性，并设置它们的值
-                var property = typeof(PalConfigModel).GetProperty(kvp.Key);
-                if (property != null)
-                {
-                    // 根据属性的类型进行相应的值转换
-                    var targetType = property.PropertyType;
-                    var value = Convert.ChangeType(kvp.Value, targetType);
-                    property.SetValue(palConfig, value);
-                }
-            }
+            PalConfigModel palConfig = ObjectUtil.DeepCopy(DefaultPalConfig);
+
             // 设置实际值
             foreach (var kvp in configData)
             {
@@ -193,55 +203,7 @@ namespace PalServerTools.Data
 
         public void RestoreDefaultPalConfig()
         {
-            // 解析文件内容转换为字典格式 - 默认配置 DefaultPalWorldSettings.ini
-            string defaultFileContent = "";
-            var defaultPalServerConfigPath = Path.Combine(ToolsConfig.PalServerPath, "DefaultPalWorldSettings.ini");
-            if (File.Exists(defaultPalServerConfigPath))
-            {
-                defaultFileContent = File.ReadAllText(defaultPalServerConfigPath);
-            }
-            Dictionary<string, string> defaultConfigData = new Dictionary<string, string>();
-            string[] defaultLines = defaultFileContent.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string line in defaultLines)
-            {
-                if (line.StartsWith("OptionSettings="))
-                {
-                    Match match = Regex.Match(line, @"(?<=OptionSettings=\()(.*?)(?=\))");
-                    if (match.Success)
-                    {
-                        string optionSettings = match.Groups[0].Value;
-                        string[] keyValuePairs = optionSettings.Split(',');
-                        foreach (string keyValuePair in keyValuePairs)
-                        {
-                            string[] keyValue = keyValuePair.Split('=');
-                            if (keyValue.Length == 2)
-                            {
-                                string key = keyValue[0].Trim();
-                                string value = keyValue[1].Trim();
-                                defaultConfigData[key] = value.Replace(@"""", "");
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
-
-            // 将字典转换为PalConfigModel对象
-            PalConfigModel defaultPalConfig = new PalConfigModel();
-            // 设置默认值
-            foreach (var kvp in defaultConfigData)
-            {
-                // 利用反射找到属性，并设置它们的值
-                var property = typeof(PalConfigModel).GetProperty(kvp.Key);
-                if (property != null)
-                {
-                    // 根据属性的类型进行相应的值转换
-                    var targetType = property.PropertyType;
-                    var value = Convert.ChangeType(kvp.Value, targetType);
-                    property.SetValue(defaultPalConfig, value);
-                }
-            }
-            PalConfig = defaultPalConfig;
+            PalConfig = ObjectUtil.DeepCopy(DefaultPalConfig);
         }
 
         public async Task Save()

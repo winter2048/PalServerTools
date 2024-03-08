@@ -1,5 +1,7 @@
-﻿using PalServerTools.Models;
+﻿using Newtonsoft.Json;
+using PalServerTools.Models;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace PalServerTools.Utils
 {
@@ -34,6 +36,15 @@ namespace PalServerTools.Utils
             }
 
             return true;
+        }
+
+        public static T DeepCopy<T>(T obj)
+        {
+            // 序列化对象为JSON字符串
+            var json = JsonConvert.SerializeObject(obj);
+
+            // 反序列化JSON字符串到新的对象实例
+            return JsonConvert.DeserializeObject<T>(json);
         }
     }
 }

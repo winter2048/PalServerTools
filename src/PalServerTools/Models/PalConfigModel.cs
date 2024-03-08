@@ -10,16 +10,18 @@
         public double PalSpawnNumRate { get; set; }
         public double PalDamageRateAttack { get; set; }
         public double PalDamageRateDefense { get; set; }
+        public double PalStomachDecreaceRate { get; set; }
+        public double PalStaminaDecreaceRate { get; set; }
         public double PlayerDamageRateAttack { get; set; }
         public double PlayerDamageRateDefense { get; set; }
-        public double PlayerStomachDecreaseRate { get; set; }
-        public double PlayerStaminaDecreaseRate { get; set; }
+        public double PlayerStomachDecreaceRate { get; set; }
+        public double PlayerStaminaDecreaceRate { get; set; }
         public double PlayerAutoHPRegeneRate { get; set; }
-        public double PlayerAutoHPRegeneRateInSleep { get; set; }
+        public double PlayerAutoHpRegeneRateInSleep { get; set; }
         public double PalStomachDecreaseRate { get; set; }
         public double PalStaminaDecreaseRate { get; set; }
         public double PalAutoHPRegeneRate { get; set; }
-        public double PalAutoHPRegeneRateInSleep { get; set; }
+        public double PalAutoHpRegeneRateInSleep { get; set; }
         public double BuildObjectDamageRate { get; set; }
         public double BuildObjectDeteriorationDamageRate { get; set; }
         public double CollectionDropRate { get; set; }
@@ -33,14 +35,14 @@
         public bool bActiveUNKO { get; set; }
         public bool bEnableAimAssistPad { get; set; }
         public bool bEnableAimAssistKeyboard { get; set; }
-        public int DropItemMaxNum { get; set; }
-        public int DropItemMaxNum_UNKO { get; set; }
-        public int BaseCampMaxNum { get; set; }
-        public int BaseCampWorkerMaxNum { get; set; }
+        public double DropItemMaxNum { get; set; }
+        public double DropItemMaxNum_UNKO { get; set; }
+        public double BaseCampMaxNum { get; set; }
+        public double BaseCampWorkerMaxNum { get; set; }
         public double DropItemAliveMaxHours { get; set; }
         public bool bAutoResetGuildNoOnlinePlayers { get; set; }
         public double AutoResetGuildTimeNoOnlinePlayers { get; set; }
-        public int GuildPlayerMaxNum { get; set; }
+        public double GuildPlayerMaxNum { get; set; }
         public double PalEggDefaultHatchingTime { get; set; }
         public double WorkSpeedRate { get; set; }
         public bool bIsMultiplay { get; set; }
@@ -51,8 +53,9 @@
         public bool bIsStartLocationSelectByMap { get; set; }
         public bool bExistPlayerAfterLogout { get; set; }
         public bool bEnableDefenseOtherGuildPlayer { get; set; }
-        public int CoopPlayerMaxNum { get; set; }
-        public int ServerPlayerMaxNum { get; set; }
+        public bool bShowPlayerList { get; set; }
+        public double CoopPlayerMaxNum { get; set; }
+        public double ServerPlayerMaxNum { get; set; }
         public string ServerName { get; set; } = "";
         public string ServerDescription { get; set; } = "";
         public string AdminPassword { get; set; } = "";
