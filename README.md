@@ -61,4 +61,10 @@ iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/maste
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/2a764d53-0107-4791-ab5b-53f646de3727)
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/eb90bf24-6b45-4580-9c04-3ded442f3abc)
 
+# 感谢
 
+- [palworld-save-tools](https://github.com/cheahjs/palworld-save-tools) 提供了存档解析工具实现
+
+## 许可证
+
+根据 [Apache2.0 许可证](LICENSE) 授权，任何转载请在 README 和文件部分标明！任何商用行为请务必告知！
