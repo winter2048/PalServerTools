@@ -1,7 +1,7 @@
 ﻿using CronQuery.Mvc.Jobs;
 using PalServerTools.Data;
-using static PalServerTools.Models.PalEnum;
 using System.Diagnostics;
+using PalServerTools.Models;
 
 namespace PalServerTools.Job
 {

@@ -20,7 +20,7 @@
                     <PageHeader Class="sy-content-title-2" Title="基础配置" />
                 }
                 <Content Class="sy-content-body">
-                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@configService.ToolsConfig" OnFinish="OnFinish">
+                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@toolsConfigModel" OnFinish="OnFinish">
                         <FormItem Label="PalServer根目录">
                             <Input @bind-Value="@context.PalServerPath" />
                         </FormItem>
@@ -49,7 +49,7 @@
                     <PageHeader Class="sy-content-title-2" Title="存档配置" />
                 }
                 <Content Class="sy-content-body">
-                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@configService.ToolsConfig" OnFinish="OnFinish">
+                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@toolsConfigModel" OnFinish="OnFinish">
                         <FormItem Label="存档备份位置">
                             <Input @bind-Value="@context.BackupPath" />
                         </FormItem>
@@ -96,7 +96,7 @@
                     <PageHeader Class="sy-content-title-2" Title="服务器配置" />
                 }
                 <Content Class="sy-content-body">
-                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@configService.PalConfig">
+                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="4" WrapperColSpan="14" Model="@palConfigModel">
                         <FormItem Label="服务器名称">
                             <Input @bind-Value="@context.ServerName" />
                         </FormItem>
@@ -117,13 +117,13 @@
                         </FormItem>
                         <FormItem Label="难度">
                             <Select @bind-Value="@context.Difficulty"
-                                    DefaultValue="@("None")"
+                                    DefaultValue="@EPalOptionWorldDifficulty.None"
                                     Style="width: 120px;"
-                                    TItemValue="string"
-                                    TItem="string">
+                                    TItemValue="EPalOptionWorldDifficulty"
+                                    TItem="EPalOptionWorldDifficulty">
                                 <SelectOptions>
-                                    <SelectOption Value="@("Difficulty")" Label="困难" />
-                                    <SelectOption Value="@("None")" Label="简单" />
+                                    <SelectOption Value="@EPalOptionWorldDifficulty.Difficulty" Label="困难" />
+                                    <SelectOption Value="@EPalOptionWorldDifficulty.None" Label="简单" />
                                 </SelectOptions>
                             </Select>
                         </FormItem>
@@ -176,7 +176,7 @@
                     <PageHeader Class="sy-content-title-2" Title="游戏参数调整" />
                 }
                 <Content Class="sy-content-body">
-                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="6" WrapperColSpan="14" Model="@configService.PalConfig">
+                    <Form Class="sy-content-body" Layout="@FormLayout.Horizontal" LabelColSpan="6" WrapperColSpan="14" Model="@palConfigModel">
                         <SySliderFormItem Label="白天流逝速度" DefaultValue="@configService.DefaultPalConfig.DayTimeSpeedRate" Min="0.01" Max="15" Step="0.01" @bind-Value="@context.DayTimeSpeedRate"></SySliderFormItem>
                         <SySliderFormItem Label="夜晚流逝速度" DefaultValue="@configService.DefaultPalConfig.NightTimeSpeedRate" Min="0.01" Max="15" Step="0.01" @bind-Value="@context.NightTimeSpeedRate"></SySliderFormItem>
                         <SySliderFormItem Label="经验值倍率" DefaultValue="@configService.DefaultPalConfig.ExpRate" Min="0" Max="20" Step="0.01" @bind-Value="@context.ExpRate"></SySliderFormItem>
@@ -208,15 +208,15 @@
                         </FormItem>
                         <FormItem Label="死亡惩罚">
                             <Select @bind-Value="@context.DeathPenalty"
-                                    DefaultValue="@("ItemAndEquipment")"
+                                    DefaultValue="@EPalOptionWorldDeathPenalty.None"
                                     Style="width: 200px;"
-                                    TItemValue="string"
-                                    TItem="string">
+                                    TItemValue="@EPalOptionWorldDeathPenalty"
+                                    TItem="@EPalOptionWorldDeathPenalty">
                                 <SelectOptions>
-                                    <SelectOption Value="@("None")" Label="无惩罚" />
-                                    <SelectOption Value="@("Item")" Label="丢失物品但不丢失装备" />
-                                    <SelectOption Value="@("ItemAndEquipment")" Label="丢失物品和装备" />
-                                    <SelectOption Value="@("All")" Label="丢失所以物品、装备、伙伴" />
+                                    <SelectOption Value="@EPalOptionWorldDeathPenalty.None" Label="无惩罚" />
+                                    <SelectOption Value="@EPalOptionWorldDeathPenalty.Item" Label="丢失物品但不丢失装备" />
+                                    <SelectOption Value="@EPalOptionWorldDeathPenalty.ItemAndEquipment" Label="丢失物品和装备" />
+                                    <SelectOption Value="@EPalOptionWorldDeathPenalty.All" Label="丢失所以物品、装备、伙伴" />
                                 </SelectOptions>
                             </Select>
                         </FormItem>
@@ -303,6 +303,15 @@
     private bool IsSmall = false;
     private bool withButtonLoading = false;
     RenderFragment leftExtra => @<PageHeader Class="sy-content-title" Title="配置" />;
+    private PalConfigModel palConfigModel = new PalConfigModel();
+    private ToolsConfigModel toolsConfigModel = new ToolsConfigModel();
+
+    protected override void OnInitialized()
+    {
+        palConfigModel = configService.PalConfig.DeepCopy();
+        toolsConfigModel = configService.ToolsConfig.DeepCopy();
+    }
+
     private void OnFinish(EditContext editContext)
     {
         // Console.WriteLine($"Success:{JsonSerializer.Serialize(model)}");
@@ -319,7 +328,7 @@
                 Content = @"注意：该操作会重置 ""服务器配置"" 和 ""游戏参数调整"" 的参数，不会进行保存操作。",
                 OnOk = async (e) =>
                 {
-                    await Task.Run(() => { configService.RestoreDefaultPalConfig(); });
+                    await Task.Run(() => { configService.RestoreDefaultPalConfig(palConfigModel); });
                     this.StateHasChanged();
                     _ = message.Success("已恢复！");
                 },
@@ -332,8 +341,7 @@
     {
         try
         {
-            await configService.ToolsConfigSave();
-            configService.ReloadPalConfig();
+            await configService.ToolsConfigSave(toolsConfigModel);
             _ = message.Success("保存成功！");
         }
         catch (Exception ex)
@@ -346,7 +354,7 @@
     {
         try
         {
-            await configService.Save();
+            await configService.Save(toolsConfigModel, palConfigModel);
             _ = message.Success("保存成功！");
         }
         catch (Exception ex)
@@ -360,8 +368,8 @@
         try
         {
             withButtonLoading = true;
-            await configService.Save();
-            if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
+            await configService.Save(toolsConfigModel, palConfigModel);
+            if (palProcessService.palServerState == Models.PalServerState.Running)
             {
                await palProcessService.CloseProcess();
             }

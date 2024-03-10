@@ -7,6 +7,18 @@ namespace PalServerTools.Utils
 {
     public static class ObjectUtil
     {
+        public static void SetObject<T>(this T model1, T model2)
+        {
+            // 获取PalConfigModel的所有属性
+            PropertyInfo[] properties = typeof(T).GetProperties();
+
+            foreach (var property in properties)
+            {
+                // 获取属性的值
+                property.SetValue(model1, property.GetValue(model2));
+            }
+        }
+
         public static bool CompareModels<T>(T model1, T model2)
         {
             // 判断两个对象是否为空
@@ -38,7 +50,7 @@ namespace PalServerTools.Utils
             return true;
         }
 
-        public static T DeepCopy<T>(T obj)
+        public static T DeepCopy<T>(this T obj)
         {
             // 序列化对象为JSON字符串
             var json = JsonConvert.SerializeObject(obj);

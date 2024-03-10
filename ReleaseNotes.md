@@ -1,4 +1,9 @@
 [返回 README](./README.md)
+### v2.0.12
+
+- 游戏参数配置改为使用WorldOption.sav保存，解决部分参数在游戏中不生效的问题
+- 首次启动会自动安装PalWorld Sav解析器（palworld-save-tools）
+---
 ### v2.0.11
 
 - 完善游戏参数配置，参数参考pal.palu123.com (@wifidofs1提供)

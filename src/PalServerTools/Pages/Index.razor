@@ -28,7 +28,7 @@
                     {
                         <div style="display:inline-block;margin-left:10px;">
                             <Text Style="color: red; ">新 @palProcessService.latestVersion</Text>
-                            <Button Type="@ButtonType.Primary" Size="small" Danger Icon="arrow-up" OnClick="OnClickUpgrade" Loading="@(palProcessService.palServerUpdateState == Models.PalEnum.PalServerUpdateState.Updating)">@(palProcessService.palServerUpdateState == Models.PalEnum.PalServerUpdateState.Updating ? "升级中" : "立即升级")</Button>
+                            <Button Type="@ButtonType.Primary" Size="small" Danger Icon="arrow-up" OnClick="OnClickUpgrade" Loading="@(palProcessService.palServerUpdateState == Models.PalServerUpdateState.Updating)">@(palProcessService.palServerUpdateState == Models.PalServerUpdateState.Updating ? "升级中" : "立即升级")</Button>
                          </div>
                     }
                     else
@@ -39,8 +39,8 @@
                     }
                 </p>
                 <p>
-                    状态： @(palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped ? "停止" : "运行中")
-                    @if (palProcessService.palServerState == Models.PalEnum.PalServerState.Stopped)
+                    状态： @(palProcessService.palServerState == Models.PalServerState.Stopped ? "停止" : "运行中")
+                    @if (palProcessService.palServerState == Models.PalServerState.Stopped)
                     {
                         <Button Type="@ButtonType.Primary" Size="small" Icon="poweroff" OnClick="OnClickStart" Loading="withStartLoading">启动</Button>
                     }
@@ -51,10 +51,10 @@
                     }
                 </p>
                 <p>
-                    自动重启：<Switch Size="small" @bind-Checked="configService.ToolsConfig.AutoRestart" OnChange="OnChangeToolsConfig" />
+                    自动重启：<Switch Size="small" @bind-Checked="autoRestart" OnChange="OnChangeToolsConfig" />
                 </p>
                 <p>
-                    自动更新：<Switch Size="small" @bind-Checked="configService.ToolsConfig.AutoUpgrade" OnChange="OnChangeToolsConfig" />
+                    自动更新：<Switch Size="small" @bind-Checked="autoUpgrade" OnChange="OnChangeToolsConfig" />
                 </p>
             </Body>
         </Card>
@@ -77,6 +77,18 @@
     {
         <Alert Type="@AlertType.Warning" ShowIcon="true">
             <MessageTemplate> SteamCMD未添加到系统环境变量PATH中！<a target="_blank" href="https://www.leyongdm.com/213440.html">帮助</a></MessageTemplate>
+        </Alert>
+    }
+
+    @if (PalSavUtil.installState != Models.InstallState.Installed)
+    {
+        <Alert Type="@AlertType.Warning" ShowIcon="true">
+            <MessageTemplate>
+                PalWorld Sav解析器（palworld-save-tools）@(PalSavUtil.installState == Models.InstallState.Failed ? "安装失败" : "未安装")！
+                <Button Type="@ButtonType.Primary" Size="small" Loading="@(PalSavUtil.installState == Models.InstallState.Installing)" OnClick="OnClickInstallPalSav">
+                    安装
+                </Button>
+            </MessageTemplate>
         </Alert>
     }
 
@@ -105,10 +117,14 @@
     private bool withCloseLoading = false;
     private bool isCanConnect = true;
     private Tuple<bool, string, string> isToolsLatestVersion = new Tuple<bool, string, string>(true, "", "");
+    private bool autoRestart = false;
+    private bool autoUpgrade = false;
 
     protected override async Task OnInitializedAsync()
     {
-        if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
+        autoRestart = configService.ToolsConfig.AutoRestart;
+        autoUpgrade = configService.ToolsConfig.AutoUpgrade;
+        if (palProcessService.palServerState == Models.PalServerState.Running)
         {
             serverInfo = await palRconService.Info();
         }
@@ -158,7 +174,7 @@
         }
         catch
         {
-            
+
         }
 
         return new Tuple<bool, string, string>(currentVersion == latestVersion, latestVersion, body);
@@ -245,7 +261,10 @@
 
     async Task OnChangeToolsConfig()
     {
-        await configService.ToolsConfigSave();
+        var toolsConfig = configService.ToolsConfig.DeepCopy();
+        toolsConfig.AutoRestart = autoRestart;
+        toolsConfig.AutoUpgrade = autoUpgrade;
+        await configService.ToolsConfigSave(toolsConfig);
     }
 
     async Task OnClickUpgrade()
@@ -262,12 +281,31 @@
         this.StateHasChanged();
     }
 
+    async Task OnClickInstallPalSav()
+    {
+        try
+        {
+            await PalSavUtil.Install();
+            _ = message.Success("PalWorld Sav解析器（palworld-save-tools）安装成功！");
+
+            _ = message.Success("开始重启PalServerTools，请手动刷新页面！");
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error("PalWorld Sav解析器（palworld-save-tools）安装失败：" + ex.Message, 10);
+        }
+        finally
+        {
+            this.StateHasChanged();
+        }
+    }
+
     async Task OnClickCheckLatestVersion()
     {
         try
         {
             withCheckLatestVersionLoading = true;
-            if (palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
+            if (palProcessService.palServerState == Models.PalServerState.Running)
             {
                 await palProcessService.CheckLatestVersion();
                 _ = message.Success(palProcessService.isLatestVersion ? "已经是最新版本！" : "发现新版本！");

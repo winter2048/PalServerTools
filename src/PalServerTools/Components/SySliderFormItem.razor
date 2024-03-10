@@ -1,17 +1,46 @@
 ﻿@namespace PalServerTools.Components
-@inherits AntInputComponentBase<double>
+@typeparam TExample
+@inherits AntInputComponentBase<TExample>
 
 <FormItem Label="@Label">
-    <AntDesign.InputNumber Class="sy-slider-value-input" @bind-Value="@CurrentValue" Min="@Min" Max="@Max" DefaultValue="@DefaultValue"></AntDesign.InputNumber>
-    <Slider Class="sy-slider-value" TValue="double" DefaultValue="@this.DefaultValue" Min="@Min" Max="@Max" TooltipPlacement="@Placement.Top" Step="@Step" @bind-Value="@CurrentValue" />
+    <AntDesign.InputNumber TValue="TExample" Class="sy-slider-value-input" @bind-Value="@CurrentValue" Min="@((TExample)Convert.ChangeType(Min, typeof(TExample)))" Max="@((TExample)Convert.ChangeType(Max, typeof(TExample)))" DefaultValue="@DefaultValue"></AntDesign.InputNumber>
+    <Slider OnChange="SliderValueChange" Class="sy-slider-value" TValue="double" DefaultValue="@(Convert.ToDouble(DefaultValue))" Min="@Min" Max="@Max" TooltipPlacement="@Placement.Top" Step="@Step" @bind-Value="@SliderValue" />
     <Tooltip Placement="@Placement.Right" Title="重置">
         <Button Class="sy-slider-value-reload" Type="@ButtonType.Text" Icon="reload" OnClick="ReloadValue" />
     </Tooltip>
 </FormItem>
 
 @code {
+    private double SliderValue = 0;
+
+    [Parameter]
+    public double Max { get; set; }
+
+    [Parameter]
+    public double Min { get; set; }
+
+    [Parameter]
+    public TExample DefaultValue { get; set; }
+
+    [Parameter]
+    public double Step { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+
+
     void ReloadValue()
     {
         CurrentValue = DefaultValue;
+    }
+
+    void SliderValueChange(double value)
+    {
+        CurrentValue = (TExample)Convert.ChangeType(value, typeof(TExample));
+    }
+
+    protected override void OnValueChange(TExample value)
+    {
+        SliderValue = Convert.ToDouble(value);
     }
 }

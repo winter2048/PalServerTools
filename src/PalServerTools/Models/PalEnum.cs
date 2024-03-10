@@ -1,19 +1,38 @@
 ﻿namespace PalServerTools.Models
 {
-    public class PalEnum
+    public enum InstallState
     {
-        public enum PalServerState
-        {
-            Running,
-            Stopped
-        }
+        None,
+        Installing,
+        Failed,
+        Installed
+    }
 
-        public enum PalServerUpdateState
-        {
-            None,
-            Updating,
-            Success,
-            Failed
-        }
+    public enum PalServerState
+    {
+        Running,
+        Stopped
+    }
+
+    public enum PalServerUpdateState
+    {
+        None,
+        Updating,
+        Success,
+        Failed
+    }
+
+    public enum EPalOptionWorldDeathPenalty
+    {
+        None,
+        Item,
+        ItemAndEquipment,
+        All
+    }
+
+    public enum EPalOptionWorldDifficulty
+    {
+        None,
+        Difficulty
     }
 }

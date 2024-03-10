@@ -14,6 +14,7 @@
 - [x] 内存优化
 - [x] 一键安装脚本
 - [x] 检查&更新工具版本
+- [x] 读取&保存WorldOption.sav
 - [ ] 日志查询
 - [ ] 代理配置(frpc)
 - [ ] 服务器崩溃时提醒在线玩家即将重启
@@ -36,9 +37,7 @@ iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/maste
 ```
 
 - 升级
-``` powershell
-iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/master/install.ps1) } -Update"
-```
+> 双击执行安装目录下的`update.cmd`即可完成更新。
 
 ## 手动安装
 

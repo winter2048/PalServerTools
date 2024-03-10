@@ -18,7 +18,7 @@ namespace PalServerTools.Job
         }
         public async Task RunAsync()
         {
-            if (_palProcessService.palServerState == Models.PalEnum.PalServerState.Running)
+            if (_palProcessService.palServerState == Models.PalServerState.Running)
             {
                await _backupService.Backup();
             }
