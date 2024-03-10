@@ -17,14 +17,21 @@ namespace PalServerTools.Utils
         {
             if (Installer.IsPythonInstalled() && Installer.IsPipInstalled())
             {
-                await Installer.SetupPython(true);
-                await Installer.TryInstallPip(true);
-                await Installer.PipInstallModule("palworld-save-tools", force: true);
-                installState = InstallState.Installed;
+                try
+                {
+                    await Installer.SetupPython(true);
+                    await Installer.TryInstallPip(true);
+                    await Installer.PipInstallModule("palworld-save-tools", force: true);
+                    installState = InstallState.Installed;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("SAV解析器palworld-save-tools初始化失败：" + ex.Message);
+                }
             }
             else
             {
-                await Install();
+                _ = Install();
             }
         }
 
