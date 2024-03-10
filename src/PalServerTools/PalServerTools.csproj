@@ -4,19 +4,38 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="WorldOption.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resource\WorldOption.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\WorldOption.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AntDesign" Version="0.17.4" />
     <PackageReference Include="BlazorPro.BlazorSize" Version="6.2.2" />
     <PackageReference Include="CronQuery" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Python.Included" Version="3.11.6" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.ServiceModel.Syndication" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="update.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="update.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

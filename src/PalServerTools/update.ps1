@@ -1,5 +1,26 @@
-﻿$Owner = "winter2048"
+﻿param(
+    [switch]$Restart
+)
+
+$Owner = "winter2048"
 $RepoName = "PalServerTools"
+
+if ($Restart) {
+    while ($true) {
+        if (Get-Process PalServerTools -ErrorAction SilentlyContinue) {
+            Write-Warning "PalServerTools 正在运行，等待关闭后继续。"
+            Start-Sleep -Seconds 2 
+        }
+        else {
+            break
+        }
+    }
+
+    Start-Sleep -Seconds 2 
+    Start-Process -FilePath  ".\PalServerTools.exe"
+    return $null
+}
+
 
 $folderPath = Get-Location
 if (-not (Test-Path -Path (Join-Path -Path $folderPath -ChildPath "PalServerTools.exe"))) {

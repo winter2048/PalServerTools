@@ -15,7 +15,7 @@ namespace PalServerTools
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -27,12 +27,12 @@ namespace PalServerTools
             builder.Services.AddScoped<ConsoleService>();
             builder.Services.AddSingleton<PalProcessService>();
             builder.Services.AddSingleton<SystemInfoService>();
-            builder.Services.AddTransient<PalConfigService>();
+            builder.Services.AddSingleton<PalConfigService>();
             builder.Services.AddTransient<PalRconService>();
             builder.Services.AddTransient<BackupService>();
             builder.Services.AddScoped<ClientConfigService>();
 
-            // ע��ImitateAuthStateProvider
+            // ImitateAuthStateProvider
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ICookieUtil, CookieUtil>();
             builder.Services.AddScoped<ImitateAuthStateProvider>();
@@ -87,6 +87,7 @@ namespace PalServerTools
             builder.Services.AddTransient<AutoUpgradeJob>();
             var app = builder.Build();
 
+            AppUtil.ServiceProvider = app.Services;
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -100,6 +101,7 @@ namespace PalServerTools
             app.MapBlazorHub();
             app.MapFallbackToPage("/_Host");
             app.Urls.Add(builder.Configuration.GetValue<string>("ASPNETCORE_URLS"));
+            _ = PalSavUtil.Init();
             app.Run();
         }
     }

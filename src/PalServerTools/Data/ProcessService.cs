@@ -1,10 +1,10 @@
 ﻿using AntDesign;
+using PalServerTools.Models;
 using PalServerTools.Utils;
 using System;
 using System.Diagnostics;
 using System.Reactive.Joins;
 using System.Text.RegularExpressions;
-using static PalServerTools.Models.PalEnum;
 
 namespace PalServerTools.Data
 {

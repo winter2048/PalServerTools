@@ -1,6 +1,7 @@
 ﻿using AntDesign;
 using PalServerTools.Components;
 using System.IO;
+using System.Reflection;
 
 namespace PalServerTools.Utils
 {
@@ -45,5 +46,7 @@ namespace PalServerTools.Utils
                 Icon = "mac-command"
             }
         };
+
+        public static string emptyWorldOption = ResourceUtil.GetEmbeddedResourceAsString("PalServerTools.Resource.WorldOption.txt");
     }
 }
