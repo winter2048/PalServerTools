@@ -112,7 +112,7 @@ namespace PalServerTools
             app.MapBlazorHub();
             app.MapFallbackToPage("/_Host");
             app.Urls.Add(builder.Configuration.GetValue<string>("ASPNETCORE_URLS"));
-            //await PalSavUtil.Init();
+            await PalSavUtil.Init();
             app.Run();
         }
     }

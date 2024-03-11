@@ -53,7 +53,7 @@ iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/maste
 
 # 多开功能
 
-> v2.0.14 版本后正式支持多开功能！
+> v2.0.15 版本后正式支持多开功能！
 
 - 创建配置文件`appsetting.{EnvName}.json`
 - 将`appsetting.json`文件的内容复制到新创建的配置文件中，注意修改端口号`ASPNETCORE_URLS`
