@@ -1,4 +1,6 @@
 
+using CronQuery.Mvc.Options;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PalServerTools.Models;
@@ -12,12 +14,11 @@ namespace PalServerTools.Data
 {
     public class PalConfigService
     {
-        private readonly IConfiguration _configuration;
         private ToolsConfigModel _toolsConfigModel;
         private PalConfigModel _tefaultPalConfig;
         private PalConfigModel _palConfig;
 
-        private string appSettingPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+        private string appSettingPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"appsetting{(!string.IsNullOrWhiteSpace(AppUtil.Env) ? "." + AppUtil.Env : "")}.json");
         private string? worldOptionJsonStr;
         private string? worldOptionPath;
 
@@ -25,22 +26,31 @@ namespace PalServerTools.Data
         public PalConfigModel PalConfig { get { return _palConfig; } }
         public ToolsConfigModel ToolsConfig { get { return _toolsConfigModel; } }
 
-        public PalConfigService(IConfiguration configuration)
+        public PalConfigService(IOptionsMonitor<ToolsConfigModel> toolsConfigOptions)
         {
-            _configuration = configuration;
-            _toolsConfigModel = GetToolsConfig();
+            _toolsConfigModel = toolsConfigOptions.CurrentValue;
             _tefaultPalConfig = GetDefaultPalConfig();
             _palConfig = GetPalConfig();
 
             FileUtil.WatchFile(Path.Combine(ToolsConfig.PalServerPath, "DefaultPalWorldSettings.ini"), (obj, ev) => { _tefaultPalConfig = GetDefaultPalConfig(); });
             FileUtil.WatchFile(ToolsConfig.PalServerPath, @"WorldOption.sav", (obj, ev) => { _palConfig = GetPalConfig(); }, true);
             FileUtil.WatchFile(Path.Combine(ToolsConfig.PalServerPath, @"Pal\Saved\Config\WindowsServer\PalWorldSettings.ini"), (obj, ev) => { _palConfig = GetPalConfig(); });
-            FileUtil.WatchFile(appSettingPath, (obj, ev) =>
+            toolsConfigOptions.OnChange((value) =>
             {
-                _toolsConfigModel = GetToolsConfig();
-                FileUtil.WatchFile(Path.Combine(ToolsConfig.PalServerPath, "DefaultPalWorldSettings.ini"), (obj, ev) => { _tefaultPalConfig = GetDefaultPalConfig(); });
-                FileUtil.WatchFile(ToolsConfig.PalServerPath, @"WorldOption.sav", (obj, ev) => { _palConfig = GetPalConfig(); }, true);
-                FileUtil.WatchFile(Path.Combine(ToolsConfig.PalServerPath, @"Pal\Saved\Config\WindowsServer\PalWorldSettings.ini"), (obj, ev) => { _palConfig = GetPalConfig(); });
+                if (_toolsConfigModel.PalServerPath != value.PalServerPath)
+                {
+                    _toolsConfigModel = value;
+                    _tefaultPalConfig = GetDefaultPalConfig();
+                    _palConfig = GetPalConfig();
+                    FileUtil.CleanWatchFileAll();
+                    FileUtil.WatchFile(Path.Combine(ToolsConfig.PalServerPath, "DefaultPalWorldSettings.ini"), (obj, ev) => { _tefaultPalConfig = GetDefaultPalConfig(); });
+                    FileUtil.WatchFile(ToolsConfig.PalServerPath, @"WorldOption.sav", (obj, ev) => { _palConfig = GetPalConfig(); }, true);
+                    FileUtil.WatchFile(Path.Combine(ToolsConfig.PalServerPath, @"Pal\Saved\Config\WindowsServer\PalWorldSettings.ini"), (obj, ev) => { _palConfig = GetPalConfig(); });
+                }
+                else
+                {
+                    _toolsConfigModel = value;
+                }
             });
         }
 
@@ -236,40 +246,20 @@ namespace PalServerTools.Data
             return palConfig;
         }
 
-        private ToolsConfigModel GetToolsConfig()
-        {
-            ((IConfigurationRoot)_configuration).Reload();
-            ToolsConfigModel toolsConfig = new ToolsConfigModel();
-            var propertys = typeof(ToolsConfigModel).GetProperties();
-
-            foreach (var property in propertys)
-            {
-
-                var value = _configuration.GetSection("ToolsConfig").GetValue<object>(property.Name);
-                if (value != null)
-                {
-                    var targetType = property.PropertyType;
-                    property.SetValue(toolsConfig, Convert.ChangeType(value, targetType));
-                }
-
-            }
-            return toolsConfig;
-        }
 
         public void ReLoad()
         {
-            _toolsConfigModel = GetToolsConfig();
             _tefaultPalConfig = GetDefaultPalConfig();
             _palConfig = GetPalConfig();
         }
 
         public async Task ToolsConfigSave(ToolsConfigModel toolsConfig)
         {
-            var appSettingsJson = File.ReadAllText("appsettings.json");
+            var appSettingsJson = File.ReadAllText(appSettingPath);
             JObject configJson = JObject.Parse(appSettingsJson);
             configJson["ToolsConfig"] = JObject.FromObject(toolsConfig);
             var modifiedAppSettingsJson = JsonConvert.SerializeObject(configJson, Formatting.Indented);
-            await File.WriteAllTextAsync("appsettings.json", modifiedAppSettingsJson);
+            await File.WriteAllTextAsync(appSettingPath, modifiedAppSettingsJson);
         }
 
         public async Task PalConfigSave(PalConfigModel palConfig)

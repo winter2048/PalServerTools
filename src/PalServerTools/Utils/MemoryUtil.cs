@@ -9,17 +9,13 @@ namespace PalServerTools.Utils
         [DllImport("psapi.dll", SetLastError = true)]
         private static extern bool EmptyWorkingSet(IntPtr hProcess);
 
-        public static bool ClearProcessWorkingSet(string processName)
+        public static bool ClearProcessWorkingSet(Process process)
         {
             try
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    var procs = Process.GetProcessesByName(processName);
-                    foreach (var proc in procs)
-                    {
-                        EmptyWorkingSet(proc.Handle);
-                    }
+                    EmptyWorkingSet(process.Handle);
                     return true;
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))

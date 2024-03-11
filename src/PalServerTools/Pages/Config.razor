@@ -27,6 +27,9 @@
                         <FormItem Label="PalServer启动参数">
                             <Input @bind-Value="@context.RunArguments" />
                         </FormItem>
+                        <FormItem Label="SteamCMD根目录">
+                            <Input @bind-Value="@context.SteamCMDPath" Placeholder="默认从系统环境变量Path中获取" />
+                        </FormItem>
                         <FormItem Label="工具密码">
                             <InputPassword @bind-Value="@context.ToolsPassword" />
                         </FormItem>

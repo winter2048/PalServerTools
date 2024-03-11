@@ -3,13 +3,17 @@ using BlazorPro.BlazorSize;
 using CronQuery.Mvc.Jobs;
 using CronQuery.Mvc.Options;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Options;
 using PalServerTools.Auth;
 using PalServerTools.Components;
 using PalServerTools.Data;
 using PalServerTools.Job;
+using PalServerTools.Models;
 using PalServerTools.Utils;
+using System.Configuration;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace PalServerTools
 {
@@ -17,8 +21,14 @@ namespace PalServerTools
     {
         public static async Task Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            AppUtil.HistoryProcessor();
 
+            //args = new string[] { "-env","p1"};
+            AppUtil.Env = string.Join(" ", args).GetArgumentValue("-Env") ?? "";
+            await Console.Out.WriteLineAsync("PalServerTools：" + AppUtil.Env);
+            var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddJsonFile($"appsetting{(!string.IsNullOrWhiteSpace(AppUtil.Env) ? "." + AppUtil.Env : "")}.json", true, true);
+           
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
@@ -31,6 +41,7 @@ namespace PalServerTools
             builder.Services.AddTransient<PalRconService>();
             builder.Services.AddTransient<BackupService>();
             builder.Services.AddScoped<ClientConfigService>();
+            builder.Services.Configure<ToolsConfigModel>(builder.Configuration.GetSection("ToolsConfig"));
 
             // ImitateAuthStateProvider
             builder.Services.AddHttpContextAccessor();
@@ -101,7 +112,7 @@ namespace PalServerTools
             app.MapBlazorHub();
             app.MapFallbackToPage("/_Host");
             app.Urls.Add(builder.Configuration.GetValue<string>("ASPNETCORE_URLS"));
-            await PalSavUtil.Init();
+            //await PalSavUtil.Init();
             app.Run();
         }
     }

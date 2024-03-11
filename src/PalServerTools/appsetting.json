@@ -1,5 +1,5 @@
 {
-  "ASPNETCORE_URLS": "http://0.0.0.0:5000",
+  "ASPNETCORE_URLS": "http://0.0.0.0:5001",
   "Logging": {
     "LogLevel": {
       "Default": "Information",
@@ -11,6 +11,7 @@
     "ToolsPassword": "123456",
     "PalServerPath": "E:\\steamcmd\\steamapps\\common\\PalServer",
     "RunArguments": "-publicip 1.1.1.1 -publicport 8211 -publiclobby",
+    "SteamCMDPath": "",
     "AutoRestart": false,
     "AutoBackup": false,
     "BackupCron": "0 0/30 * * * *",
