@@ -24,9 +24,9 @@ namespace PalServerTools.Utils
         public static string? GetArgumentValue(this string commandLine, string argumentName)
         {
             if (string.IsNullOrEmpty(commandLine))
-                throw new ArgumentException("commandLine cannot be null or empty.", nameof(commandLine));
+                return null;
             if (string.IsNullOrEmpty(argumentName))
-                throw new ArgumentException("argumentName cannot be null or empty.", nameof(argumentName));
+                return null;
 
             // 正常化参数名（确保它以"-"开始）
             if (!argumentName.StartsWith("-"))

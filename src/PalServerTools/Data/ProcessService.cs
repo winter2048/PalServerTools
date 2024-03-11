@@ -13,8 +13,9 @@ namespace PalServerTools.Data
         private readonly PalRconService _palRconService;
         private readonly SystemInfoService _systemInfoService;
         private readonly IServiceProvider _serviceProvider;
-        private string processName = "PalServer";
+        private readonly string processName = "PalServer";
         private PalConfigService _configService => _serviceProvider.GetRequiredService<PalConfigService>();
+        private string _palServerPath => Path.Combine(_configService.ToolsConfig.PalServerPath, "PalServer.exe");
 
         public PalServerUpdateState palServerUpdateState = PalServerUpdateState.None;
         public PalServerState palServerState = PalServerState.Stopped;
@@ -48,7 +49,7 @@ namespace PalServerTools.Data
                             throw new Exception($"启动参数-rconport {runArguments.GetArgumentValue("-rconport")}与服务器配置中的RCON端口号({_configService.PalConfig.RCONPort})不一致！");
                         }
                     }
-                    Process.Start(Path.Combine(_configService.ToolsConfig.PalServerPath, "PalServer.exe"), runArguments);
+                    Process.Start(_palServerPath, runArguments);
                     palServerState = PalServerState.Running;
                     Console.WriteLine("启动进程 " + processName + ".exe");
                 }
@@ -66,7 +67,13 @@ namespace PalServerTools.Data
             {
                 try
                 {
-                    Process[] processes = Process.GetProcesses().Where(p => p.ProcessName == "PalServer-Win64-Test-Cmd" || p.ProcessName == "PalServer-Win64-Test" || p.ProcessName == "PalServer").ToArray();
+                    string palServerPath = Path.Combine(_configService.ToolsConfig.PalServerPath, "PalServer.exe");
+                    string PalServerWin64TestPath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Binaries\Win64", "PalServer-Win64-Test.exe");
+                    string PalServerWin64TestCmdPath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Binaries\Win64", "PalServer-Win64-Test-Cmd.exe");
+                    var processes = ProcessUtil.GetProcessesByPath(palServerPath)
+                        .Concat(ProcessUtil.GetProcessesByPath(PalServerWin64TestPath))
+                        .Concat(ProcessUtil.GetProcessesByPath(PalServerWin64TestCmdPath));
+
                     foreach (Process process in processes)
                     {
                         process.Kill();
@@ -85,7 +92,7 @@ namespace PalServerTools.Data
         // 检查进程是否存在
         public bool IsProcessRunning()
         {
-            Process[] processes = Process.GetProcessesByName(processName);
+            Process[] processes = ProcessUtil.GetProcessesByPath(_palServerPath);
             return processes.Length > 0;
         }
 
@@ -163,7 +170,10 @@ namespace PalServerTools.Data
         {
             if (_systemInfoService.Info.MemoryUsage >= 80)
             {
-                MemoryUtil.ClearProcessWorkingSet(processName);
+                foreach (var item in ProcessUtil.GetProcessesByPath(_palServerPath))
+                {
+                    MemoryUtil.ClearProcessWorkingSet(item);
+                }
             }
         }
     }

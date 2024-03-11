@@ -20,8 +20,10 @@ namespace PalServerTools.Utils
                 try
                 {
                     await Installer.SetupPython(true);
-                    await Installer.TryInstallPip(true);
-                    await Installer.PipInstallModule("palworld-save-tools", force: true);
+                    _ = Task.Run(async () => {
+                       await Installer.TryInstallPip(true);
+                       await Installer.PipInstallModule("palworld-save-tools", force: true);
+                    });
                     installState = InstallState.Installed;
                 }
                 catch (Exception ex)
@@ -86,7 +88,7 @@ namespace PalServerTools.Utils
                 };
 
                 Process process = Process.Start(psi);
-                AppUtil.ServiceProvider.GetRequiredService<IHostApplicationLifetime>().StopApplication();
+                //AppUtil.ServiceProvider.GetRequiredService<IHostApplicationLifetime>().StopApplication();
             }
             catch (Exception ex)
             {
@@ -158,7 +160,7 @@ namespace PalServerTools.Utils
             {
                 Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp"));
             }
-            string outFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp\{Path.GetFileName(filename)}_{Guid.NewGuid()}.json");
+            string outFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp\{AppUtil.Env}_{Guid.NewGuid()}.json");
             ConvertSavToJsonFile(filename, outFile);
             string jsonStr = File.ReadAllText(outFile);
             File.Delete(outFile);
@@ -175,7 +177,7 @@ namespace PalServerTools.Utils
             {
                 Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp"));
             }
-            string jsonFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp\temp_{Guid.NewGuid()}.json");
+            string jsonFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp\{AppUtil.Env}_{Guid.NewGuid()}.json");
             File.WriteAllText(jsonFile, jsonStr);
             ConvertJsonToSavFile(jsonFile, outputPath);
             File.Delete(jsonFile);

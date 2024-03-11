@@ -15,6 +15,7 @@
 - [x] 一键安装脚本
 - [x] 检查&更新工具版本
 - [x] 读取&保存WorldOption.sav
+- [x] 支持多开功能
 - [ ] 日志查询
 - [ ] 代理配置(frpc)
 - [ ] 服务器崩溃时提醒在线玩家即将重启
@@ -49,6 +50,15 @@ iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/maste
 - 使用浏览器打开[127.0.0.1:5000](http:127.0.0.1:5000)，默认密码`123456`
 
 > 密码可在appsettings.json文件中配置`ToolsConfig.ToolsPassword`
+
+# 多开功能
+
+> v2.0.14 版本后正式支持多开功能！
+
+- 创建配置文件`appsetting.{EnvName}.json`
+- 将`appsetting.json`文件的内容复制到新创建的配置文件中，注意修改端口号`ASPNETCORE_URLS`
+- 运行`PalServerTools.exe`时添加`-Env {EnvName}`参数，例如`PalServerTools.exe -Env {EnvName}`
+- 每个PalServerTools可以管理不同的PalServer服务端。如果使用PalServer升级功能，需要为每个PalServerTools配置不同的steamcmd路径
 
 # 更新内容查看
 

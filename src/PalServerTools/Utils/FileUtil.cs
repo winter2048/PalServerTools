@@ -23,6 +23,19 @@
             }
         }
 
+        public static void CleanWatchFileAll()
+        {
+            foreach (var item in watchFilePaths)
+            {
+                try
+                {
+                    item.Value.Dispose();
+                    watchFilePaths.Remove(item.Key);
+                }
+                catch{}
+            }
+        }
+
         public static void WatchFile(string filePath, Action<object, FileSystemEventArgs> OnChanged)
         {
             try
@@ -42,10 +55,10 @@
                     watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
 
                     // 添加事件处理程序
-                    watcher.Changed += (e, k) => { OnChanged(e, k); };
-                    watcher.Created += (e, k) => { OnChanged(e, k); };
-                    watcher.Deleted += (e, k) => { OnChanged(e, k); };
-                    watcher.Renamed += (e, k) => { OnChanged(e, k); };
+                    watcher.Changed += (e, k) => { Console.WriteLine("File Changed: " + filePath); OnChanged(e, k); };
+                    watcher.Created += (e, k) => { Console.WriteLine("File Changed: " + filePath); OnChanged(e, k); };
+                    watcher.Deleted += (e, k) => { Console.WriteLine("File Changed: " + filePath); OnChanged(e, k); };
+                    watcher.Renamed += (e, k) => { Console.WriteLine("File Changed: " + filePath); OnChanged(e, k); };
 
                     // 开始监听
                     watcher.EnableRaisingEvents = true;

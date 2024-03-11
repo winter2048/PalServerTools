@@ -1,9 +1,8 @@
 [返回 README](./README.md)
-### v2.0.13
+### v2.0.14
 
-- 修复PalWorld Sav解析器加载问题
----
-### v2.0.12
+- 正式支持多开功能
+### v2.0.13
 
 - 游戏参数配置改为使用WorldOption.sav保存，解决部分参数在游戏中不生效的问题
 - 首次启动会自动安装PalWorld Sav解析器（palworld-save-tools）

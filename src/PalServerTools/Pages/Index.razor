@@ -76,7 +76,7 @@
     @if (!SteamCmdUtil.HasSteamCMD())
     {
         <Alert Type="@AlertType.Warning" ShowIcon="true">
-            <MessageTemplate> SteamCMD未添加到系统环境变量PATH中！<a target="_blank" href="https://www.leyongdm.com/213440.html">帮助</a></MessageTemplate>
+            <MessageTemplate> SteamCMD未安装！请配置SteamCMD的路径或将其添加到系统的环境变量PATH中！<a target="_blank" href="https://www.leyongdm.com/213440.html">帮助</a> <NavLink style="margin-left: 8px" href="/config#basic">去配置</NavLink></MessageTemplate>
         </Alert>
     }
 
@@ -338,7 +338,5 @@
             };
 
         Process process = Process.Start(psi);
-
-        lifetime.StopApplication();
     }
 }

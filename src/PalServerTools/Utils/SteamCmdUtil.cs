@@ -1,5 +1,7 @@
 ﻿using OneOf.Types;
+using PalServerTools.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace PalServerTools.Utils
@@ -9,25 +11,39 @@ namespace PalServerTools.Utils
         public static bool HasSteamCMD()
         {
             bool found = false;
-            // 获取系统的PATH环境变量
-            var pathVariable = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
 
-            if (pathVariable != null)
+            string steamCMDPath = AppUtil.ServiceProvider.GetRequiredService<PalConfigService>().ToolsConfig.SteamCMDPath;
+            if (!string.IsNullOrWhiteSpace(steamCMDPath))
             {
-                // 拆分PATH环境变量为单独的目录路径
-                string[] paths = pathVariable.Split(Path.PathSeparator);
-               
-                // 遍历每个目录路径
-                foreach (var path in paths)
+                // 从配置的路径中查找 steamcmd.exe
+                string steamCmdPath = Path.Combine(steamCMDPath, "steamcmd.exe");
+                if (File.Exists(steamCmdPath))
                 {
-                    // 构建steamcmd.exe的完整路径
-                    string steamCmdPath = Path.Combine(path, "steamcmd.exe");
+                    found = true;
+                }
+            }
+            else
+            {
+                // 从系统环境变量中查找 steamcmd.exe
+                var pathVariable = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
 
-                    // 检查文件是否存在
-                    if (File.Exists(steamCmdPath))
+                if (pathVariable != null)
+                {
+                    // 拆分PATH环境变量为单独的目录路径
+                    string[] paths = pathVariable.Split(Path.PathSeparator);
+
+                    // 遍历每个目录路径
+                    foreach (var path in paths)
                     {
-                        found = true;
-                        break;
+                        // 构建steamcmd.exe的完整路径
+                        string steamCmdPath = Path.Combine(path, "steamcmd.exe");
+
+                        // 检查文件是否存在
+                        if (File.Exists(steamCmdPath))
+                        {
+                            found = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -53,6 +69,13 @@ namespace PalServerTools.Utils
                 StandardOutputEncoding = Encoding.UTF8, // 设置标准输出的编码为UTF-8
                 StandardErrorEncoding = Encoding.UTF8 // 设置错误输出的编码为UTF-8
             };
+
+            // 设置steamcmd路径
+            string steamCMDPath = AppUtil.ServiceProvider.GetRequiredService<PalConfigService>().ToolsConfig.SteamCMDPath;
+            if (!string.IsNullOrWhiteSpace(steamCMDPath))
+            {
+                startInfo.WorkingDirectory = steamCMDPath;
+            }
 
             try
             {

@@ -1,0 +1,24 @@
+{
+  "ASPNETCORE_URLS": "http://0.0.0.0:5002",
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ToolsConfig": {
+    "ToolsPassword": "123456",
+    "PalServerPath": "E:\\Steam\\steamapps\\common\\PalServer",
+    "RunArguments": "-publicip 1.1.1.2 -publicport 8212 -publiclobby",
+    "SteamCMDPath": "",
+    "AutoRestart": false,
+    "AutoBackup": false,
+    "BackupCron": "0 0/30 * * * *",
+    "BackupPath": "D:\\PalBackup",
+    "BackupClearType": 1,
+    "BackupCount": 20,
+    "AutoUpgrade": false,
+    "MemoryClear": true
+  }
+}
