@@ -68,6 +68,7 @@ iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/maste
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/1c7fc6ba-2acd-43eb-84cf-d88bd6b67968)
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/8794e5a6-252b-425c-afe5-fead6ecdb1f2)
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/720b88d4-fb61-437b-ac8b-04af6b546799)
+![image](https://github.com/winter2048/PalServerTools/assets/31879147/62baf5e6-b99a-413c-afd9-9182b8124427)
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/2a764d53-0107-4791-ab5b-53f646de3727)
 ![image](https://github.com/winter2048/PalServerTools/assets/31879147/eb90bf24-6b45-4580-9c04-3ded442f3abc)
 
