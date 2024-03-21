@@ -1,4 +1,5 @@
-﻿using PalServerTools.Models;
+﻿using Microsoft.Extensions.Logging;
+using PalServerTools.Models;
 using System.IO.Compression;
 
 namespace PalServerTools.Data
@@ -6,10 +7,12 @@ namespace PalServerTools.Data
     public class BackupService
     {
         private readonly PalConfigService _configService;
+        private readonly ILogger _logger;
 
-        public BackupService(PalConfigService configService)
+        public BackupService(PalConfigService configService, ILogger logger)
         {
             _configService = configService;
+            _logger = logger;
         }
 
         public List<BackupModel> GetBackupList()
@@ -76,11 +79,11 @@ namespace PalServerTools.Data
                     // 移动压缩文件到目标位置
                     //File.Move(zipFilePath, Path.Combine(backupFolderPath, "backup.zip"));
 
-                    Console.WriteLine("压缩并移动成功！");
+                    _logger.LogInformation("存档备份成功");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("错误：" + ex.Message);
+                   _logger.LogError(ex, "存档备份出错");
                 }
             });
         }
@@ -131,7 +134,7 @@ namespace PalServerTools.Data
                 // 删除临时文件夹
                 Directory.Delete(tempZipFolderPath, true);
 
-                Console.WriteLine("存档恢复成功！");
+                _logger.LogInformation("存档恢复成功！");
             });
         }
 

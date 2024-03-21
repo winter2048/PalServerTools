@@ -31,7 +31,7 @@ namespace PalServerTools.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not clear process working set. " + ex.Message);
+                AppUtil.Logger.LogInformation("Could not clear process working set. " + ex.Message);
             }
             return false;
         }

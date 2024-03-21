@@ -3,21 +3,24 @@ using Newtonsoft.Json;
 using PalServerTools.Models;
 using PalServerTools.Utils;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 
 namespace PalServerTools.Data
 {
     public class ClientConfigService
     {
         private ICookieUtil _cookieUtil { get; set; }
+        private readonly ILogger _logger;
 
         public ClientConfigModel ClientConfig;
 
         internal event Action? OnSave;
 
-        public ClientConfigService(ICookieUtil cookieUtil)
+        public ClientConfigService(ICookieUtil cookieUtil, ILogger logger)
         {
             _cookieUtil = cookieUtil;
-            ClientConfig= new ClientConfigModel();
+            ClientConfig = new ClientConfigModel();
+            _logger = logger;
         }
 
         public async Task Init()
@@ -42,7 +45,7 @@ namespace PalServerTools.Data
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    //_logger.LogError(ex, "GetClientConfig 异常");
                 }
             }
             return clientConfig;

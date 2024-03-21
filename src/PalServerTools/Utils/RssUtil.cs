@@ -1,4 +1,5 @@
-﻿using System.ServiceModel.Syndication;
+﻿using Microsoft.Extensions.Logging;
+using System.ServiceModel.Syndication;
 using System.Xml;
 
 namespace PalServerTools.Utils
@@ -34,12 +35,13 @@ namespace PalServerTools.Utils
                     }
                     else
                     {
-                        Console.WriteLine("Error retrieving content.");
+                        AppUtil.Logger.LogError("Error retrieving content.");
                     }
                 }
             }
             catch (Exception ex)
             {
+                AppUtil.Logger.LogError($"读取Rss({rssUrl})失败:{ex.Message}");
                 throw new Exception($"读取Rss({rssUrl})失败:{ex.Message}");
             }
 

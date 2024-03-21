@@ -75,7 +75,8 @@ $appsettings = Get-ChildItem -Path $folderPath -Filter 'appsetting*.json'
 $appsettings | ForEach-Object { Rename-Item -Path $_.FullName -NewName "$($_.FullName).bak" }
 
 $appsettingsBak = Get-ChildItem -Path $folderPath -Filter 'appsetting*.json.bak'
-$excludeFile = @("$fileName")
+$excludeFile = @("$fileName", "data")
+Get-ChildItem -Path $folderPath -Recurse -Filter '*.db'| ForEach-Object { $excludeFile += $_.Name }
 $appsettingsBak | ForEach-Object { $excludeFile += $_.Name } 
 Remove-Item ".\*" -Recurse -Force -Exclude $excludeFile
 Expand-Archive -LiteralPath $fileName -DestinationPath "PalServerTools"

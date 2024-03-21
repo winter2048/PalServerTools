@@ -1,4 +1,5 @@
 ﻿using AntDesign;
+using Microsoft.Extensions.Logging;
 using PalServerTools.Utils;
 
 namespace PalServerTools.Data
@@ -6,12 +7,14 @@ namespace PalServerTools.Data
     public class PalRconService
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger _logger;
         private PalConfigService _configService => _serviceProvider.GetRequiredService<PalConfigService>();
 
         public RconClient client;
     
-        public PalRconService(IServiceProvider serviceProvider)
+        public PalRconService(IServiceProvider serviceProvider, ILogger logger)
         {
+            _logger = logger;
             _serviceProvider = serviceProvider;
             this.client = new RconClient();
         }
@@ -48,7 +51,7 @@ namespace PalServerTools.Data
             }
             catch (Exception ex)
             {
-                Console.WriteLine("RconClient: ", ex);
+                _logger.LogError(ex, "Rcon连接失败");
             }
             finally
             {

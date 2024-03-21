@@ -87,7 +87,8 @@ namespace PalServerTools.Utils
                     {
                         string result = await reader.ReadToEndAsync();
                         msg = result;
-                        Console.WriteLine("Output: " + result); // 打印输出结果
+
+                        AppUtil.Logger.LogInformation("Output: " + result); // 打印输出结果
                     }
 
                     // 读取错误输出
@@ -97,7 +98,7 @@ namespace PalServerTools.Utils
                         if (!string.IsNullOrWhiteSpace(error))
                         {
                             msg = error;
-                            Console.WriteLine("Error: " + error); // 打印错误信息
+                            AppUtil.Logger.LogError("Error: " + error); // 打印错误信息
                         }
                     }
 
@@ -109,7 +110,7 @@ namespace PalServerTools.Utils
             catch (Exception ex)
             {
                 msg = ex.Message;
-                Console.WriteLine("Exception occurred: " + ex.Message);
+                AppUtil.Logger.LogError("Exception occurred: " + ex.Message);
                 return new Tuple<bool, string>(false, msg);
             }
         }

@@ -28,7 +28,7 @@ namespace PalServerTools.Utils
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("SAV解析器palworld-save-tools初始化失败：" + ex.Message);
+                    AppUtil.Logger.LogError("SAV解析器palworld-save-tools初始化失败：" + ex.Message);
                 }
             }
             else
@@ -113,7 +113,7 @@ namespace PalServerTools.Utils
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    AppUtil.Logger.LogError(ex.Message);
                 }
                 finally
                 {
@@ -140,7 +140,7 @@ namespace PalServerTools.Utils
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    AppUtil.Logger.LogError(ex.Message);
                 }
                 finally
                 {

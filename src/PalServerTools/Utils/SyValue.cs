@@ -29,6 +29,12 @@ namespace PalServerTools.Utils
             },
             new MenuItems()
             {
+                Title = "日志",
+                Path = "/logs",
+                Icon = "profile"
+            },
+            new MenuItems()
+            {
                 Title = "代理",
                 Path = "/proxy",
                 Icon = "apartment"
