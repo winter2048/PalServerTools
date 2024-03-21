@@ -1,4 +1,5 @@
-﻿using PalServerTools.Utils;
+﻿using Microsoft.Extensions.Logging;
+using PalServerTools.Utils;
 using System.Diagnostics;
 using System.Management;
 using System.Runtime.InteropServices;
@@ -15,10 +16,13 @@ namespace PalServerTools.Data
         [SupportedOSPlatform("Windows")]
         private readonly ManagementObjectSearcher? managementObject;
 
+        private readonly ILogger _logger;
+
         public SystemInfo Info { get; set; }
 
-        public SystemInfoService()
+        public SystemInfoService(ILogger logger)
         {
+            _logger = logger;
             Info = new SystemInfo();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -76,7 +80,7 @@ namespace PalServerTools.Data
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return 0;
         }
@@ -102,7 +106,7 @@ namespace PalServerTools.Data
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return 0;
         }
@@ -145,7 +149,7 @@ namespace PalServerTools.Data
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return 0;
         }

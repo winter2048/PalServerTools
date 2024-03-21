@@ -27,11 +27,10 @@
 
             if (packet.type == RconPacketType.AuthResponse)
             {
-                Console.WriteLine("Rcon Authentication successful.");
             }
             else
             {
-                Console.WriteLine("Rcon Authentication failed.");
+                AppUtil.Logger.LogError("Rcon Authentication failed.");
                 Disconnect();
             }
         }

@@ -2,8 +2,10 @@
 using BlazorPro.BlazorSize;
 using CronQuery.Mvc.Jobs;
 using CronQuery.Mvc.Options;
+using LiteDB;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PalServerTools.Auth;
 using PalServerTools.Components;
@@ -35,13 +37,24 @@ namespace PalServerTools
             builder.Services.AddAntDesign();
             builder.Services.AddMediaQueryService();
             builder.Services.AddScoped<ConsoleService>();
+            builder.Services.AddSingleton<LogService>();
             builder.Services.AddSingleton<PalProcessService>();
             builder.Services.AddSingleton<SystemInfoService>();
             builder.Services.AddSingleton<PalConfigService>();
+            builder.Services.AddSingleton<ILogger, LiteDBLogger>();
             builder.Services.AddTransient<PalRconService>();
             builder.Services.AddTransient<BackupService>();
             builder.Services.AddScoped<ClientConfigService>();
             builder.Services.Configure<ToolsConfigModel>(builder.Configuration.GetSection("ToolsConfig"));
+            builder.Services.AddSingleton<LiteDatabase>(sp =>
+            {
+                var dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data");
+                if (!Directory.Exists(dataDir))
+                {
+                    Directory.CreateDirectory(dataDir);
+                }
+                return new LiteDatabase(Path.Combine(dataDir, "data.db"));
+            });
 
             // ImitateAuthStateProvider
             builder.Services.AddHttpContextAccessor();

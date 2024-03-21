@@ -1,0 +1,186 @@
+﻿@page "/logs"
+
+<PageTitle>日志</PageTitle>
+
+@using System.IO
+@using PalServerTools.Data
+@using PalServerTools.Models
+@using System.ComponentModel
+@using AntDesign.TableModels
+
+@inject IJSRuntime JS
+@inject IMessageService message
+@inject ModalService _modalService
+@inject LogService logService
+
+<Flex Vertical="true" Class="sy-content">
+    <PageHeader Class="sy-content-title" Title="日志" Subtitle="Pal Server Tools" />
+    <Content Class="sy-content-body">
+        <div class="sy-content-body-search">
+            <Input Placeholder="输入内容" Style="width: 200px;" @bind-Value="keywords" />
+            <RangePicker TValue="DateTime?[]" ShowTime='@("HH:mm")' OnChange="OnRangeChange" Value="dateTimes" />
+            <Select @bind-Value="@logLevel"
+                    DefaultValue="@LogLevel.None"
+                    Style="width: 120px;"
+                    TItemValue="LogLevel"
+                    TItem="LogLevel"
+                    Placeholder="日志等级">
+                <SelectOptions>
+                    <SelectOption Value="@LogLevel.None" Label="全部" />
+                    <SelectOption Value="@LogLevel.Information" Label="信息" />
+                    <SelectOption Value="@LogLevel.Warning" Label="警告" />
+                    <SelectOption Value="@LogLevel.Error" Label="错误" />
+                </SelectOptions>
+            </Select>
+            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="search" OnClick="Search">查询</Button>
+            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Default" Icon="reload" OnClick="Refresh" Loading="withRefreshLoading">刷新</Button>
+            <Button Type="@ButtonType.Primary" Danger Size="@ButtonSize.Default" Icon="delete" OnClick="ShowDelAllLogConfirm">全部删除</Button>
+        </div>
+        @if (backupList == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <Table @ref="table"
+                   TItem="LogMedel"
+                   DataSource="@backupList"
+                   Total="_total"
+                   @bind-PageIndex="_pageIndex"
+                   @bind-PageSize="_pageSize"
+                   @bind-SelectedRows="selectedRows"
+                   OnChange="OnChange"
+                   Size="TableSize.Default"
+                   ScrollY="1"
+                   RowKey="x=>x.Id"
+                   Class="sy-table-max"
+                   Responsive>
+                <Selection Key="@(context.Id)" />
+                <PropertyColumn Property="c=>c.Message" Sortable Title="内容" />
+                <PropertyColumn Property="c=>LogLevelStr(c.LogLevel)" Sortable Title="类型" Width="100px" />
+                <PropertyColumn Property='c=>c.Timestamp.ToString("yyyy/MM/dd HH:mm:ss")' Sortable Title="时间" Width="200px" />
+                <ActionColumn Title="操作" Width="150px">
+                    <Space>
+                        <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>DelLog(context.Id)">删除</Button></SpaceItem>
+                    </Space>
+                </ActionColumn>
+            </Table>
+        }
+    </Content>
+</Flex>
+
+
+
+@code {
+    private List<LogMedel>? backupList = null;
+    private DateTime?[]? dateTimes;
+    private LogLevel logLevel = LogLevel.None;
+    private string? keywords = null;
+    private bool withBackupLoading = false;
+    private bool withRefreshLoading = false;
+
+    IEnumerable<LogMedel>? selectedRows;
+    ITable? table;
+
+    int _pageIndex = 1;
+    int _pageSize = 10;
+    int _total = 0;
+
+    protected override void OnInitialized()
+    {
+        backupList = logService.GetAllLogs(logLevel).ToList();
+    }
+
+    public void OnChange(QueryModel<LogMedel> queryModel)
+    {
+        //Console.WriteLine(JsonSerializer.Serialize(queryModel));
+    }
+
+    private void OnRangeChange(DateRangeChangedEventArgs<DateTime?[]> args)
+    {
+        dateTimes = args.Dates;
+    }
+
+    private string LogLevelStr(LogLevel logLevel)
+    {
+        string text = "";
+        switch (logLevel)
+        {
+            case LogLevel.Information:
+                text = "信息";
+                break;
+            case LogLevel.Error:
+                text = "错误";
+                break;
+            case LogLevel.Warning:
+                text = "警告";
+                break;
+        }
+        return text;
+    }
+
+    private void DelLog(string id)
+    {
+        try
+        {
+            logService.DeleteLog(id);
+            _ = message.Success("删除成功！");
+            Refresh();
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
+        }
+    }
+
+    private void DelAllLog()
+    {
+        try
+        {
+            logService.DeleteAllLogs();
+            _ = message.Success("日志全部删除成功！");
+            Refresh();
+        }
+        catch (Exception ex)
+        {
+            _ = message.Error(ex.Message);
+        }
+    }
+
+    private void ShowDelAllLogConfirm()
+    {
+        RenderFragment icon =@<Icon Type="exclamation-circle" Theme="outline"></Icon>;
+
+        _modalService.Confirm(new ConfirmOptions()
+            {
+                Title = "确认删除全部日志?",
+                Icon = icon,
+                OnOk = async (e) => { await Task.Run(() => DelAllLog()); },
+                OkText = "确认",
+                CancelText = "取消"
+            });
+    }
+
+    private void Refresh()
+    {
+        withRefreshLoading = true;
+        dateTimes = null;
+        logLevel = LogLevel.None;
+        keywords = null;
+        Search();
+        withRefreshLoading = false;
+    }
+
+    private void Search()
+    {
+        backupList = null;
+        backupList = logService.GetAllLogs(logLevel, keywords).ToList();
+        if (dateTimes != null && dateTimes.Length == 2)
+        {
+            backupList = backupList.Where(p => p.Timestamp >= dateTimes[0]).ToList();
+            backupList = backupList.Where(p => p.Timestamp <= dateTimes[1]).ToList();
+
+        }
+        _total = backupList.Count;
+    }
+}

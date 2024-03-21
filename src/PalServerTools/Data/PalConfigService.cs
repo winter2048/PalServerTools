@@ -17,6 +17,7 @@ namespace PalServerTools.Data
         private ToolsConfigModel _toolsConfigModel;
         private PalConfigModel _tefaultPalConfig;
         private PalConfigModel _palConfig;
+        private readonly ILogger _logger;
 
         private string appSettingPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"appsetting{(!string.IsNullOrWhiteSpace(AppUtil.Env) ? "." + AppUtil.Env : "")}.json");
         private string? worldOptionJsonStr;
@@ -26,8 +27,9 @@ namespace PalServerTools.Data
         public PalConfigModel PalConfig { get { return _palConfig; } }
         public ToolsConfigModel ToolsConfig { get { return _toolsConfigModel; } }
 
-        public PalConfigService(IOptionsMonitor<ToolsConfigModel> toolsConfigOptions)
+        public PalConfigService(IOptionsMonitor<ToolsConfigModel> toolsConfigOptions, ILogger logger)
         {
+            _logger = logger;
             _toolsConfigModel = toolsConfigOptions.CurrentValue;
             _tefaultPalConfig = GetDefaultPalConfig();
             _palConfig = GetPalConfig();
@@ -341,7 +343,7 @@ namespace PalServerTools.Data
                                     worldOptionKv[propertyName] = new JObject { ["id"] = null, ["value"] = (bool)value, ["type"] = "BoolProperty" };
                                     break;
                                 default:
-                                    Console.WriteLine($"Warning: Property '{propertyName}' with type '{property.PropertyType}' is not supported for JSON serialization.");
+                                    _logger.LogInformation($"Warning: Property '{propertyName}' with type '{property.PropertyType}' is not supported for JSON serialization.");
                                     break;
                             }
                         }

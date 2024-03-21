@@ -13,6 +13,7 @@ namespace PalServerTools.Data
         private readonly PalRconService _palRconService;
         private readonly SystemInfoService _systemInfoService;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger _logger;
         private readonly string processName = "PalServer";
         private PalConfigService _configService => _serviceProvider.GetRequiredService<PalConfigService>();
         private string _palServerPath => Path.Combine(_configService.ToolsConfig.PalServerPath, "PalServer.exe");
@@ -23,11 +24,12 @@ namespace PalServerTools.Data
         public string latestVersion = "";
         public string currentVersion = "";
 
-        public PalProcessService(PalRconService palRconService, SystemInfoService systemInfoService, IServiceProvider serviceProvider)
+        public PalProcessService(PalRconService palRconService, SystemInfoService systemInfoService, IServiceProvider serviceProvider, ILogger logger)
         {
             _serviceProvider = serviceProvider;
             _palRconService = palRconService;
             _systemInfoService = systemInfoService;
+            _logger = logger;
         }
 
         // 启动进程
@@ -51,7 +53,7 @@ namespace PalServerTools.Data
                     }
                     Process.Start(_palServerPath, runArguments);
                     palServerState = PalServerState.Running;
-                    Console.WriteLine("启动进程 " + processName + ".exe");
+                    _logger.LogInformation("启动进程 " + processName + ".exe");
                 }
                 catch (Exception ex)
                 {
@@ -79,12 +81,12 @@ namespace PalServerTools.Data
                         process.Kill();
                         process.WaitForExit();
                         palServerState = PalServerState.Stopped;
-                        Console.WriteLine("进程 " + processName + ".exe 已关闭");
+                        _logger.LogInformation("进程 " + processName + ".exe 已关闭");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("启动进程失败: " + ex.Message);
+                    _logger.LogError(ex, "启动进程失败");
                 }
             });
         }

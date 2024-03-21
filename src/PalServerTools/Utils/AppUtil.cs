@@ -6,6 +6,8 @@ namespace PalServerTools.Utils
     {
         public static IServiceProvider ServiceProvider { get; set; }
 
+        public static ILogger Logger => ServiceProvider.GetRequiredService<ILogger>();
+
         public static string Env { get; set; } = "";
 
         /// <summary>
