@@ -74,5 +74,17 @@ namespace PalServerTools.Utils
             // 如果找不到参数，返回null或抛出异常
             return null;
         }
+
+        public static string AddEnvPrefix(this string str)
+        {
+            if (string.IsNullOrWhiteSpace(AppUtil.Env))
+            {
+                return str;
+            }
+            else
+            {
+                return $"{AppUtil.Env}-{str}";
+            }
+        }
     }
 }

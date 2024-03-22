@@ -160,7 +160,7 @@ namespace PalServerTools.Utils
             {
                 Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp"));
             }
-            string outFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp\{AppUtil.Env}_{Guid.NewGuid()}.json");
+            string outFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp\{Guid.NewGuid().ToString().AddEnvPrefix()}.json");
             ConvertSavToJsonFile(filename, outFile);
             string jsonStr = File.ReadAllText(outFile);
             File.Delete(outFile);
@@ -177,7 +177,7 @@ namespace PalServerTools.Utils
             {
                 Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp"));
             }
-            string jsonFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp\{AppUtil.Env}_{Guid.NewGuid()}.json");
+            string jsonFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"temp\{Guid.NewGuid().ToString().AddEnvPrefix()}.json");
             File.WriteAllText(jsonFile, jsonStr);
             ConvertJsonToSavFile(jsonFile, outputPath);
             File.Delete(jsonFile);

@@ -53,7 +53,7 @@ namespace PalServerTools
                 {
                     Directory.CreateDirectory(dataDir);
                 }
-                return new LiteDatabase(Path.Combine(dataDir, "data.db"));
+                return new LiteDatabase(Path.Combine(dataDir, "data.db".AddEnvPrefix()));
             });
 
             // ImitateAuthStateProvider
