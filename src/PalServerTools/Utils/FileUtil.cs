@@ -113,13 +113,15 @@
             WatchFile(dirPath, fileName, OnChanged);
             if (allDir)
             {
-                // 监听所有子目录
-                foreach (var directory in Directory.EnumerateDirectories(dirPath, "*", SearchOption.AllDirectories))
+                if (Directory.Exists(dirPath))
                 {
-                    WatchFile(directory, fileName, OnChanged);
+                    // 监听所有子目录
+                    foreach (var directory in Directory.EnumerateDirectories(dirPath, "*", SearchOption.AllDirectories))
+                    {
+                        WatchFile(directory, fileName, OnChanged);
+                    }
                 }
             }
-            
         }
     }
 }

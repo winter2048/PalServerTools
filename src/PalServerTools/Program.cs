@@ -11,6 +11,7 @@ using PalServerTools.Auth;
 using PalServerTools.Components;
 using PalServerTools.Data;
 using PalServerTools.Job;
+using PalServerTools.Middleware;
 using PalServerTools.Models;
 using PalServerTools.Utils;
 using System.Configuration;
@@ -121,6 +122,8 @@ namespace PalServerTools
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
             app.MapBlazorHub();
             app.MapFallbackToPage("/_Host");
