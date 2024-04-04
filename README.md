@@ -58,7 +58,7 @@ iex "& { $(irm https://raw.githubusercontent.com/winter2048/PalServerTools/maste
 - 创建配置文件`appsetting.{EnvName}.json`
 - 将`appsetting.json`文件的内容复制到新创建的配置文件中，注意修改端口号`ASPNETCORE_URLS`
 - 运行`PalServerTools.exe`时添加`-Env {EnvName}`参数，例如`PalServerTools.exe -Env {EnvName}`
-- 每个PalServerTools可以管理不同的PalServer服务端。如果使用PalServer升级功能，需要为每个PalServerTools配置不同的steamcmd路径
+- 每个PalServerTools可以管理不同的PalServer服务端。
 
 # 更新内容查看
 

@@ -96,7 +96,7 @@ namespace PalServerTools
                 {
                     autoUpgradeJob = new JobOptions()
                     {
-                        Cron = "0 0/10 * * * *",
+                        Cron = "0 0/5 * * * *",
                         Name = "AutoUpgradeJob"
                     };
                     option.Jobs.Add(autoUpgradeJob);
