@@ -72,9 +72,14 @@ namespace PalServerTools.Data
                     string palServerPath = Path.Combine(_configService.ToolsConfig.PalServerPath, "PalServer.exe");
                     string PalServerWin64TestPath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Binaries\Win64", "PalServer-Win64-Test.exe");
                     string PalServerWin64TestCmdPath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Binaries\Win64", "PalServer-Win64-Test-Cmd.exe");
+                    string PalServerWin64ShippingPath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Binaries\Win64", "PalServer-Win64-Shipping.exe");
+                    string PalServerWin64ShippingCmdPath = Path.Combine(_configService.ToolsConfig.PalServerPath, @"Pal\Binaries\Win64", "PalServer-Win64-Shipping-Cmd.exe");
+
                     var processes = ProcessUtil.GetProcessesByPath(palServerPath)
                         .Concat(ProcessUtil.GetProcessesByPath(PalServerWin64TestPath))
-                        .Concat(ProcessUtil.GetProcessesByPath(PalServerWin64TestCmdPath));
+                        .Concat(ProcessUtil.GetProcessesByPath(PalServerWin64TestCmdPath))
+                        .Concat(ProcessUtil.GetProcessesByPath(PalServerWin64ShippingPath))
+                        .Concat(ProcessUtil.GetProcessesByPath(PalServerWin64ShippingCmdPath));
 
                     foreach (Process process in processes)
                     {
@@ -106,7 +111,7 @@ namespace PalServerTools.Data
 
         public async Task CheckLatestVersion()
         {
-            if ((string.IsNullOrWhiteSpace(currentVersion) || !isLatestVersion) && palServerState == PalServerState.Running)
+            if (palServerState == PalServerState.Running && _configService.PalConfig.RCONEnabled)
             {
                 var info = await _palRconService.Info();
                 if (!string.IsNullOrWhiteSpace(info))
@@ -152,18 +157,23 @@ namespace PalServerTools.Data
                 {
                    await CloseProcess();
                 }
-
-                var res = await SteamCmdUtil.AppUpdate(2394010);
+                _logger.LogInformation("PalServer开始更新...");
+                var res = await SteamCmdUtil.AppUpdate(2394010, _configService.ToolsConfig.PalServerPath);
                 if (!res.Item1)
                 {
                     throw new Exception(res.Item2);
                 }
                 palServerUpdateState = PalServerUpdateState.Success;
+                _logger.LogInformation("PalServer更新成功！");
                 await StartProcess();
+
+                await Task.Delay(2000);
+                await CheckLatestVersion();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 palServerUpdateState = PalServerUpdateState.Failed;
+                _logger.LogError(ex, "PalServer更新失败！");
                 throw;
             }
         }

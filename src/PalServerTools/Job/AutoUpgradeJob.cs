@@ -1,4 +1,5 @@
 ﻿using CronQuery.Mvc.Jobs;
+using Microsoft.Extensions.Logging;
 using PalServerTools.Data;
 using PalServerTools.Models;
 using System.Diagnostics;
@@ -31,7 +32,8 @@ namespace PalServerTools.Job
             // 如果有新版本，则升级
             if (!_palProcessService.isLatestVersion && _palProcessService.palServerUpdateState != PalServerUpdateState.Updating)
             {
-               await _palProcessService.Upgrade();
+                _logger.LogInformation($"发现PalServer新版本 {_palProcessService.latestVersion}，开始自动更新...");
+                await _palProcessService.Upgrade();
             }
         }
     }

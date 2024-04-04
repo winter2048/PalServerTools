@@ -51,12 +51,18 @@ namespace PalServerTools.Utils
             return found;
         }
 
-        public static async Task<Tuple<bool, string>> AppUpdate(int appId)
+        public static async Task<Tuple<bool, string>> AppUpdate(int appId, string installDir = "")
         {
             string msg = "";
             // 设置SteamCMD的执行命令行
-            string command = "steamcmd +login anonymous +app_update "+ appId + " validate +quit";
-
+            string command = "steamcmd";
+            if (!string.IsNullOrWhiteSpace(installDir))
+            {
+                command += @$" +force_install_dir ""{installDir}""";
+            }
+            command += " +login anonymous";
+            command += @$" +app_update {appId} validate";
+            command += " +quit";
             // 创建过程启动信息
             ProcessStartInfo startInfo = new ProcessStartInfo
             {

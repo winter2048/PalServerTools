@@ -61,7 +61,7 @@
         <br />
         <SystemMonitor></SystemMonitor>
     </div>
-    @if (!File.Exists(Path.Combine(configService.ToolsConfig.PalServerPath, "PalServer.exe")))
+    @if (!File.Exists(Path.Combine(configService.ToolsConfig.PalServerPath, "PalServer.exe")) && palProcessService.palServerUpdateState != Models.PalServerUpdateState.Updating)
     {
         <Alert Type="@AlertType.Error" ShowIcon="true">
             <MessageTemplate> PalServer根目录未配置！<NavLink href="/config#basic">去配置</NavLink></MessageTemplate>
