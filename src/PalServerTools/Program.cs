@@ -44,6 +44,7 @@ namespace PalServerTools
             builder.Services.AddSingleton<PalConfigService>();
             builder.Services.AddSingleton<ILogger, LiteDBLogger>();
             builder.Services.AddTransient<PalRconService>();
+            builder.Services.AddTransient<PalApiService>();
             builder.Services.AddTransient<BackupService>();
             builder.Services.AddScoped<ClientConfigService>();
             builder.Services.Configure<ToolsConfigModel>(builder.Configuration.GetSection("ToolsConfig"));

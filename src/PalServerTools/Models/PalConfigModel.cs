@@ -65,5 +65,9 @@ namespace PalServerTools.Models
         public string Region { get; set; } = "";
         public bool bUseAuth { get; set; }
         public string BanListURL { get; set; } = "";
+
+        public int RESTAPIPort { get; set; }
+
+        public bool RESTAPIEnabled { get; set; }
     }
 }

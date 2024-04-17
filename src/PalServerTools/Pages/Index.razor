@@ -7,8 +7,9 @@
 @using PalServerTools.Utils;
 @using System.Diagnostics;
 @using System.Reflection;
+@using PalServerTools.Models;
 @inject ConsoleService consoleService
-@inject PalRconService palRconService
+@inject PalApiService palApiService
 @inject PalProcessService palProcessService
 @inject PalConfigService configService
 @inject IHostApplicationLifetime lifetime
@@ -61,16 +62,25 @@
         <br />
         <SystemMonitor></SystemMonitor>
     </div>
+
+    <InputGroup Compact Style="margin-bottom: 10px;"> 
+        <Tag Color="default" Style="width: 120px;text-align: center;line-height: 30px;font-size: 14px;">服务器消息</Tag>
+        <Input DefaultValue="@("")" Style="width: 100%;" Placeholder="输入消息..." @bind-Value="sendMsg" />
+        <Button Type="@ButtonType.Primary" OnClick="OnClickSendMsg" Loading="withSendMsgLoading">
+            发送
+        </Button>
+    </InputGroup>
+
     @if (!File.Exists(Path.Combine(configService.ToolsConfig.PalServerPath, "PalServer.exe")) && palProcessService.palServerUpdateState != Models.PalServerUpdateState.Updating)
     {
         <Alert Type="@AlertType.Error" ShowIcon="true">
             <MessageTemplate> PalServer根目录未配置！<NavLink href="/config#basic">去配置</NavLink></MessageTemplate>
         </Alert>
     }
-    @if (!configService.PalConfig.RCONEnabled)
+    @if (!configService.PalConfig.RESTAPIEnabled)
     {
         <Alert Type="@AlertType.Warning" ShowIcon="true">
-            <MessageTemplate> RCON未启用！<NavLink href="/config#service">去开启</NavLink></MessageTemplate>
+            <MessageTemplate> Rest Api未启用！<NavLink href="/config#service">去开启</NavLink></MessageTemplate>
         </Alert>
     }
     @if (!SteamCmdUtil.HasSteamCMD())
@@ -110,15 +120,17 @@
 
 @code {
     Timer? timer;
-    private string serverInfo = "";
+    private ServerInfoModel serverInfo = new ServerInfoModel();
     private bool withCheckLatestVersionLoading = false;
     private bool withReloadLoading = false;
     private bool withStartLoading = false;
     private bool withCloseLoading = false;
+    private bool withSendMsgLoading = false;
     private bool isCanConnect = true;
     private Tuple<bool, string, string> isToolsLatestVersion = new Tuple<bool, string, string>(true, "", "");
     private bool autoRestart = false;
     private bool autoUpgrade = false;
+    private string sendMsg = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -126,9 +138,9 @@
         autoUpgrade = configService.ToolsConfig.AutoUpgrade;
         if (palProcessService.palServerState == Models.PalServerState.Running)
         {
-            serverInfo = await palRconService.Info();
+            serverInfo = await palApiService.Info();
         }
-        isCanConnect = await palRconService.IsCanConnect();
+        isCanConnect = await palApiService.IsCanConnect();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -257,6 +269,15 @@
             withReloadLoading = false;
             await CheckLatestVersion();
         }
+    }
+
+    async Task OnClickSendMsg()
+    {
+        withSendMsgLoading = true;
+        var isok = await palApiService.Broadcast(sendMsg);
+        withSendMsgLoading = false;
+        _ = isok ? message.Success("启动成功！") : message.Error("启动成功");
+        this.StateHasChanged();
     }
 
     async Task OnChangeToolsConfig()

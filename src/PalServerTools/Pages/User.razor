@@ -5,7 +5,7 @@
 @using AntDesign.TableModels;
 @using PalServerTools.Data
 @using PalServerTools.Models
-@inject PalRconService palRconService
+@inject PalApiService palApiService
 @inject NavigationManager nvm
 
 <Flex Vertical="true" Class="sy-content">
@@ -15,10 +15,10 @@
         @if (!isCanConnect)
         {
             <Result Status="warning"
-                Title="RCON连接失败！"
-                SubTitle="提示：请先在 配置/服务器配置 页面启用RCON。如果已经完成配置，请尝试重启PalServer。">
+                Title="Rest Api连接失败！"
+                    SubTitle="提示：请先在 配置/服务器配置 页面启用Rest Api。如果已经完成配置，请尝试重启PalServer。">
                 <Extra>
-                    <Button Type="primary" OnClick="@(()=>{ nvm.NavigateTo("/config#service");})">去启用RCON</Button>
+                    <Button Type="primary" OnClick="@(()=>{ nvm.NavigateTo("/config#service");})">去启用Rest Api</Button>
                 </Extra>
             </Result>
         }
@@ -49,14 +49,14 @@
                RowKey="x=>x.Name"
                Class="sy-table-max"
                Responsive>
-                    <Selection Key="@(context.PlayerUid)" />
-                    <PropertyColumn Property="c=>c.PlayerUid" Sortable Title="Id" />
+                    <Selection Key="@(context.PlayerID)" />
+                    <PropertyColumn Property="c=>c.PlayerID" Sortable Title="Id" />
                     <PropertyColumn Property="c=>c.Name" Sortable Title="名称" />
-                    <PropertyColumn Property='c=>c.SteamId' Sortable Title="SteamId" />
+                    <PropertyColumn Property='c=>c.SteamID' Sortable Title="SteamId" />
                     <ActionColumn Title="操作">
                         <Space>
-                            <SpaceItem><Button Icon="download" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>palRconService.KickPlayer(context.SteamId)">踢出</Button></SpaceItem>
-                            <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>palRconService.BanPlayer(context.SteamId)">封禁</Button></SpaceItem>
+                            <SpaceItem><Button Icon="download" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>palApiService.KickPlayer(context.SteamID)">踢出</Button></SpaceItem>
+                            <SpaceItem><Button Icon="delete" Type="@ButtonType.Primary" Danger Shape="@ButtonShape.Round" OnClick="()=>palApiService.BanPlayer(context.SteamID)">封禁</Button></SpaceItem>
                         </Space>
                     </ActionColumn>
                 </Table>
@@ -83,7 +83,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        isCanConnect = await palRconService.IsCanConnect();
+        isCanConnect = await palApiService.IsCanConnect();
         await this.Refresh();
     }
 
@@ -95,24 +95,12 @@
     private async Task Search()
     {
         players = null;
-        var playersRes = await palRconService.ShowPlayers();
-        players = new List<PlayerModel>();
-        foreach (var player in playersRes.Split("\n").Skip(1))
-        {
-            if (!string.IsNullOrWhiteSpace(player))
-            {
-                var value = player.Split(",");
-                players.Add(new PlayerModel()
-                    {
-                        Name = value.Length >= 1 ? value[0] : "",
-                        PlayerUid = value.Length >= 2 ? value[1] : "",
-                        SteamId = value.Length >= 3 ? value[2] : ""
-                    });
-            }
-        }
+        var playersRes = await palApiService.ShowPlayers();
+        players = playersRes?.Players;
+       
         if (!string.IsNullOrWhiteSpace(keywords))
         {
-            players = players.Where(p => p.Name.Contains(keywords) || p.PlayerUid.Contains(keywords) || p.SteamId.Contains(keywords)).ToList();
+            players = players.Where(p => p.Name.Contains(keywords) || p.PlayerID.Contains(keywords) || p.SteamID.Contains(keywords)).ToList();
         }
     }
 

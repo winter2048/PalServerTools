@@ -10,7 +10,7 @@ namespace PalServerTools.Data
 {
     public class PalProcessService
     {
-        private readonly PalRconService _palRconService;
+        private readonly PalApiService _palApiService;
         private readonly SystemInfoService _systemInfoService;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
@@ -24,10 +24,10 @@ namespace PalServerTools.Data
         public string latestVersion = "";
         public string currentVersion = "";
 
-        public PalProcessService(PalRconService palRconService, SystemInfoService systemInfoService, IServiceProvider serviceProvider, ILogger logger)
+        public PalProcessService(PalApiService palApiService, SystemInfoService systemInfoService, IServiceProvider serviceProvider, ILogger logger)
         {
             _serviceProvider = serviceProvider;
-            _palRconService = palRconService;
+            _palApiService = palApiService;
             _systemInfoService = systemInfoService;
             _logger = logger;
         }
@@ -113,10 +113,10 @@ namespace PalServerTools.Data
         {
             if (palServerState == PalServerState.Running && _configService.PalConfig.RCONEnabled)
             {
-                var info = await _palRconService.Info();
-                if (!string.IsNullOrWhiteSpace(info))
+                var info = await _palApiService.Info();
+                if (info != null && !string.IsNullOrWhiteSpace(info.Version))
                 {
-                    Match match = Regex.Match(info, @"v\d+\.\d+\.\d+\.\d+");
+                    Match match = Regex.Match(info.Version, @"v\d+\.\d+\.\d+\.\d+");
                     if (match.Success)
                     {
                         currentVersion = match.Value;
