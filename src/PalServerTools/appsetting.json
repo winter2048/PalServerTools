@@ -9,7 +9,7 @@
   "AllowedHosts": "*",
   "ToolsConfig": {
     "ToolsPassword": "123456",
-    "PalServerPath": "E:\\steamcmd\\steamapps\\common\\PalServer",
+    "PalServerPath": "E:\\Steam\\steamapps\\common\\PalServer",
     "RunArguments": "-publicip 1.1.1.1 -publicport 8211 -publiclobby",
     "SteamCMDPath": "",
     "AutoRestart": false,

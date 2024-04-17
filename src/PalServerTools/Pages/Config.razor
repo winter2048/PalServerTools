@@ -140,6 +140,15 @@
                                 <AntDesign.InputNumber @bind-Value="@context.RCONPort" Min="0" Max="65535" DefaultValue="25575"></AntDesign.InputNumber>
                             </FormItem>
                         }
+                        <FormItem Label="是否启用REST API">
+                            <Checkbox @bind-Value="context.RESTAPIEnabled"></Checkbox>
+                        </FormItem>
+                        @if (context.RESTAPIEnabled)
+                        {
+                            <FormItem Label="REST API端口号">
+                                <AntDesign.InputNumber @bind-Value="@context.RESTAPIPort" Min="0" Max="65535" DefaultValue="8212"></AntDesign.InputNumber>
+                            </FormItem>
+                        }
                         <FormItem Label="地区">
                             <Input @bind-Value="@context.Region" />
                         </FormItem>
