@@ -56,7 +56,15 @@
                    Class="sy-table-max"
                    Responsive>
                 <Selection Key="@(context.Id)" />
-                <PropertyColumn Property="c=>c.Message" Sortable Title="内容" />
+                <PropertyColumn Title="内容" Property="c=>c.Message">
+                    <span>@context.Message</span>
+                    @if (context.Exception != null)
+                    {
+                        <Tooltip Placement="@Placement.Right" Title="@context.Exception" ArrowPointAtCenter="@true">
+                            <Icon Type="info-circle" Theme="outline" />
+                        </Tooltip>
+                    }
+                </PropertyColumn>
                 <PropertyColumn Property="c=>LogLevelStr(c.LogLevel)" Sortable Title="类型" Width="100px" />
                 <PropertyColumn Property='c=>c.Timestamp.ToString("yyyy/MM/dd HH:mm:ss")' Sortable Title="时间" Width="200px" />
                 <ActionColumn Title="操作" Width="150px">

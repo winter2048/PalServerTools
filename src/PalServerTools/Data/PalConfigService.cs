@@ -1,5 +1,6 @@
 
 using CronQuery.Mvc.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -231,9 +232,16 @@ namespace PalServerTools.Data
                 {
                     if (property.PropertyType.BaseType == typeof(Enum))
                     {
-                        var targetType = property.PropertyType;
-                        var value = Enum.Parse(targetType, kvp.Value, true);
-                        property.SetValue(palConfig, value);
+                        try
+                        {
+                            var targetType = property.PropertyType;
+                            var value = Enum.Parse(targetType, kvp.Value, true);
+                            property.SetValue(palConfig, value);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "WorldOption.sav∏Ò Ω¥ÌŒÛ");
+                        }
                     }
                     else
                     {
